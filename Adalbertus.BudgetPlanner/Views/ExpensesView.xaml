@@ -1,0 +1,103 @@
+﻿<UserControl x:Class="Adalbertus.BudgetPlanner.Views.ExpensesView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:cal="http://www.caliburnproject.org"
+             xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+             xmlns:ext="clr-namespace:Adalbertus.BudgetPlanner.Extensions"
+>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="200" />
+        </Grid.ColumnDefinitions>
+        <DataGrid Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                  ItemsSource="{Binding BudgetExpenses}" CanUserAddRows="False" CanUserDeleteRows="True"
+                  AutoGenerateColumns="False">
+            <DataGrid.Columns>
+                <DataGridTemplateColumn Header="Kategoria">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <ComboBox ItemsSource="{Binding DataContext.ExpensesGridCashFlows, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}" 
+                                      SelectedItem="{Binding Flow, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                      IsSynchronizedWithCurrentItem="False"
+                                      />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Data">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <DatePicker SelectedDate="{Binding Date, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" SelectedDateFormat="Long" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Header="Kwota" Binding="{Binding Value}"/>
+                <DataGridTextColumn Header="Opis" Binding="{Binding Description}" Width="*"/>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <GroupBox Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <StackPanel>
+                <Label>Kategoria</Label>
+                <ComboBox ItemsSource="{Binding CashFlows}"
+                          SelectedItem="{Binding SelectedExpenseCashFlow}"                          
+                          VerticalAlignment="Stretch" />
+
+                <Label>Data</Label>
+                <DatePicker SelectedDate="{Binding SelectedExpenseDate}" SelectedDateFormat="Long" />
+
+                <Label>Kwota</Label>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <TextBox Grid.Row="0" Grid.Column="0" Text="{Binding ExpenseValue, UpdateSourceTrigger=PropertyChanged}"
+                             VerticalAlignment="Stretch"
+                             ext:FocusExtension.IsFocused="{Binding IsExpenseValueFocused}"
+                             ToolTip="Wciśnięcie klawisza Ctrl+Enter wstawi kwotę do kalkulatora">
+                        <i:Interaction.Triggers>
+                            <ext:KeyTrigger Key="Enter" Modifiers="Control">
+                                <cal:ActionMessage MethodName="AddExpenseValueToCalculator" />
+                            </ext:KeyTrigger>
+                            <ext:KeyTrigger Key="Enter">
+                                <cal:ActionMessage MethodName="MoveToExpenseDescription" />
+                            </ext:KeyTrigger>
+                        </i:Interaction.Triggers>
+                    </TextBox>
+                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{ext:CultureBinding ExpenseTotalValue, StringFormat='Łącznie: {0:c}'}" 
+                               Foreground="Black"/>
+                    <ListBox x:Name="CalculatorListBox" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" 
+                             ItemsSource="{Binding ExpenseValues}" MaxHeight="100">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <WrapPanel>
+                                    <Label Content="{Binding}" />
+                                    <Button Content="Usuń" cal:Message.Attach="[Event Click] = [Action RemoveExpenseValueFromCalculator($dataContext)]" />
+                                </WrapPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Grid>
+
+                <Label>Opis</Label>
+                <TextBox Text="{Binding ExpenseDescription, UpdateSourceTrigger=PropertyChanged}"
+                         ext:FocusExtension.IsFocused="{Binding IsExpenseDescriptionFocused}"
+                         VerticalAlignment="Stretch">
+                    <i:Interaction.Triggers>
+                        <ext:KeyTrigger Key="Enter">
+                            <cal:ActionMessage MethodName="AddAndMoveToExpenseValue" />
+                        </ext:KeyTrigger>
+                    </i:Interaction.Triggers>
+
+                </TextBox>
+
+                <Button Content="Wstaw" cal:Message.Attach="[Event Click] = [Action AddExpense()]"/>
+            </StackPanel>
+        </GroupBox>
+    </Grid>
+</UserControl>

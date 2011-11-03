@@ -1,0 +1,140 @@
+﻿<UserControl x:Class="Adalbertus.BudgetPlanner.Views.RevenuesView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:cal="http://www.caliburnproject.org"
+             xmlns:conv="clr-namespace:Adalbertus.BudgetPlanner.Converters"
+>
+    <UserControl.Resources>
+        <conv:StringFormatConverter x:Key="DateFormatter" StringFormat="{}{0:D}" />
+        <conv:StringFormatConverter x:Key="CurrencyFormatter" StringFormat="{}{0:c}" />
+        <conv:StringFormatConverter x:Key="ProcentFormatter" StringFormat="{}{0:f}%" />
+    </UserControl.Resources>
+    
+    <Expander IsExpanded="False" ExpandDirection="Down">
+        <Expander.Header>
+            <WrapPanel>
+                <Label ToolTip="Dowolne wpływy do budżetu domowego - można je później dodać w trakcie">Całkowite wpływy</Label>
+                <Label Content="{Binding Path=TotalSumOfRevenues, Converter={StaticResource CurrencyFormatter}}" Margin="5 0 0 0" />
+            </WrapPanel>
+        </Expander.Header>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <GroupBox Grid.Column="0">
+                <GroupBox.Header>
+                    <WrapPanel>
+                        <Label>Wpływy z dochodów</Label>
+                        <Label Content="{Binding Path=SumOfRevenueIncomes, Converter={StaticResource CurrencyFormatter}}" Margin="5 0 0 0" />
+                    </WrapPanel>
+                </GroupBox.Header>
+                <StackPanel>
+                    <WrapPanel>
+                        <Label>Nazwa</Label>
+                        <ComboBox ItemsSource="{Binding AvailableIncomes}" 
+                                  SelectedItem="{Binding SelectedAvailableIncome}"
+                                  IsSynchronizedWithCurrentItem="True"
+                                  DisplayMemberPath="Name" Width="160" 
+                                  ToolTip="Proszę wybrać dochód z listy poniżej.">
+                        </ComboBox>
+
+                        <Label>Data</Label>
+                        <DatePicker SelectedDate="{Binding IncomeValueDate}" SelectedDateFormat="Long" />
+
+                        <Label>Kwota</Label>
+                        <TextBox Text="{Binding IncomeValueValue, UpdateSourceTrigger=PropertyChanged}"
+                                 Width="40"/>
+
+                        <Label>Opis</Label>
+                        <TextBox Text="{Binding IncomeValueDescription}" Width="100"/>
+
+                        <Button Content="Dodaj wpływy z dochodów" ToolTip="Wstawienie wpływów z nowego dochodu" cal:Message.Attach="[Event Click] = [Action AddIncomeValue()]" />
+                    </WrapPanel>
+
+                    <DataGrid ItemsSource="{Binding BudgetIncomeValues}" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Nazwa" Binding="{Binding IncomeName}" />
+                            <DataGridTemplateColumn Header="Data">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <DatePicker SelectedDate="{Binding Date, UpdateSourceTrigger=LostFocus}" SelectedDateFormat="Long" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTextColumn Header="Kwota" Binding="{Binding Value, UpdateSourceTrigger=LostFocus}" />
+                            <DataGridTextColumn Header="Opis" Binding="{Binding Description}" />
+                            <DataGridTemplateColumn CanUserReorder="False" CanUserResize="False">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <WrapPanel>
+                                            <Button Content="Usuń wpis" cal:Message.Attach="[Event Click] = [Action RemoveIncomeValue($dataContext)]" />
+                                        </WrapPanel>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </StackPanel>
+            </GroupBox>
+
+            <GroupBox Grid.Column="1">
+                <GroupBox.Header>
+                    <WrapPanel>
+                        <Label>Wpływy z oszczędności</Label>
+                        <Label Content="{Binding Path=SumOfRevenueSavings, Converter={StaticResource CurrencyFormatter}}" Margin="5 0 0 0" />
+                    </WrapPanel>
+                </GroupBox.Header>
+
+                <StackPanel>
+                    <WrapPanel>
+                        <Label>Nazwa</Label>                        
+                        <ComboBox ItemsSource="{Binding AvailableSavings}" 
+                                  SelectedItem="{Binding SelectedAvailableSaving}"
+                                  IsSynchronizedWithCurrentItem="False"
+                                  DisplayMemberPath="Name" Width="160" 
+                                  ToolTip="Proszę wybrać oszczędności z listy poniżej.">
+                        </ComboBox>
+                        <Label>Data</Label>
+                        <DatePicker SelectedDate="{Binding SavingValueDate}" SelectedDateFormat="Long"
+                                    Width="70"/>
+                        
+                        <Label>Kwota</Label>
+                        <TextBox Text="{Binding SavingValueValue, UpdateSourceTrigger=PropertyChanged}"
+                                 Width="40"/>
+
+                        <Label>Opis</Label>
+                        <TextBox Text="{Binding SavingValueDescription}" Width="100"/>
+
+                        <Button Content="Dodaj wpływy z oszczędności" ToolTip="Wstawienie wpływu pochodzącego z oszczędności" cal:Message.Attach="[Event Click] = [Action AddSavingValue()]" />
+                    </WrapPanel>
+
+                    <DataGrid ItemsSource="{Binding BudgetSavingValues}" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Nazwa" Binding="{Binding SavingName}" IsReadOnly="True" />
+                            <DataGridTemplateColumn Header="Data">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <DatePicker SelectedDate="{Binding Date}" SelectedDateFormat="Long" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTextColumn Header="Opis" Binding="{Binding Description}" />
+                            <DataGridTextColumn Header="Kwota" Binding="{Binding BudgetValue}" />
+                            <DataGridTemplateColumn CanUserReorder="False" CanUserResize="False">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <WrapPanel>
+                                            <Button Content="Usuń wpis" cal:Message.Attach="[Event Click] = [Action RemoveSavingValue($dataContext)]" />
+                                        </WrapPanel>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </StackPanel>
+            </GroupBox>
+        </Grid>
+    </Expander>
+
+</UserControl>
