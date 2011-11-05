@@ -15,8 +15,8 @@ namespace Adalbertus.BudgetPlanner.ViewModels
 {
     public class CashFlowTypesViewModel : BaseViewModel
     {
-        public CashFlowTypesViewModel(IDatabase database, IConfiguration configuration)
-            : base(database, configuration)
+        public CashFlowTypesViewModel(IDatabase database, IConfiguration configuration, ICachedService cashedService, IEventAggregator eventAggregator)
+            : base(database, configuration, cashedService, eventAggregator)
         {
             CashFlows = new BindableCollectionExt<CashFlow>();
             CashFlows.PropertyChanged += (s, e) => { OnPropertyChanged(s, e); };

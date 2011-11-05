@@ -99,5 +99,6 @@
                 <Button Content="Wstaw" cal:Message.Attach="[Event Click] = [Action AddExpense()]"/>
             </StackPanel>
         </GroupBox>
+    
     </Grid>
 </UserControl>

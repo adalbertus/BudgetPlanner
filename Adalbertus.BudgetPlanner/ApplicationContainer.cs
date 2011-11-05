@@ -23,6 +23,7 @@ namespace Adalbertus.BudgetPlanner
                 Component.For<IEventAggregator>().ImplementedBy<EventAggregator>().LifeStyle.Is(LifestyleType.Singleton),
                 Component.For<IDatabase>().ImplementedBy<Database.Database>().LifeStyle.Is(LifestyleType.Singleton),
                 Component.For<IConfiguration>().ImplementedBy<Configuration>().LifeStyle.Is(LifestyleType.Singleton),
+                Component.For<ICachedService>().ImplementedBy<Database.CachedService>().LifeStyle.Is(LifestyleType.Singleton),
                 AllTypes.FromAssemblyContaining<App>().Pick().Configure(x => x.LifeStyle.Is(LifestyleType.Singleton))
             );
         }

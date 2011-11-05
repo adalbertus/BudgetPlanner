@@ -33,8 +33,8 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             }
         }
 
-        public ExternalSourcesViewModel(IDatabase database, IConfiguration configuration)
-            : base(database, configuration)
+        public ExternalSourcesViewModel(IDatabase database, IConfiguration configuration, ICachedService cashedService, IEventAggregator eventAggregator)
+            : base(database, configuration, cashedService, eventAggregator)
         {
             _savings = new BindableCollectionExt<Saving>();
             _incomes = new BindableCollectionExt<Income>();

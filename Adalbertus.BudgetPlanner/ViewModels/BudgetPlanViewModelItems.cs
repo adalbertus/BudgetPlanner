@@ -16,6 +16,8 @@ namespace Adalbertus.BudgetPlanner.ViewModels
 
         private void LoadBudgetPlanItems()
         {
+            var cashFlows = CachedService.GetAllCashFlows();
+
             var sql = PetaPoco.Sql.Builder
                 .Select("*")
                 .From("BudgetPlan")
@@ -28,15 +30,24 @@ namespace Adalbertus.BudgetPlanner.ViewModels
                 .Where("BudgetPlan.BudgetId = @0", _budget.Id);
             var budgetPlans = Database.Query<BudgetPlan, Budget, CashFlow, CashFlowGroup>(sql);
 
+            var sumOfExpenses = Database.Query<dynamic>(PetaPoco.Sql.Builder
+                .Select("CashFlow.Id, SUM(ifnull(Value, 0) Sum)")
+                .From("CashFlow")
+                .LeftJoin("Expense")
+                .On("Expense.CashFlowId = CashFlow.Id AND BudgetId = @0", _budget.Id));
+                
             BudgetPlanList.IsNotifying = false;
             BudgetPlanList.Clear();
 
-            foreach (var cashFlow in CashFlows)
+            foreach (var cashFlow in cashFlows)
             {
+                //var expenseTotalValue = sumOfExpenses.Single(x => x.Id == cashFlow.Id) as decimal;
                 var planItems = budgetPlans.Where(x => x.CashFlow.Id == cashFlow.Id);
                 BudgetPlanList.Add(new BudgetPlanItemVM(_budget, cashFlow, planItems));
             }
             BudgetPlanList.IsNotifying = true;
+
+            BudgetPlanList.Refresh();
         }
 
         private void AttachToBudgetPlanItems()

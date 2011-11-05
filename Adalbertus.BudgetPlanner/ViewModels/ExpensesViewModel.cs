@@ -2,14 +2,28 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Adalbertus.BudgetPlanner.Models;
+using Adalbertus.BudgetPlanner.Database;
 using Adalbertus.BudgetPlanner.Core;
+using Adalbertus.BudgetPlanner.Models;
 using System.Collections.Specialized;
+using System.ComponentModel;
+using Caliburn.Micro;
 
 namespace Adalbertus.BudgetPlanner.ViewModels
 {
-    public partial class BudgetPlanViewModel : BaseViewModel
+    public class ExpensesViewModel : BaseViewModel
     {
+        public ExpensesViewModel(IDatabase database, IConfiguration configuration, ICachedService cashedService, IEventAggregator eventAggregator)
+            : base(database, configuration, cashedService, eventAggregator)
+        {
+            //BudgetExpenses = new BindableCollectionExt<Expense>();
+            //BudgetExpenses.PropertyChanged += ExpensesPropertyChanged;
+            //BudgetExpenses.CollectionChanged += ExpensesCollectionChanged;
+
+            ExpensesGridCashFlows = new BindableCollectionExt<CashFlow>();
+            CashFlows = new BindableCollectionExt<CashFlow>();
+        }
+
         protected override void Initialize()
         {
             base.Initialize();
@@ -22,10 +36,29 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             SelectedExpenseDate = DateTime.Now;
         }
 
+        // Workaround - need ExpensesGridCashFlows and CashFlows because without spliting
+        // it was refresed only in DataGrid in ExpensesView
+        public BindableCollectionExt<CashFlow> ExpensesGridCashFlows { get; private set; }
+        public BindableCollectionExt<CashFlow> CashFlows { get; private set; }
+        //public int BudgetId { get; private set; }
+
         #region Budget plan expenses
+        public Budget Budget { get; private set; }
+        //private Budget _budget;
+        //public Budget Budget {
+        //    get { return _budget; }
+        //    set
+        //    {
+        //        _budget = value;
+        //        AttachEvents(_budget);
+        //        NotifyOfPropertyChange(() => Budget);
+        //    }
+        //}
         public BindableCollectionExt<Expense> BudgetExpenses
         {
-            get { return _budget.Expenses as BindableCollectionExt<Expense>; }
+            get;
+            private set;
+            //get { return Budget.Expenses as BindableCollectionExt<Expense>; }
         }
 
         private CashFlow _selectedExpenseCashFlow;
@@ -129,6 +162,58 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         }
         #endregion
 
+        public void LoadData(Budget budget)
+        {
+            Budget = budget;
+            BudgetExpenses = budget.Expenses;
+            BudgetExpenses.PropertyChanged += ExpensesPropertyChanged;
+            BudgetExpenses.CollectionChanged += ExpensesCollectionChanged;
+            LoadCashFlows();
+            LoadExpenses();
+        }
+
+        public void AttachEvents()
+        {
+        }
+
+        public void DeatachEvents()
+        {
+            //DeatachEvents(_budget);
+            BudgetExpenses.CollectionChanged -= ExpensesCollectionChanged;
+            BudgetExpenses.PropertyChanged -= ExpensesPropertyChanged;
+        }
+
+        //TODO: Need refactoring - put into cache...
+        private void LoadCashFlows()
+        {
+            ExpensesGridCashFlows.IsNotifying = false;
+            ExpensesGridCashFlows.Clear();
+            CashFlows.Clear();
+            var cashFlowList = Database.Query<CashFlow, CashFlowGroup, Saving>(PetaPoco.Sql.Builder
+                .Select("*")
+                .From("CashFlow")
+                .InnerJoin("CashFlowGroup")
+                .On("CashFlow.CashFlowGroupId = CashFlowGroup.Id")
+                .LeftJoin("Saving")
+                .On("Saving.CashFlowId = CashFlow.Id")
+                .OrderBy("CashFlow.Name ASC")).ToList();
+            cashFlowList.ForEach(x =>
+            {
+                if (x.Saving.IsTransient())
+                {
+                    x.Saving = null;
+                }
+            });
+            if (cashFlowList != null)
+            {
+                cashFlowList.ForEach(x => ExpensesGridCashFlows.Add(x));
+                cashFlowList.ForEach(x => CashFlows.Add(x));
+            }
+            ExpensesGridCashFlows.IsNotifying = true;
+
+            NotifyOfPropertyChange(() => ExpensesGridCashFlows);
+        }
+
         private void LoadExpenses()
         {
             var sql = PetaPoco.Sql.Builder
@@ -138,7 +223,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
                     .On("Budget.Id = Expense.BudgetId")
                     .InnerJoin("CashFlow")
                     .On("CashFlow.Id = Expense.CashFlowId")
-                    .Where("Expense.BudgetId = @0", _budget.Id);
+                    .Where("Expense.BudgetId = @0", Budget.Id);
 
             var expenses = Database.Query<Expense, Budget, CashFlow>(sql).ToList();
             expenses.ForEach(x =>
@@ -152,24 +237,48 @@ namespace Adalbertus.BudgetPlanner.ViewModels
                     x.SavingValue.Budget = x.Budget;
                 }
             });
-            expenses.ForEach(e => _budget.Expenses.Add(e));
+            BudgetExpenses.IsNotifying = false;
+            BudgetExpenses.Clear();
+            BudgetExpenses.AddRange(expenses);
+            BudgetExpenses.IsNotifying = true;
+            BudgetExpenses.Refresh();
         }
 
-        private void AttachToExpenses()
+        //private void AttachEvents(Budget budget)
+        //{
+        //    if (budget == null)
+        //    {
+        //        return;
+        //    }
+        //    var expenes = budget.Expenses as BindableCollectionExt<Expense>;
+        //    expenes.PropertyChanged += ExpensesPropertyChanged;
+        //    expenes.CollectionChanged += ExpensesCollectionChanged;
+        //}
+
+        //private void DeatachEvents(Budget budget)
+        //{
+        //    if (budget == null)
+        //    {
+        //        return;
+        //    }
+        //    var expenes = budget.Expenses as BindableCollectionExt<Expense>;
+        //    expenes.PropertyChanged -= ExpensesPropertyChanged;
+        //    expenes.CollectionChanged -= ExpensesCollectionChanged;
+        //}
+
+        private void ExpensesPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            BudgetExpenses.PropertyChanged += BudgetPropertyChanged;
-            BudgetExpenses.CollectionChanged += BudgetExpenses_CollectionChanged;
+            Save(sender as Expense);
         }
 
-        
-        private void DetachFromExpenses()
+        private void ExpensesCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            BudgetExpenses.PropertyChanged -= BudgetPropertyChanged;
-            BudgetExpenses.CollectionChanged -= BudgetExpenses_CollectionChanged;
-        }
-
-        private void BudgetExpenses_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
+            switch (e.Action)
+            {
+                case NotifyCollectionChangedAction.Remove:
+                    Delete(e.OldItems[0] as Expense);
+                    break;
+            }
         }
 
         public bool CanAddExpense
@@ -191,17 +300,18 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             {
                 expenseValue = ExpenseTotalValue;
             }
+            var fakeBudget = new Budget { Id = Budget.Id };
+            var expense = Expense.CreateExpense(fakeBudget, SelectedExpenseCashFlow, expenseValue, ExpenseDescription, SelectedExpenseDate);
 
-            var expense = _budget.AddExpense(SelectedExpenseCashFlow, expenseValue, ExpenseDescription, SelectedExpenseDate);
-
-            SaveExpense(expense);
+            Save(expense);
 
             ExpenseValues.Clear();
             ExpenseValue = 0;
             ExpenseDescription = string.Empty;
+            BudgetExpenses.Add(expense);
         }
 
-        private void SaveExpense(Expense expense)
+        private void Save(Expense expense)
         {
             using (var tx = Database.GetTransaction())
             {
@@ -227,9 +337,20 @@ namespace Adalbertus.BudgetPlanner.ViewModels
                 }
 
                 tx.Complete();
-                //NotifyOfPropertyChange(() => BudgetPlanList);
-                BudgetPlanList.Refresh();
             }
+            PublishRefreshRequest();
+        }
+
+        private void Delete(Expense expense)
+        {
+            using (var tx = Database.GetTransaction())
+            {
+                Database.Delete<SavingValue>("WHERE ExpenseId = @0", expense.Id);
+                Database.Delete(expense);
+
+                tx.Complete();
+            }
+            PublishRefreshRequest();
         }
 
         public void AddExpenseValueToCalculator()

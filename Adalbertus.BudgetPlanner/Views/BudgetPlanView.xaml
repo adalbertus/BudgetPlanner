@@ -193,7 +193,7 @@
             <GroupBox Grid.Column="2" Header="Realizacja budżetu">
                 <StackPanel>
                     <Label>ExpensesView</Label>
-                    <view:ExpensesView />
+                    <ContentControl x:Name="ExpensesViewModel" />
                 </StackPanel>
             </GroupBox>
         </Grid>

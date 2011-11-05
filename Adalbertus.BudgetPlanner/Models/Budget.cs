@@ -19,7 +19,7 @@ namespace Adalbertus.BudgetPlanner.Models
         public virtual IList<IncomeValue> IncomeValues { get; private set; }
         public virtual IList<SavingValue> SavingValues { get; private set; }
         public virtual IList<BudgetPlan> BudgetPlanItems { get; private set; }
-        public virtual IList<Expense> Expenses { get; private set; }
+        public virtual BindableCollectionExt<Expense> Expenses { get; private set; }
 
 
         public Budget()
