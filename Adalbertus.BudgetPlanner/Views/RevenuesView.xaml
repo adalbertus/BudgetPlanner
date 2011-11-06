@@ -15,6 +15,8 @@
             <WrapPanel>
                 <Label ToolTip="Dowolne wpływy do budżetu domowego - można je później dodać w trakcie">Całkowite wpływy</Label>
                 <Label Content="{Binding Path=TotalSumOfRevenues, Converter={StaticResource CurrencyFormatter}}" Margin="5 0 0 0" />
+                <Label>Przeniesione z poprzedniego budżetu</Label>
+                <TextBox Text="{Binding TransferedValue, UpdateSourceTrigger=PropertyChanged}" Width="60"/>
             </WrapPanel>
         </Expander.Header>
         <Grid>

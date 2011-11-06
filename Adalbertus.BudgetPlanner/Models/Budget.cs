@@ -16,6 +16,9 @@ namespace Adalbertus.BudgetPlanner.Models
         public virtual DateTime DateFrom { get; set; }
         [PetaPoco.Column]
         public virtual DateTime DateTo { get; set; }
+        [PetaPoco.Column]
+        public decimal TransferedValue { get; set; }
+
         public virtual IList<IncomeValue> IncomeValues { get; private set; }
         public virtual IList<SavingValue> SavingValues { get; private set; }
         public virtual IList<BudgetPlan> BudgetPlanItems { get; private set; }

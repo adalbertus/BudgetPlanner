@@ -57,7 +57,27 @@
 
             <!-- Budget plans -->
             <GroupBox Grid.Column="0" Header="Plan budżetowy">
-                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <UniformGrid Grid.Row="0" Columns="2">
+                        <TextBlock Padding="0">Łącznie</TextBlock>
+                        <TextBlock Padding="0" Text="{Binding TotalBudgetPlanValue, Converter={StaticResource CurrencyFormatter}}"/>
+
+                        <TextBlock Padding="0">Wydane</TextBlock>
+                        <WrapPanel>
+                            <TextBlock Padding="0" Text="{Binding TotalExpenseValue, Converter={StaticResource CurrencyFormatter}}"/>
+                            <TextBlock Padding="4 0 0 0">[</TextBlock>
+                            <TextBlock Padding="0" Text="{Binding TotalBalanceProcentValue, Converter={StaticResource ProcentFormatter}}" />
+                            <TextBlock Padding="0">]</TextBlock>
+                        </WrapPanel>
+
+                        <TextBlock Padding="0">Do wydania</TextBlock>
+                        <TextBlock Padding="0" Text="{Binding TotalBalanceValue, Converter={StaticResource CurrencyFormatter}}"/>
+                    </UniformGrid>
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
                     <ItemsControl ItemsSource="{Binding Source={StaticResource GroupedBudgetPlanList}}" 
                                   HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch"
                                   >
@@ -124,6 +144,7 @@
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
                     </ScrollViewer>
+                </Grid>
             </GroupBox>
 
             <GridSplitter Grid.Column="1" Width="2"

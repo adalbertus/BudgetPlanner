@@ -2,7 +2,8 @@ DROP TABLE IF EXISTS [Budget];
 CREATE TABLE [Budget] (
   [Id] INTEGER PRIMARY KEY AUTOINCREMENT, 
   [DateFrom] DATETIME, 
-  [DateTo] DATETIME);
+  [DateTo] DATETIME,
+  [TransferedValue] NUMERIC);
 
 DROP TABLE IF EXISTS [BudgetPlan];
 CREATE TABLE [BudgetPlan] (

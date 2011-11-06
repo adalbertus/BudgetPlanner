@@ -29,11 +29,11 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         public DateTime BudgetDate { get; set; }
 
         #region Loading data
-        
+
         protected override void LoadData()
         {
             LoadOrCreateDefaultBudget();
-            
+
             LoadBudgetPlanItems();
             RevenuesViewModel.LoadData(_budget);
             ExpensesViewModel.LoadData(_budget);
@@ -60,14 +60,14 @@ namespace Adalbertus.BudgetPlanner.ViewModels
                 }
 
                 tx.Complete();
-            }            
+            }
         }
 
         protected override void OnRefreshRequest(string senderName)
         {
             if (senderName == typeof(ExpensesViewModel).Name)
             {
-                LoadBudgetPlanItems();
+                LoadBudgetPlanItems();                
             }
         }
 
@@ -82,7 +82,6 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         #region Events handling
         public override void AttachEvents()
         {
-            AttachToBudgetPlanItems();
         }
 
         public override void DeatachEvents()
@@ -120,6 +119,36 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         #endregion
 
         #region Budget plan items
+        public decimal TotalBudgetPlanValue
+        {
+            get { return BudgetPlanList.Sum(x => x.TotalValue); }
+        }
+
+        public decimal TotalExpenseValue
+        {
+            get { return BudgetPlanList.Sum(x => x.TotalExpenseValue); }
+        }
+        public decimal TotalBalanceValue
+        {
+            get
+            {
+                return TotalBudgetPlanValue - TotalExpenseValue;
+            }
+        }
+
+
+        public decimal TotalBalanceProcentValue
+        {
+            get
+            {
+                if (TotalBudgetPlanValue == 0)
+                {
+                    return 0;
+                }
+                return (TotalExpenseValue / TotalBudgetPlanValue) * 100M;
+            }
+        }
+
         public BindableCollectionExt<BudgetPlanItemVM> BudgetPlanList { get; set; }
 
         private void LoadBudgetPlanItems()
@@ -145,6 +174,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
                 .On("Expense.CashFlowId = CashFlow.Id AND BudgetId = @0", _budget.Id));
 
             BudgetPlanList.IsNotifying = false;
+            DetachFromBudgetPlanItems();
             BudgetPlanList.Clear();
 
             foreach (var cashFlow in cashFlows)
@@ -155,7 +185,10 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             }
             BudgetPlanList.IsNotifying = true;
 
+            NotifyOfPropertyChange(() => BudgetPlanList);
             BudgetPlanList.Refresh();
+            RefreshBudgetPlanSummary();
+            AttachToBudgetPlanItems();
         }
 
         private void AttachToBudgetPlanItems()
@@ -170,7 +203,15 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         private void BudgetPlanListPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             SaveBudget(sender as Entity);
-            RefreshBudgetPlanFor(sender);
+            RefreshBudgetPlanFor(sender);            
+        }
+
+        private void RefreshBudgetPlanSummary()
+        {
+            NotifyOfPropertyChange(() => TotalBudgetPlanValue);
+            NotifyOfPropertyChange(() => TotalExpenseValue);
+            NotifyOfPropertyChange(() => TotalBalanceProcentValue);
+            NotifyOfPropertyChange(() => TotalBalanceValue);
         }
 
         private void RefreshBudgetPlanFor(object sender)
@@ -185,6 +226,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
                 {
                     budgetPlanList.Refresh();
                 }
+                RefreshBudgetPlanSummary();
             }
         }
 
