@@ -122,10 +122,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="ViewModels\BudgetPlanViewModel.cs" />
-    <Compile Include="ViewModels\BudgetPlanViewModelItems.cs" />
     <Compile Include="ViewModels\CashFlowTypesViewModel.cs" />
     <Compile Include="ViewModels\ExpensesViewModel.cs" />
-    <Compile Include="ViewModels\ExternalSourcesViewModel.cs" />
+    <Compile Include="Views\ExternalSourcesViewModel.cs" />
     <Compile Include="ViewModels\RevenuesViewModel.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
     <Compile Include="App.xaml.cs">

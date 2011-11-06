@@ -291,7 +291,6 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             ExpenseValues.Clear();
             ExpenseValue = 0;
             ExpenseDescription = string.Empty;
-            BudgetExpenses.Add(expense);
         }
 
         private void Save(Expense expense)
