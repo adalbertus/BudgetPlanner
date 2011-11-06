@@ -37,10 +37,6 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         {
         }
 
-        public virtual void LoadData()
-        {
-        }
-
         public virtual void AttachEvents()
         {
         }
@@ -54,6 +50,10 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             base.OnActivate();
             LoadData();
             AttachEvents();
+        }
+
+        protected virtual void LoadData()
+        {
         }
 
         protected override void OnDeactivate(bool close)

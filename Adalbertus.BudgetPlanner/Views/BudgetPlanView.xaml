@@ -44,8 +44,8 @@
                         <!--<DatePicker SelectedDate="{Binding DateTo}" SelectedDateFormat="Long" />-->
                     </WrapPanel>
                 </Grid>
-                <!--<view:RevenuesView DataContext="{Binding RevenuesViewModel}" />-->
-                <view:RevenuesView />
+                <ContentControl x:Name="RevenuesViewModel" />
+                <!--<view:RevenuesView />-->
             </StackPanel>
         </GroupBox>
 
@@ -126,63 +126,6 @@
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
                     </ScrollViewer>
-                    <!--<DataGrid ItemsSource="{Binding BudgetPlanList}" SelectionMode="Single"
-                          SelectedItem="{Binding SelectedBudgetPlan}" AutoGenerateColumns="False"
-                          CanUserAddRows="False" CanUserDeleteRows="False"
-                          Visibility="Collapsed"
-                          >
-                        <DataGrid.Columns>
-                            <DataGridTemplateColumn Header="" Width="*">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <StackPanel>
-                                            <TextBlock Padding="0 4 0 4" FontWeight="Bold" Text="{Binding Name}"/>
-                                            <UniformGrid Columns="2">
-                                                <TextBlock Padding="0">Łącznie</TextBlock>
-                                                <TextBlock Padding="0" Text="{Binding TotalValue, Converter={StaticResource CurrencyFormatter}}"/>
-
-                                                <TextBlock Padding="0">Wydane</TextBlock>
-                                                <WrapPanel>
-                                                    <TextBlock Padding="0" Text="{Binding TotalExpenseValue, Converter={StaticResource CurrencyFormatter}}"/>
-                                                    <TextBlock Padding="4 0 0 0">[</TextBlock>
-                                                    <TextBlock Padding="0" Text="{Binding TotalBalanceProcentValue, Converter={StaticResource ProcentFormatter}}" />
-                                                    <TextBlock Padding="0">]</TextBlock>
-                                                </WrapPanel>
-
-                                                <TextBlock Padding="0">Do wydania</TextBlock>
-                                                <TextBlock Padding="0" Text="{Binding TotalBalanceValue, Converter={StaticResource CurrencyFormatter}}"/>
-                                            </UniformGrid>
-                                        </StackPanel>
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-                        </DataGrid.Columns>
-                        <DataGrid.RowDetailsTemplate>
-                            <DataTemplate>
-                                <Border BorderBrush="AliceBlue" BorderThickness="1" CornerRadius="4" Margin="10" Padding="10" Background="Beige">
-                                    <StackPanel>
-                                        <WrapPanel>
-                                            <Label>Wartość:</Label>
-                                            <TextBox Text="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}, Path=DataContext.NewDetailValue, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                                                 Width="30"
-                                                 ext:FocusExtension.IsFocused="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}, Path=DataContext.IsNewDetailValueFocused}">
-                                            </TextBox>
-                                            <Label>Opis:</Label>
-                                            <TextBox Width="30" Text="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}, Path=DataContext.NewDetailDescription, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
-                                            <Button Content="Dodaj" cal:Message.Attach="[Event Click] = [Action AddPlanItemValue()]" />
-                                        </WrapPanel>
-                                        <DataGrid ItemsSource="{Binding Values, UpdateSourceTrigger=PropertyChanged}" AutoGenerateColumns="False"
-                                              CanUserAddRows="False" CanUserDeleteRows="True">
-                                            <DataGrid.Columns>
-                                                <DataGridTextColumn Header="Wartość" Binding="{Binding Value}" />
-                                                <DataGridTextColumn Binding="{Binding Description}" Header="Opis"/>
-                                            </DataGrid.Columns>
-                                        </DataGrid>
-                                    </StackPanel>
-                                </Border>
-                            </DataTemplate>
-                        </DataGrid.RowDetailsTemplate>
-                    </DataGrid>-->
             </GroupBox>
 
             <GridSplitter Grid.Column="1" Width="2"

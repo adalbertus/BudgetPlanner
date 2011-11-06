@@ -16,36 +16,26 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         public BudgetPlanViewModel(IDatabase database, IConfiguration configuration, ICachedService cashedService, IEventAggregator eventAggregator)
             : base(database, configuration, cashedService, eventAggregator)
         {
-            ExpensesViewModel = new ExpensesViewModel(database, configuration, cashedService, eventAggregator);
+            ExpensesViewModel = IoC.Get<ExpensesViewModel>();
+            RevenuesViewModel = IoC.Get<RevenuesViewModel>();
 
             BudgetPlanList = new BindableCollectionExt<BudgetPlanItemVM>();
-            _availableIncomes = new BindableCollectionExt<Income>();
-            _availableSavings = new BindableCollectionExt<Saving>();
         }
 
-        private ExpensesViewModel _expensesViewModel;
-        public ExpensesViewModel ExpensesViewModel {
-            get { return _expensesViewModel; }
-            set
-            {
-                _expensesViewModel = value;
-                NotifyOfPropertyChange(() => ExpensesViewModel);
-            }
-        }
+        public ExpensesViewModel ExpensesViewModel { get; private set; }
+        public RevenuesViewModel RevenuesViewModel { get; private set; }
 
         private Budget _budget;
         public DateTime BudgetDate { get; set; }
 
         #region Loading data
-
-        public override void LoadData()
+        
+        protected override void LoadData()
         {
             LoadOrCreateDefaultBudget();
             
             LoadBudgetPlanItems();
-            LoadAvailableIncomes();
-            LoadAvailableSavings();
-            
+            RevenuesViewModel.LoadData(_budget);
             ExpensesViewModel.LoadData(_budget);
 
             RefreshUI();
@@ -77,8 +67,6 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         {
             if (senderName == typeof(ExpensesViewModel).Name)
             {
-                //TODO: need refactorisation (should refresh only budget plan items)
-                //LoadOrCreateDefaultBudget();
                 LoadBudgetPlanItems();
             }
         }
@@ -88,41 +76,22 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             NotifyOfPropertyChange(() => DateFrom);
             NotifyOfPropertyChange(() => DateTo);
             BudgetPlanList.Refresh();
-
-            RefreshRevenueSums();
-        }
-
-        private void RefreshRevenueSums()
-        {
-            NotifyOfPropertyChange(() => TotalSumOfRevenues);
-            NotifyOfPropertyChange(() => SumOfRevenueSavings);
-            NotifyOfPropertyChange(() => SumOfRevenueIncomes);
         }
         #endregion
 
-        public string TotalSumOfRevenues 
-        {
-            get 
-            {
-                //return string.Format("{0:c2}", _budget.IncomeValues.Sum(x => x.Value) + _budget.SavingValues.Sum(x => x.BudgetValue));
-                return string.Format("{0:c2}", SumOfRevenueIncomes + SumOfRevenueSavings);
-            }
-        }
 
         #region Events handling
         private void AttachEvents()
         {
-            AttachToIncomeValues();
-            AttachToSavingValues();
             AttachToBudgetPlanItems();
+            RevenuesViewModel.AttachEvents();
             ExpensesViewModel.AttachEvents();
         }
 
         private void DeatachEvents()
         {
-            DetachFromSavingValues();
-            DetachFromIncomeValues();
             DetachFromBudgetPlanItems();
+            RevenuesViewModel.DeatachEvents();
             ExpensesViewModel.DeatachEvents();
         }
 
@@ -150,14 +119,6 @@ namespace Adalbertus.BudgetPlanner.ViewModels
                 Database.Save(entity);
 
                 tx.Complete();
-                if (entity is IncomeValue)
-                {
-                    RefreshRevenueSums();
-                }
-                if (entity is SavingValue)
-                {
-                    RefreshRevenueSums();
-                }
                 NotifyOfPropertyChange(() => BudgetPlanList);
             }
         }

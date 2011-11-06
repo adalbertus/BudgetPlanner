@@ -16,10 +16,6 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         public ExpensesViewModel(IDatabase database, IConfiguration configuration, ICachedService cashedService, IEventAggregator eventAggregator)
             : base(database, configuration, cashedService, eventAggregator)
         {
-            //BudgetExpenses = new BindableCollectionExt<Expense>();
-            //BudgetExpenses.PropertyChanged += ExpensesPropertyChanged;
-            //BudgetExpenses.CollectionChanged += ExpensesCollectionChanged;
-
             ExpensesGridCashFlows = new BindableCollectionExt<CashFlow>();
             CashFlows = new BindableCollectionExt<CashFlow>();
         }
@@ -43,23 +39,8 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         //public int BudgetId { get; private set; }
 
         #region Budget plan expenses
-        public Budget Budget { get; private set; }
-        //private Budget _budget;
-        //public Budget Budget {
-        //    get { return _budget; }
-        //    set
-        //    {
-        //        _budget = value;
-        //        AttachEvents(_budget);
-        //        NotifyOfPropertyChange(() => Budget);
-        //    }
-        //}
-        public BindableCollectionExt<Expense> BudgetExpenses
-        {
-            get;
-            private set;
-            //get { return Budget.Expenses as BindableCollectionExt<Expense>; }
-        }
+        public Budget Budget { get; set; }        
+        public BindableCollectionExt<Expense> BudgetExpenses { get; private set; }
 
         private CashFlow _selectedExpenseCashFlow;
         public CashFlow SelectedExpenseCashFlow
@@ -168,6 +149,8 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             BudgetExpenses = budget.Expenses;
             BudgetExpenses.PropertyChanged += ExpensesPropertyChanged;
             BudgetExpenses.CollectionChanged += ExpensesCollectionChanged;
+            NotifyOfPropertyChange(() => BudgetExpenses);
+
             LoadCashFlows();
             LoadExpenses();
         }
@@ -300,8 +283,8 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             {
                 expenseValue = ExpenseTotalValue;
             }
-            var fakeBudget = new Budget { Id = Budget.Id };
-            var expense = Expense.CreateExpense(fakeBudget, SelectedExpenseCashFlow, expenseValue, ExpenseDescription, SelectedExpenseDate);
+
+            var expense = Budget.AddExpense(SelectedExpenseCashFlow, expenseValue, ExpenseDescription, SelectedExpenseDate);
 
             Save(expense);
 
