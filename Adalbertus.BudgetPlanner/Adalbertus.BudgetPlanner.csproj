@@ -124,7 +124,7 @@
     <Compile Include="ViewModels\BudgetPlanViewModel.cs" />
     <Compile Include="ViewModels\CashFlowTypesViewModel.cs" />
     <Compile Include="ViewModels\ExpensesViewModel.cs" />
-    <Compile Include="Views\ExternalSourcesViewModel.cs" />
+    <Compile Include="ViewModels\ExternalSourcesViewModel.cs" />
     <Compile Include="ViewModels\RevenuesViewModel.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
     <Compile Include="App.xaml.cs">
@@ -148,15 +148,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\IncomesView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="Views\RevenuesView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\SavingsView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

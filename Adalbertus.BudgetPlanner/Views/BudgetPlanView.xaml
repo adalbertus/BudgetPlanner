@@ -5,8 +5,7 @@
              xmlns:cal="http://www.caliburnproject.org"
              xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
              xmlns:ext="clr-namespace:Adalbertus.BudgetPlanner.Extensions"
-             xmlns:conv="clr-namespace:Adalbertus.BudgetPlanner.Converters"
-             xmlns:view="clr-namespace:Adalbertus.BudgetPlanner.Views"
+             xmlns:conv="clr-namespace:Adalbertus.BudgetPlanner.Converters"             
 >
     <UserControl.Resources>
         <conv:StringFormatConverter x:Key="DateFormatter" StringFormat="{}{0:yyyy-MM-dd}" />
@@ -44,8 +43,7 @@
                         <!--<DatePicker SelectedDate="{Binding DateTo}" SelectedDateFormat="Long" />-->
                     </WrapPanel>
                 </Grid>
-                <ContentControl x:Name="RevenuesViewModel" />
-                <!--<view:RevenuesView />-->
+                <ContentControl x:Name="RevenuesViewModel" />                
             </StackPanel>
         </GroupBox>
 
