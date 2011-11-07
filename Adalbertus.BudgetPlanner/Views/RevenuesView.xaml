@@ -10,15 +10,19 @@
         <conv:StringFormatConverter x:Key="ProcentFormatter" StringFormat="{}{0:f}%" />
     </UserControl.Resources>
     
-    <Expander IsExpanded="False" ExpandDirection="Down">
-        <Expander.Header>
+    <Expander IsExpanded="False" ExpandDirection="Down" Header="Wpływy budżetowe">
+        <!--<Expander.Header>
             <WrapPanel>
-                <Label ToolTip="Dowolne wpływy do budżetu domowego - można je później dodać w trakcie">Całkowite wpływy</Label>
+                <Label>Wpływy budżetowe:</Label>
                 <Label Content="{Binding Path=TotalSumOfRevenues, Converter={StaticResource CurrencyFormatter}}" Margin="5 0 0 0" />
-                <Label>Przeniesione z poprzedniego budżetu</Label>
-                <TextBox Text="{Binding TransferedValue, UpdateSourceTrigger=PropertyChanged}" Width="60"/>
+                
+                <Label Margin="10 0 0 0">Z dochodów:</Label>
+                <Label Content="{Binding Path=SumOfRevenueIncomes, Converter={StaticResource CurrencyFormatter}}" Margin="5 0 0 0" />
+                
+                <Label>Z oszczędności:</Label>
+                <Label Content="{Binding Path=SumOfRevenueSavings, Converter={StaticResource CurrencyFormatter}}" Margin="5 0 0 0" />
             </WrapPanel>
-        </Expander.Header>
+        </Expander.Header>-->
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
@@ -37,7 +41,7 @@
                         <ComboBox ItemsSource="{Binding AvailableIncomes}" 
                                   SelectedItem="{Binding SelectedAvailableIncome}"
                                   IsSynchronizedWithCurrentItem="True"
-                                  DisplayMemberPath="Name" Width="160" 
+                                  DisplayMemberPath="Name" Width="140" 
                                   ToolTip="Proszę wybrać dochód z listy poniżej.">
                         </ComboBox>
 
@@ -54,7 +58,9 @@
                         <Button Content="Dodaj wpływy z dochodów" ToolTip="Wstawienie wpływów z nowego dochodu" cal:Message.Attach="[Event Click] = [Action AddIncomeValue()]" />
                     </WrapPanel>
 
-                    <DataGrid ItemsSource="{Binding BudgetIncomeValues}" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False">
+                    <DataGrid ItemsSource="{Binding BudgetIncomeValues}" AutoGenerateColumns="False" 
+                              CanUserAddRows="False" CanUserDeleteRows="False"
+                              FontSize="10">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Nazwa" Binding="{Binding IncomeName}" />
                             <DataGridTemplateColumn Header="Data">
@@ -90,11 +96,12 @@
 
                 <StackPanel>
                     <WrapPanel>
+                        
                         <Label>Nazwa</Label>                        
                         <ComboBox ItemsSource="{Binding AvailableSavings}" 
                                   SelectedItem="{Binding SelectedAvailableSaving}"
                                   IsSynchronizedWithCurrentItem="False"
-                                  DisplayMemberPath="Name" Width="160" 
+                                  DisplayMemberPath="Name" Width="140"
                                   ToolTip="Proszę wybrać oszczędności z listy poniżej.">
                         </ComboBox>
                         <Label>Data</Label>
@@ -111,7 +118,9 @@
                         <Button Content="Dodaj wpływy z oszczędności" ToolTip="Wstawienie wpływu pochodzącego z oszczędności" cal:Message.Attach="[Event Click] = [Action AddSavingValue()]" />
                     </WrapPanel>
 
-                    <DataGrid ItemsSource="{Binding BudgetSavingValues}" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False">
+                    <DataGrid ItemsSource="{Binding BudgetSavingValues}" AutoGenerateColumns="False"
+                              CanUserAddRows="False" CanUserDeleteRows="False"
+                              FontSize="10">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Nazwa" Binding="{Binding SavingName}" IsReadOnly="True" />
                             <DataGridTemplateColumn Header="Data">

@@ -22,9 +22,21 @@ namespace Adalbertus.BudgetPlanner.Database
             Database = database;
         }
 
+        public void Clear(string key = null)
+        {
+            if (string.IsNullOrWhiteSpace(key))
+            {
+                Cache[Keys.AllCashFlows] = null;
+            }
+            else if(Cache.ContainsKey(key))
+            {
+                Cache[key] = null;
+            }
+        }
+
         public IEnumerable<CashFlow> GetAllCashFlows()
         {
-            if (Cache.ContainsKey(Keys.AllCashFlows))
+            if (Cache.ContainsKey(Keys.AllCashFlows) && Cache[Keys.AllCashFlows] != null)
             {
                 return Cache[Keys.AllCashFlows] as IEnumerable<CashFlow>;
             }

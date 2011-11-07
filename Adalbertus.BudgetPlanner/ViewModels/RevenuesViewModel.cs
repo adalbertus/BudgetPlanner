@@ -22,10 +22,17 @@ namespace Adalbertus.BudgetPlanner.ViewModels
 
         public decimal TotalSumOfRevenues
         {
-            get
-            {
-                return SumOfRevenueIncomes + SumOfRevenueSavings;
-            }
+            get { return Budget.TotalSumOfRevenues; }
+        }
+
+        public decimal SumOfRevenueIncomes
+        {
+            get { return Budget.SumOfRevenueIncomes; }
+        }
+
+        public decimal SumOfRevenueSavings
+        {
+            get { return Budget.SumOfRevenueSavings; }
         }
 
         public void LoadData(Budget budget)
@@ -98,15 +105,6 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             {
                 _incomeValueDescription = value;
                 NotifyOfPropertyChange(() => IncomeValueDescription);
-            }
-        }
-
-
-        public decimal SumOfRevenueIncomes
-        {
-            get
-            {
-                return BudgetIncomeValues.Sum(x => x.Value);
             }
         }
 
@@ -222,14 +220,6 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             }
         }
 
-        public decimal SumOfRevenueSavings
-        {
-            get
-            {
-                return BudgetSavingValues.Where(x => x.Expense != null).Sum(x => x.BudgetValue);
-            }
-        }
-
         public bool CanAddSavingValue
         {
             get
@@ -296,6 +286,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
                 tx.Complete();
             }
             RefreshSummaryValues();
+            PublishRefreshRequest();
         }
 
         private void Delete(Entity entity)
@@ -306,6 +297,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
                 tx.Complete();
             }
             RefreshSummaryValues();
+            PublishRefreshRequest();
         }
     }
 }

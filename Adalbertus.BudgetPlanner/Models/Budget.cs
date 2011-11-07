@@ -16,14 +16,38 @@ namespace Adalbertus.BudgetPlanner.Models
         public virtual DateTime DateFrom { get; set; }
         [PetaPoco.Column]
         public virtual DateTime DateTo { get; set; }
-        [PetaPoco.Column]
-        public decimal TransferedValue { get; set; }
+
+        private decimal _transferedValue;
+        [PetaPoco.Column]       
+        public decimal TransferedValue
+        {
+            get { return _transferedValue; }
+            set
+            {
+                _transferedValue = value;
+                NotifyOfPropertyChange(() => TransferedValue);
+            }
+        }
 
         public virtual IList<IncomeValue> IncomeValues { get; private set; }
         public virtual IList<SavingValue> SavingValues { get; private set; }
         public virtual IList<BudgetPlan> BudgetPlanItems { get; private set; }
         public virtual BindableCollectionExt<Expense> Expenses { get; private set; }
 
+        public decimal TotalSumOfRevenues
+        {
+            get { return SumOfRevenueIncomes + SumOfRevenueSavings; }
+        }
+
+        public decimal SumOfRevenueIncomes
+        {
+            get { return IncomeValues.Sum(x => x.Value); }
+        }
+
+        public decimal SumOfRevenueSavings
+        {
+            get { return SavingValues.Where(x => x.Expense != null).Sum(x => x.BudgetValue); }
+        }
 
         public Budget()
         {
@@ -92,9 +116,9 @@ namespace Adalbertus.BudgetPlanner.Models
         {
             var budgetPlan = new BudgetPlan
                         {
-                            Budget      = this,
-                            CashFlow    = cashFlow,
-                            Value       = value,
+                            Budget = this,
+                            CashFlow = cashFlow,
+                            Value = value,
                             Description = description
                         };
             BudgetPlanItems.Add(budgetPlan);

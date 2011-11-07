@@ -6,7 +6,7 @@
         WindowState="Maximized"
 >
     <Window.Resources>
-        <conv:StringFormatConverter x:Key="DateFormatter" StringFormat="{}{0:yyyy-MM}" />
+        <conv:StringFormatConverter x:Key="DateFormatter" StringFormat="{}{0:yyyy-MM-dd}" />
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>

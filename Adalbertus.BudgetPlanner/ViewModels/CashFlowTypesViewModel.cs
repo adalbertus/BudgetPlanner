@@ -308,6 +308,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
                 Database.Delete<CashFlow>(cashFlow);
                 tx.Complete();
             }
+            CachedService.Clear();
 
             LoadData();
         }
@@ -347,6 +348,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
                     LoadData();
                 }
             }
+            CachedService.Clear();
         }
         #endregion
     }

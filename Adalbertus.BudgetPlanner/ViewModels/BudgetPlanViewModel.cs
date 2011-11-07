@@ -25,7 +25,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         public ExpensesViewModel ExpensesViewModel { get; private set; }
         public RevenuesViewModel RevenuesViewModel { get; private set; }
 
-        private Budget _budget;
+        public Budget Budget { get; private set; }
         public DateTime BudgetDate { get; set; }
 
         #region Loading data
@@ -35,12 +35,11 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             LoadOrCreateDefaultBudget();
 
             LoadBudgetPlanItems();
-            RevenuesViewModel.LoadData(_budget);
-            ExpensesViewModel.LoadData(_budget);
+            RevenuesViewModel.LoadData(Budget);
+            ExpensesViewModel.LoadData(Budget);
 
             RefreshUI();
         }
-
 
         private void LoadOrCreateDefaultBudget()
         {
@@ -52,22 +51,28 @@ namespace Adalbertus.BudgetPlanner.ViewModels
                                 .Select("*")
                                 .From("Budget")
                                 .Where("@0 BETWEEN DateFrom AND DateTo", BudgetDate.Date);
-                _budget = Database.SingleOrDefault<Budget>(sql);
-                if (_budget == null)
+                Budget = Database.SingleOrDefault<Budget>(sql);
+                if (Budget == null)
                 {
-                    _budget = Budget.CreateEmptyForDate(BudgetDate, cashFlowList);
-                    Database.Save(_budget);
+                    Budget = Budget.CreateEmptyForDate(BudgetDate, cashFlowList);
+                    Database.Save(Budget);
                 }
 
                 tx.Complete();
             }
+
+            Budget.PropertyChanged += (s, e) => { SaveBudget(s as Budget); };
         }
 
         protected override void OnRefreshRequest(string senderName)
         {
             if (senderName == typeof(ExpensesViewModel).Name)
             {
-                LoadBudgetPlanItems();                
+                LoadBudgetPlanItems();
+            }
+            if (senderName == typeof(RevenuesViewModel).Name)
+            {
+                RefreshBudgetSummary();
             }
         }
 
@@ -88,22 +93,42 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         {
             DetachFromBudgetPlanItems();
         }
-
-        private void BudgetPropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            SaveBudget(sender as Entity);
-        }
         #endregion
 
         #region Budget main data
         public DateTime DateFrom
         {
-            get { return _budget.DateFrom; }
+            get { return Budget.DateFrom; }
         }
 
         public DateTime DateTo
         {
-            get { return _budget.DateTo; }
+            get { return Budget.DateTo; }
+        }
+
+        public decimal TransferedValue
+        {
+            get { return Budget.TransferedValue; }
+            set
+            {
+                Budget.TransferedValue = value;
+                NotifyOfPropertyChange(() => TransferedValue);
+            }
+        }
+
+        public decimal TotalSumOfRevenues
+        {
+            get { return Budget.TotalSumOfRevenues; }
+        }
+
+        public decimal SumOfRevenueIncomes
+        {
+            get { return Budget.SumOfRevenueIncomes; }
+        }
+
+        public decimal SumOfRevenueSavings
+        {
+            get { return Budget.SumOfRevenueSavings; }
         }
 
         private void SaveBudget(Entity entity)
@@ -164,14 +189,14 @@ namespace Adalbertus.BudgetPlanner.ViewModels
                 .On("CashFlow.Id = BudgetPlan.CashFlowId")
                 .InnerJoin("CashFlowGroup")
                 .On("CashFlow.CashFlowGroupId = CashFlowGroup.Id")
-                .Where("BudgetPlan.BudgetId = @0", _budget.Id);
+                .Where("BudgetPlan.BudgetId = @0", Budget.Id);
             var budgetPlans = Database.Query<BudgetPlan, Budget, CashFlow, CashFlowGroup>(sql);
 
             var sumOfExpenses = Database.Query<dynamic>(PetaPoco.Sql.Builder
                 .Select("CashFlow.Id, SUM(ifnull(Value, 0) Sum)")
                 .From("CashFlow")
                 .LeftJoin("Expense")
-                .On("Expense.CashFlowId = CashFlow.Id AND BudgetId = @0", _budget.Id));
+                .On("Expense.CashFlowId = CashFlow.Id AND BudgetId = @0", Budget.Id));
 
             BudgetPlanList.IsNotifying = false;
             DetachFromBudgetPlanItems();
@@ -181,13 +206,13 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             {
                 //var expenseTotalValue = sumOfExpenses.Single(x => x.Id == cashFlow.Id) as decimal;
                 var planItems = budgetPlans.Where(x => x.CashFlow.Id == cashFlow.Id);
-                BudgetPlanList.Add(new BudgetPlanItemVM(_budget, cashFlow, planItems));
+                BudgetPlanList.Add(new BudgetPlanItemVM(Budget, cashFlow, planItems));
             }
             BudgetPlanList.IsNotifying = true;
 
             NotifyOfPropertyChange(() => BudgetPlanList);
             BudgetPlanList.Refresh();
-            RefreshBudgetPlanSummary();
+            RefreshBudgetSummary();
             AttachToBudgetPlanItems();
         }
 
@@ -203,11 +228,15 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         private void BudgetPlanListPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             SaveBudget(sender as Entity);
-            RefreshBudgetPlanFor(sender);            
+            RefreshBudgetPlanFor(sender);
         }
 
-        private void RefreshBudgetPlanSummary()
+        private void RefreshBudgetSummary()
         {
+            NotifyOfPropertyChange(() => TotalSumOfRevenues);
+            NotifyOfPropertyChange(() => SumOfRevenueIncomes);
+            NotifyOfPropertyChange(() => SumOfRevenueSavings);
+
             NotifyOfPropertyChange(() => TotalBudgetPlanValue);
             NotifyOfPropertyChange(() => TotalExpenseValue);
             NotifyOfPropertyChange(() => TotalBalanceProcentValue);
@@ -226,7 +255,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
                 {
                     budgetPlanList.Refresh();
                 }
-                RefreshBudgetPlanSummary();
+                RefreshBudgetSummary();
             }
         }
 

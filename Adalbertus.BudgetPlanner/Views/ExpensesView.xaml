@@ -36,7 +36,7 @@
             </DataGrid.Columns>
         </DataGrid>
 
-        <GroupBox Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <Border Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <StackPanel>
                 <Label>Kategoria</Label>
                 <ComboBox ItemsSource="{Binding CashFlows}"
@@ -98,7 +98,6 @@
 
                 <Button Content="Wstaw" cal:Message.Attach="[Event Click] = [Action AddExpense()]"/>
             </StackPanel>
-        </GroupBox>
-    
+        </Border>            
     </Grid>
 </UserControl>

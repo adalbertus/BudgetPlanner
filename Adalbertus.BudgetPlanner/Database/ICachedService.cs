@@ -8,6 +8,7 @@ namespace Adalbertus.BudgetPlanner.Database
 {
     public interface ICachedService
     {
+        void Clear(string key = null);
         IEnumerable<CashFlow> GetAllCashFlows();
     }
 }
