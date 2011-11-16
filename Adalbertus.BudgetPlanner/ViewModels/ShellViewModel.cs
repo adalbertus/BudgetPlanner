@@ -35,14 +35,14 @@ namespace Adalbertus.BudgetPlanner.ViewModels
 
         public void ShowCurrentBudget()
         {
-            BudgetPlanViewModel budgetPlanViewModel = IoC.Get<BudgetPlanViewModel>();
-            budgetPlanViewModel.BudgetDate = CurrentBudgetDate;
+            BudgetViewModel budgetViewModel = IoC.Get<BudgetViewModel>();
+            budgetViewModel.BudgetDate = CurrentBudgetDate;
 
-            if (ActiveItem != null && ActiveItem is BudgetPlanViewModel)
+            if (ActiveItem != null && ActiveItem is BudgetViewModel)
             {
                 DeactivateItem(ActiveItem, false);
             }
-            ActivateItem(budgetPlanViewModel);
+            ActivateItem(budgetViewModel);
         }
 
         public void ShowPreviousBudget()

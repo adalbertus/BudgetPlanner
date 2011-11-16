@@ -75,7 +75,12 @@ namespace Adalbertus.BudgetPlanner.Database
 
         private static void AddOrNothingCashFlowByName(Database db, CashFlowGroup defautGroup, string cashFowName, string cashFlowDescription = null)
         {
-            var cashFlow = db.SingleOrDefault<CashFlow>("WHERE NAME = @0", cashFowName);
+            var sql = PetaPoco.Sql.Builder.Where("NAME = @0", cashFowName);
+            if (!string.IsNullOrWhiteSpace(cashFlowDescription))
+            {
+                sql.Append(" AND Description = @0", cashFlowDescription);
+            }
+            var cashFlow = db.FirstOrDefault<CashFlow>(sql);
             if (cashFlow == null)
             {
                 cashFlow = new CashFlow

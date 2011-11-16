@@ -37,7 +37,9 @@
                                         <Button Content="+" ToolTip="Dodaj nowe oszczędności" cal:Message.Attach="[Event Click] = [Action AddSavingValue($dataContext)]"/>
                                     </WrapPanel>
                                 </GroupBox.Header>
-                                <DataGrid ItemsSource="{Binding Values}" CanUserAddRows="False" CanUserDeleteRows="False" 
+                                <DataGrid ItemsSource="{Binding Values}" CanUserAddRows="False" 
+                                          CanUserDeleteRows="False" RowHeaderWidth="0"
+                                          VerticalScrollBarVisibility="Auto"
                                           AutoGenerateColumns="False" MaxHeight="220">
                                     <DataGrid.Columns>
                                         <DataGridTemplateColumn Header="Data" Width="110">
@@ -45,7 +47,7 @@
                                                 <DataTemplate>
                                                     <StackPanel>
                                                         <DatePicker x:Name="Date" SelectedDate="{Binding Date, UpdateSourceTrigger=LostFocus}"
-                                                                   SelectedDateFormat="Long" />
+                                                                   SelectedDateFormat="Long" BorderThickness="0" />
                                                         <TextBlock x:Name="DateReadOnly" Text="{Binding Date, Converter={StaticResource DateFormatter}}" Visibility="Collapsed"/>
                                                     </StackPanel>
                                                     <DataTemplate.Triggers>
@@ -61,7 +63,7 @@
                                             <DataGridTemplateColumn.CellTemplate>
                                                 <DataTemplate>
                                                     <StackPanel>
-                                                        <TextBox x:Name="Text" Text="{Binding Value, UpdateSourceTrigger=LostFocus}" />
+                                                        <TextBox x:Name="Text" Text="{Binding Value, UpdateSourceTrigger=LostFocus}" BorderThickness="0"/>
                                                         <TextBlock x:Name="TextReadOnly" Text="{Binding Value}" Visibility="Collapsed"/>
                                                     </StackPanel>
                                                     <DataTemplate.Triggers>
@@ -77,7 +79,7 @@
                                             <DataGridTemplateColumn.CellTemplate>
                                                 <DataTemplate>
                                                     <StackPanel>
-                                                        <TextBox x:Name="Text" Text="{Binding Description, UpdateSourceTrigger=LostFocus}" />
+                                                        <TextBox x:Name="Text" Text="{Binding Description, UpdateSourceTrigger=LostFocus}" BorderThickness="0"/>
                                                         <TextBlock x:Name="TextReadOnly" Text="{Binding Description}" Visibility="Collapsed"/>
                                                     </StackPanel>
                                                     <DataTemplate.Triggers>
@@ -132,17 +134,11 @@
                                         <Button Content="X" ToolTip="Usuń źródło przychodów" cal:Message.Attach="[Event Click] = [Action RemoveIncome($dataContext)]"/>
                                     </WrapPanel>
                                 </GroupBox.Header>
-                                <DataGrid ItemsSource="{Binding Values}" CanUserAddRows="False" CanUserDeleteRows="False" 
-                                          AutoGenerateColumns="False" MaxHeight="220" IsReadOnly="True">
-                                    <DataGrid.Columns>
-                                        <!--<DataGridTemplateColumn Header="Data">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <DatePicker SelectedDate="{Binding Date, UpdateSourceTrigger=LostFocus}"
-                                                                   SelectedDateFormat="Long"  />
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>-->
+                                <DataGrid ItemsSource="{Binding Values}" CanUserAddRows="False" 
+                                          CanUserDeleteRows="False" RowHeaderWidth="0"
+                                          AutoGenerateColumns="False" MaxHeight="220" IsReadOnly="True"
+                                          VerticalScrollBarVisibility="Auto">
+                                    <DataGrid.Columns>                                        
                                         <DataGridTextColumn Header="Data" Binding="{Binding Date, Converter={StaticResource DateFormatter}}" Width="90"/>
                                         <DataGridTextColumn Header="Kwota" Binding="{Binding Value}" Width="50"/>
                                         <DataGridTextColumn Header="Uwagi" Binding="{Binding Description}" Width="*" />

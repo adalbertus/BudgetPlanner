@@ -49,6 +49,16 @@ namespace Adalbertus.BudgetPlanner.Models
             get { return SavingValues.Where(x => x.Expense != null).Sum(x => x.BudgetValue); }
         }
 
+        public decimal TotalBudgetPlanValue
+        {
+            get { return BudgetPlanItems.Sum(x => x.Value); }
+        }
+
+        public decimal TotalExpenseValue
+        {
+            get { return Expenses.Sum(x => x.Value); }
+        }
+
         public Budget()
         {
             IncomeValues = new BindableCollectionExt<IncomeValue>();

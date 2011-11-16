@@ -10,19 +10,7 @@
         <conv:StringFormatConverter x:Key="ProcentFormatter" StringFormat="{}{0:f}%" />
     </UserControl.Resources>
     
-    <Expander IsExpanded="False" ExpandDirection="Down" Header="Wpływy budżetowe">
-        <!--<Expander.Header>
-            <WrapPanel>
-                <Label>Wpływy budżetowe:</Label>
-                <Label Content="{Binding Path=TotalSumOfRevenues, Converter={StaticResource CurrencyFormatter}}" Margin="5 0 0 0" />
-                
-                <Label Margin="10 0 0 0">Z dochodów:</Label>
-                <Label Content="{Binding Path=SumOfRevenueIncomes, Converter={StaticResource CurrencyFormatter}}" Margin="5 0 0 0" />
-                
-                <Label>Z oszczędności:</Label>
-                <Label Content="{Binding Path=SumOfRevenueSavings, Converter={StaticResource CurrencyFormatter}}" Margin="5 0 0 0" />
-            </WrapPanel>
-        </Expander.Header>-->
+    <Expander IsExpanded="False" ExpandDirection="Down" Header="Wpływy budżetowe">        
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
@@ -59,28 +47,31 @@
                     </WrapPanel>
 
                     <DataGrid ItemsSource="{Binding BudgetIncomeValues}" AutoGenerateColumns="False" 
-                              CanUserAddRows="False" CanUserDeleteRows="False"
+                              CanUserAddRows="False" CanUserDeleteRows="False" RowHeaderWidth="0"
+                              VerticalScrollBarVisibility="Auto"
                               FontSize="10">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="Nazwa" Binding="{Binding IncomeName}" />
-                            <DataGridTemplateColumn Header="Data">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <DatePicker SelectedDate="{Binding Date, UpdateSourceTrigger=LostFocus}" SelectedDateFormat="Long" />
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-                            <DataGridTextColumn Header="Kwota" Binding="{Binding Value, UpdateSourceTrigger=LostFocus}" />
-                            <DataGridTextColumn Header="Opis" Binding="{Binding Description}" />
                             <DataGridTemplateColumn CanUserReorder="False" CanUserResize="False">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <WrapPanel>
-                                            <Button Content="Usuń wpis" cal:Message.Attach="[Event Click] = [Action RemoveIncomeValue($dataContext)]" />
+                                            <Button Content="Usuń" cal:Message.Attach="[Event Click] = [Action RemoveIncomeValue($dataContext)]" />
                                         </WrapPanel>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
+
+                            <DataGridTextColumn Header="Nazwa" Binding="{Binding IncomeName}" />
+                            <DataGridTemplateColumn Header="Data">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <DatePicker SelectedDate="{Binding Date, UpdateSourceTrigger=LostFocus}"
+                                                    SelectedDateFormat="Long" BorderThickness="0"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTextColumn Header="Kwota" Binding="{Binding Value, UpdateSourceTrigger=LostFocus}" />
+                            <DataGridTextColumn Header="Opis" Binding="{Binding Description}" Width="80"/>
                         </DataGrid.Columns>
                     </DataGrid>
                 </StackPanel>
@@ -119,28 +110,31 @@
                     </WrapPanel>
 
                     <DataGrid ItemsSource="{Binding BudgetSavingValues}" AutoGenerateColumns="False"
-                              CanUserAddRows="False" CanUserDeleteRows="False"
+                              CanUserAddRows="False" CanUserDeleteRows="False" RowHeaderWidth="0"
+                              VerticalScrollBarVisibility="Auto"
                               FontSize="10">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="Nazwa" Binding="{Binding SavingName}" IsReadOnly="True" />
-                            <DataGridTemplateColumn Header="Data">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <DatePicker SelectedDate="{Binding Date}" SelectedDateFormat="Long" />
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-                            <DataGridTextColumn Header="Opis" Binding="{Binding Description}" />
-                            <DataGridTextColumn Header="Kwota" Binding="{Binding BudgetValue}" />
                             <DataGridTemplateColumn CanUserReorder="False" CanUserResize="False">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <WrapPanel>
-                                            <Button Content="Usuń wpis" cal:Message.Attach="[Event Click] = [Action RemoveSavingValue($dataContext)]" />
+                                            <Button Content="Usuń" cal:Message.Attach="[Event Click] = [Action RemoveSavingValue($dataContext)]" />
                                         </WrapPanel>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
+
+                            <DataGridTextColumn Header="Nazwa" Binding="{Binding SavingName}" IsReadOnly="True" />
+                            <DataGridTemplateColumn Header="Data">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <DatePicker SelectedDate="{Binding Date}" SelectedDateFormat="Long"
+                                                    BorderThickness="0"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTextColumn Header="Opis" Binding="{Binding Description}" Width="80"/>
+                            <DataGridTextColumn Header="Kwota" Binding="{Binding BudgetValue}" />
                         </DataGrid.Columns>
                     </DataGrid>
                 </StackPanel>

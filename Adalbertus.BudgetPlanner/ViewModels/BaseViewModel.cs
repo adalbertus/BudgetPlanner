@@ -7,6 +7,7 @@ using System.Diagnostics.Contracts;
 using System.ComponentModel;
 using Adalbertus.BudgetPlanner.Database;
 using Adalbertus.BudgetPlanner.Core;
+using Adalbertus.BudgetPlanner.Models;
 
 namespace Adalbertus.BudgetPlanner.ViewModels
 {
@@ -67,20 +68,40 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             }
         }
 
+        protected void Save(Entity entity)
+        {
+            using (var tx = Database.GetTransaction())
+            {
+                Database.Save(entity);
+                tx.Complete();
+            }
+            PublishRefreshRequest(entity);
+        }
+
+        protected void Delete(Entity entity)
+        {
+            using (var tx = Database.GetTransaction())
+            {
+                Database.Delete(entity);
+                tx.Complete();
+            }
+            PublishRefreshRequest(entity);
+        }
+
         #region IHandle<RefreshEvent> Members
 
         public void Handle(RefreshEvent message)
         {
-            OnRefreshRequest(message.Sender);
+            OnRefreshRequest(message);
         }
 
-        protected virtual void OnRefreshRequest(string senderName)
+        protected virtual void OnRefreshRequest(RefreshEvent refreshEvent)
         {
         }
 
-        protected void PublishRefreshRequest()
+        protected void PublishRefreshRequest(Entity entity)
         {
-            EventAggregator.Publish(new RefreshEvent(this.GetType().Name));
+            EventAggregator.Publish(new RefreshEvent(this.GetType().Name, entity));
         }
 
         #endregion

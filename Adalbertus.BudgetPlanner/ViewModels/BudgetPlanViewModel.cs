@@ -16,166 +16,40 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         public BudgetPlanViewModel(IDatabase database, IConfiguration configuration, ICachedService cashedService, IEventAggregator eventAggregator)
             : base(database, configuration, cashedService, eventAggregator)
         {
-            ExpensesViewModel = IoC.Get<ExpensesViewModel>();
-            RevenuesViewModel = IoC.Get<RevenuesViewModel>();
-
             BudgetPlanList = new BindableCollectionExt<BudgetPlanItemVM>();
         }
-
-        public ExpensesViewModel ExpensesViewModel { get; private set; }
-        public RevenuesViewModel RevenuesViewModel { get; private set; }
+        public BindableCollectionExt<BudgetPlanItemVM> BudgetPlanList { get; set; }
 
         public Budget Budget { get; private set; }
-        public DateTime BudgetDate { get; set; }
 
         #region Loading data
 
-        protected override void LoadData()
+        public void LoadData(Budget budget)
         {
-            LoadOrCreateDefaultBudget();
-
+            Budget = budget;
             LoadBudgetPlanItems();
-            RevenuesViewModel.LoadData(Budget);
-            ExpensesViewModel.LoadData(Budget);
-
-            RefreshUI();
         }
 
-        private void LoadOrCreateDefaultBudget()
+        protected override void OnRefreshRequest(RefreshEvent refreshEvent)
         {
-            using (var tx = Database.GetTransaction())
+            if (refreshEvent.Sender == typeof(ExpensesViewModel).Name)
             {
-                var cashFlowList = CachedService.GetAllCashFlows();
-
-                var sql = PetaPoco.Sql.Builder
-                                .Select("*")
-                                .From("Budget")
-                                .Where("@0 BETWEEN DateFrom AND DateTo", BudgetDate.Date);
-                Budget = Database.SingleOrDefault<Budget>(sql);
-                if (Budget == null)
-                {
-                    Budget = Budget.CreateEmptyForDate(BudgetDate, cashFlowList);
-                    Database.Save(Budget);
-                }
-
-                tx.Complete();
-            }
-
-            Budget.PropertyChanged += (s, e) => { SaveBudget(s as Budget); };
+                RefreshBudgetPlanItems(refreshEvent.ChangedEntity as Expense);
+            }            
         }
 
-        protected override void OnRefreshRequest(string senderName)
+        private void RefreshBudgetPlanItems(Expense expense)
         {
-            if (senderName == typeof(ExpensesViewModel).Name)
-            {
-                LoadBudgetPlanItems();
-            }
-            if (senderName == typeof(RevenuesViewModel).Name)
-            {
-                RefreshBudgetSummary();
-            }
-        }
-
-        private void RefreshUI()
-        {
-            NotifyOfPropertyChange(() => DateFrom);
-            NotifyOfPropertyChange(() => DateTo);
-            BudgetPlanList.Refresh();
-        }
-        #endregion
-
-        #region Events handling
-        public override void AttachEvents()
-        {
-        }
-
-        public override void DeatachEvents()
-        {
-            DetachFromBudgetPlanItems();
+            var planToRefresh = BudgetPlanList.First(x => x.CashFlow.Id == expense.CashFlowId);
+            planToRefresh.RefreshUI();
         }
         #endregion
 
         #region Budget main data
-        public DateTime DateFrom
-        {
-            get { return Budget.DateFrom; }
-        }
-
-        public DateTime DateTo
-        {
-            get { return Budget.DateTo; }
-        }
-
-        public decimal TransferedValue
-        {
-            get { return Budget.TransferedValue; }
-            set
-            {
-                Budget.TransferedValue = value;
-                NotifyOfPropertyChange(() => TransferedValue);
-            }
-        }
-
-        public decimal TotalSumOfRevenues
-        {
-            get { return Budget.TotalSumOfRevenues; }
-        }
-
-        public decimal SumOfRevenueIncomes
-        {
-            get { return Budget.SumOfRevenueIncomes; }
-        }
-
-        public decimal SumOfRevenueSavings
-        {
-            get { return Budget.SumOfRevenueSavings; }
-        }
-
-        private void SaveBudget(Entity entity)
-        {
-            using (var tx = Database.GetTransaction())
-            {
-                Database.Save(entity);
-
-                tx.Complete();
-                NotifyOfPropertyChange(() => BudgetPlanList);
-            }
-        }
         #endregion
 
         #region Budget plan items
-        public decimal TotalBudgetPlanValue
-        {
-            get { return BudgetPlanList.Sum(x => x.TotalValue); }
-        }
-
-        public decimal TotalExpenseValue
-        {
-            get { return BudgetPlanList.Sum(x => x.TotalExpenseValue); }
-        }
-        public decimal TotalBalanceValue
-        {
-            get
-            {
-                return TotalBudgetPlanValue - TotalExpenseValue;
-            }
-        }
-
-
-        public decimal TotalBalanceProcentValue
-        {
-            get
-            {
-                if (TotalBudgetPlanValue == 0)
-                {
-                    return 0;
-                }
-                return (TotalExpenseValue / TotalBudgetPlanValue) * 100M;
-            }
-        }
-
-        public BindableCollectionExt<BudgetPlanItemVM> BudgetPlanList { get; set; }
-
+        
         private void LoadBudgetPlanItems()
         {
             var cashFlows = CachedService.GetAllCashFlows();
@@ -198,13 +72,14 @@ namespace Adalbertus.BudgetPlanner.ViewModels
                 .LeftJoin("Expense")
                 .On("Expense.CashFlowId = CashFlow.Id AND BudgetId = @0", Budget.Id));
 
+            Budget.BudgetPlanItems.Clear();
+            ((BindableCollectionExt<BudgetPlan>)Budget.BudgetPlanItems).AddRange(budgetPlans);
             BudgetPlanList.IsNotifying = false;
             DetachFromBudgetPlanItems();
             BudgetPlanList.Clear();
 
             foreach (var cashFlow in cashFlows)
             {
-                //var expenseTotalValue = sumOfExpenses.Single(x => x.Id == cashFlow.Id) as decimal;
                 var planItems = budgetPlans.Where(x => x.CashFlow.Id == cashFlow.Id);
                 BudgetPlanList.Add(new BudgetPlanItemVM(Budget, cashFlow, planItems));
             }
@@ -212,8 +87,8 @@ namespace Adalbertus.BudgetPlanner.ViewModels
 
             NotifyOfPropertyChange(() => BudgetPlanList);
             BudgetPlanList.Refresh();
-            RefreshBudgetSummary();
             AttachToBudgetPlanItems();
+            PublishExpensesFiltering();
         }
 
         private void AttachToBudgetPlanItems()
@@ -221,41 +96,80 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             BudgetPlanList.ForEach(x =>
             {
                 x.Values.CollectionChanged += BudgetPlanListCollectionChanged;
-                x.Values.PropertyChanged += BudgetPlanListPropertyChanged;
+                x.Values.PropertyChanged += (s, e) => { SaveBudgetPlan(s as BudgetPlan); };
+                x.PropertyChanged += BudgetPlanItemVMPropertyChanged;
             });
         }
 
-        private void BudgetPlanListPropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void DetachFromBudgetPlanItems()
         {
-            SaveBudget(sender as Entity);
-            RefreshBudgetPlanFor(sender);
-        }
-
-        private void RefreshBudgetSummary()
-        {
-            NotifyOfPropertyChange(() => TotalSumOfRevenues);
-            NotifyOfPropertyChange(() => SumOfRevenueIncomes);
-            NotifyOfPropertyChange(() => SumOfRevenueSavings);
-
-            NotifyOfPropertyChange(() => TotalBudgetPlanValue);
-            NotifyOfPropertyChange(() => TotalExpenseValue);
-            NotifyOfPropertyChange(() => TotalBalanceProcentValue);
-            NotifyOfPropertyChange(() => TotalBalanceValue);
-        }
-
-        private void RefreshBudgetPlanFor(object sender)
-        {
-            var budgetPlan = sender as BudgetPlan;
-            if (budgetPlan != null)
+            BudgetPlanList.ForEach(x =>
             {
-                var budgetPlanList = BudgetPlanList
+                x.Values.CollectionChanged -= BudgetPlanListCollectionChanged;
+                x.PropertyChanged -= BudgetPlanItemVMPropertyChanged;
+            });
+        }
+
+        private void BudgetPlanItemVMPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            switch(e.PropertyName)
+            {
+                case "IsFilterEnabled":
+                    PublishExpensesFiltering();
+                    break;
+            }
+        }
+
+        private void PublishExpensesFiltering()
+        {
+            var filteredCashFlows = BudgetPlanList.Where(x => x.IsFilterEnabled).Select(x => x.CashFlow);
+            EventAggregator.Publish(new FilterEvent { CashFlows = filteredCashFlows });
+        }
+
+        private void SaveBudgetPlan(BudgetPlan budgetPlan)
+        {
+            Save(budgetPlan);
+            FindBudgetPlanItemVMFor(budgetPlan).RefreshUI();
+        }
+
+        private BudgetPlanItemVM FindBudgetPlanItemVMFor(BudgetPlan budgetPlan)
+        {
+            var budgetPlanItem = BudgetPlanList
                     .Where(x => x.CashFlow.Id == budgetPlan.CashFlowId && x.Budget.Id == budgetPlan.BudgetId)
-                    .FirstOrDefault();
-                if (budgetPlanList != null)
-                {
-                    budgetPlanList.Refresh();
-                }
-                RefreshBudgetSummary();
+                    .First();
+            return budgetPlanItem;
+        }
+
+        public void FocusNewValue(BudgetPlanItemVM budgetPlanItem)
+        {
+            budgetPlanItem.IsNewValueFocused = false;
+            budgetPlanItem.IsNewValueFocused = true;
+        }
+
+        public void AddNewValueToBudgetPlan(BudgetPlanItemVM budgetPlanItem)
+        {
+            if (budgetPlanItem.NewValue.GetValueOrDefault(0) == 0)
+            {
+                FocusNewValue(budgetPlanItem);
+                return;
+            }
+            var newPlan = budgetPlanItem.AddValue(budgetPlanItem.NewValue.GetValueOrDefault(0), budgetPlanItem.NewDescription);
+            SaveBudgetPlan(newPlan);
+            budgetPlanItem.NewDescription = string.Empty;
+            budgetPlanItem.NewValue = null;
+            FocusNewValue(budgetPlanItem);
+        }
+
+        public void DeleteBudgetPlanItem(BudgetPlan planItem)
+        {
+            using (var tx = Database.GetTransaction())
+            {
+                Database.Delete(planItem);
+                tx.Complete();
+                var budgetPlanItem = FindBudgetPlanItemVMFor(planItem);
+                budgetPlanItem.Values.Remove(planItem);
+                budgetPlanItem.RefreshUI();
+                PublishRefreshRequest(planItem);
             }
         }
 
@@ -267,27 +181,6 @@ namespace Adalbertus.BudgetPlanner.ViewModels
                 DeleteBudgetPlanItem(planItem);
             }
         }
-
-        private void DeleteBudgetPlanItem(BudgetPlan planItem)
-        {
-            using (var tx = Database.GetTransaction())
-            {
-                Database.Delete(planItem);
-                tx.Complete();
-                RefreshBudgetPlanFor(planItem);
-            }
-        }
-
-        private void DetachFromBudgetPlanItems()
-        {
-            BudgetPlanList.ForEach(x =>
-            {
-                x.Values.CollectionChanged -= BudgetPlanListCollectionChanged;
-                x.Values.PropertyChanged -= BudgetPlanListPropertyChanged;
-                x.PropertyChanged -= BudgetPlanListPropertyChanged;
-            });
-        }
-
 
         #endregion
     }

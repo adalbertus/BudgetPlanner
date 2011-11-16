@@ -11,13 +11,14 @@ using Caliburn.Micro;
 
 namespace Adalbertus.BudgetPlanner.ViewModels
 {
-    public class ExpensesViewModel : BaseViewModel
+    public class ExpensesViewModel : BaseViewModel, IHandle<FilterEvent>
     {
         public ExpensesViewModel(IDatabase database, IConfiguration configuration, ICachedService cashedService, IEventAggregator eventAggregator)
             : base(database, configuration, cashedService, eventAggregator)
         {
             ExpensesGridCashFlows = new BindableCollectionExt<CashFlow>();
             CashFlows = new BindableCollectionExt<CashFlow>();
+            Filter = new ExpensesFilter();
         }
 
         protected override void Initialize()
@@ -28,6 +29,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             {
                 NotifyOfPropertyChange(() => ExpenseTotalValue);
                 NotifyOfPropertyChange(() => CanAddExpense);
+                NotifyOfPropertyChange(() => IsCalculatorListBoxVisible);
             };
             SelectedExpenseDate = DateTime.Now;
         }
@@ -39,8 +41,14 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         //public int BudgetId { get; private set; }
 
         #region Budget plan expenses
-        public Budget Budget { get; set; }        
-        public BindableCollectionExt<Expense> BudgetExpenses { get; private set; }
+        public Budget Budget { get; set; }
+        private BindableCollectionExt<Expense> _budgetExpenses;
+        public IEnumerable<Expense> BudgetExpenses { 
+            get
+            {
+                return FilteredBudgetExpenses();
+            }
+        }
 
         private CashFlow _selectedExpenseCashFlow;
         public CashFlow SelectedExpenseCashFlow
@@ -115,6 +123,11 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             }
         }
 
+        public bool IsCalculatorListBoxVisible
+        {
+            get { return ExpenseValues.Any(); }
+        }
+
         #region Focus properties
         private bool _isExpenseDescriptionFocused;
 
@@ -146,53 +159,29 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         public void LoadData(Budget budget)
         {
             Budget = budget;
-            BudgetExpenses = budget.Expenses;
-            BudgetExpenses.PropertyChanged += ExpensesPropertyChanged;
-            BudgetExpenses.CollectionChanged += ExpensesCollectionChanged;
+            _budgetExpenses = budget.Expenses;
+            _budgetExpenses.PropertyChanged += ExpensesPropertyChanged;
+            _budgetExpenses.CollectionChanged += ExpensesCollectionChanged;
             NotifyOfPropertyChange(() => BudgetExpenses);
 
             LoadCashFlows();
             LoadExpenses();
         }
 
-        public void AttachEvents()
-        {
-        }
-
-        public void DeatachEvents()
-        {
-            //DeatachEvents(_budget);
-            BudgetExpenses.CollectionChanged -= ExpensesCollectionChanged;
-            BudgetExpenses.PropertyChanged -= ExpensesPropertyChanged;
-        }
-
-        //TODO: Need refactoring - put into cache...
         private void LoadCashFlows()
         {
+            CachedService.GetAllCashFlows();
             ExpensesGridCashFlows.IsNotifying = false;
             ExpensesGridCashFlows.Clear();
             CashFlows.Clear();
-            var cashFlowList = Database.Query<CashFlow, CashFlowGroup, Saving>(PetaPoco.Sql.Builder
-                .Select("*")
-                .From("CashFlow")
-                .InnerJoin("CashFlowGroup")
-                .On("CashFlow.CashFlowGroupId = CashFlowGroup.Id")
-                .LeftJoin("Saving")
-                .On("Saving.CashFlowId = CashFlow.Id")
-                .OrderBy("CashFlow.Name ASC")).ToList();
-            cashFlowList.ForEach(x =>
-            {
-                if (x.Saving.IsTransient())
-                {
-                    x.Saving = null;
-                }
-            });
+            var cashFlowList = CachedService.GetAllCashFlows();
             if (cashFlowList != null)
             {
                 cashFlowList.ForEach(x => ExpensesGridCashFlows.Add(x));
                 cashFlowList.ForEach(x => CashFlows.Add(x));
             }
             ExpensesGridCashFlows.IsNotifying = true;
+            SelectedExpenseCashFlow = CashFlows.FirstOrDefault();
 
             NotifyOfPropertyChange(() => ExpensesGridCashFlows);
         }
@@ -200,7 +189,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         private void LoadExpenses()
         {
             var sql = PetaPoco.Sql.Builder
-                    .Select("Expense.*, Budget.*, CashFlow.*")
+                    .Select("*")
                     .From("Expense")
                     .InnerJoin("Budget")
                     .On("Budget.Id = Expense.BudgetId")
@@ -220,34 +209,17 @@ namespace Adalbertus.BudgetPlanner.ViewModels
                     x.SavingValue.Budget = x.Budget;
                 }
             });
-            BudgetExpenses.IsNotifying = false;
-            BudgetExpenses.Clear();
-            BudgetExpenses.AddRange(expenses);
-            BudgetExpenses.IsNotifying = true;
-            BudgetExpenses.Refresh();
+            _budgetExpenses.IsNotifying = false;
+            _budgetExpenses.Clear();
+            _budgetExpenses.AddRange(expenses);
+            _budgetExpenses.IsNotifying = true;
+            _budgetExpenses.Refresh();
         }
 
-        //private void AttachEvents(Budget budget)
-        //{
-        //    if (budget == null)
-        //    {
-        //        return;
-        //    }
-        //    var expenes = budget.Expenses as BindableCollectionExt<Expense>;
-        //    expenes.PropertyChanged += ExpensesPropertyChanged;
-        //    expenes.CollectionChanged += ExpensesCollectionChanged;
-        //}
-
-        //private void DeatachEvents(Budget budget)
-        //{
-        //    if (budget == null)
-        //    {
-        //        return;
-        //    }
-        //    var expenes = budget.Expenses as BindableCollectionExt<Expense>;
-        //    expenes.PropertyChanged -= ExpensesPropertyChanged;
-        //    expenes.CollectionChanged -= ExpensesCollectionChanged;
-        //}
+        public void RemoveExpense(Expense expense)
+        {
+            _budgetExpenses.Remove(expense);
+        }
 
         private void ExpensesPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
@@ -320,7 +292,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
 
                 tx.Complete();
             }
-            PublishRefreshRequest();
+            PublishRefreshRequest(expense);
         }
 
         private void Delete(Expense expense)
@@ -332,11 +304,15 @@ namespace Adalbertus.BudgetPlanner.ViewModels
 
                 tx.Complete();
             }
-            PublishRefreshRequest();
+            PublishRefreshRequest(expense);
         }
 
         public void AddExpenseValueToCalculator()
         {
+            if (ExpenseValue == 0)
+            {
+                return;
+            }
             ExpenseValues.Add(ExpenseValue);
             ExpenseValue = 0;
         }
@@ -349,22 +325,35 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         public void MoveToExpenseValue()
         {
             IsExpenseValueFocused = false;
-            IsExpenseDescriptionFocused = true;
-        }
-
-        public void MoveToExpenseDescription()
-        {
-            IsExpenseDescriptionFocused = false;
-            IsExpenseDescriptionFocused = true;
+            IsExpenseValueFocused = true;
         }
 
         public void AddAndMoveToExpenseValue()
         {
-            AddExpense();
+            if (CanAddExpense)
+            {
+                AddExpense();
+            }
             MoveToExpenseValue();
         }
 
 
+        #endregion
+        public ExpensesFilter Filter { get; set; }
+
+        private IEnumerable<Expense> FilteredBudgetExpenses()
+        {
+            var expenses = _budgetExpenses.Where(x => Filter.CashFlows.Any(y => y.Id == x.CashFlowId)).ToList();
+            return expenses;
+        }
+        
+        #region IHandle<FilterEvent> Members
+
+        public void Handle(FilterEvent message)
+        {
+            Filter.CashFlows = message.CashFlows;
+            NotifyOfPropertyChange(() => BudgetExpenses);
+        }
         #endregion
     }
 }

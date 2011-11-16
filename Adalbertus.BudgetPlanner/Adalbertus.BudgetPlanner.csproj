@@ -70,6 +70,9 @@
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="WPFToolkit.Extended">
+      <HintPath>..\packages\Extended.Wpf.Toolkit.1.5.0\lib\net40\WPFToolkit.Extended.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
@@ -82,10 +85,14 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>BudgetPlanner.resx</DependentUpon>
     </Compile>
+    <Compile Include="Converters\CompareConverter.cs" />
+    <Compile Include="Converters\NumericToBoolConverter.cs" />
+    <Compile Include="Converters\VisibilityConverter.cs" />
     <Compile Include="Core\BindableCollectionExt.cs" />
     <Compile Include="CastleBootstrapper.cs" />
     <Compile Include="Core\CollectionExtensions.cs" />
     <Compile Include="Core\ConfigurationHelper.cs" />
+    <Compile Include="Core\FilterEvent.cs" />
     <Compile Include="Core\RefreshEvent.cs" />
     <Compile Include="Database\CachedService.cs" />
     <Compile Include="Database\ICachedService.cs">
@@ -95,6 +102,7 @@
     <Compile Include="Core\IConfiguration.cs">
       <DependentUpon>Configuration.cs</DependentUpon>
     </Compile>
+    <Compile Include="Extensions\KeyDownFocusAction.cs" />
     <Compile Include="Extensions\KeyTrigger.cs" />
     <Compile Include="Core\Configuration.cs" />
     <Compile Include="Database\Database.cs" />
@@ -121,8 +129,12 @@
     <Compile Include="ViewModels\BudgetPlanItemVM.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ViewModels\BudgetPlanViewModel.cs" />
+    <Compile Include="ViewModels\BudgetPlanViewModel.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ViewModels\BudgetViewModel.cs" />
     <Compile Include="ViewModels\CashFlowTypesViewModel.cs" />
+    <Compile Include="ViewModels\ExpensesFilter.cs" />
     <Compile Include="ViewModels\ExpensesViewModel.cs" />
     <Compile Include="ViewModels\ExternalSourcesViewModel.cs" />
     <Compile Include="ViewModels\RevenuesViewModel.cs" />
@@ -132,11 +144,19 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="IShell.cs" />
+    <Page Include="Styles.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\BudgetPlanView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\CashFlowTypesView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\CashFlowTypesView.xaml">
+    <Page Include="Views\BudgetView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

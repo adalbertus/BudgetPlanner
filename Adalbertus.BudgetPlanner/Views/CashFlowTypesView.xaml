@@ -39,8 +39,8 @@
                     <Button Content="Wstaw" cal:Message.Attach="[Event Click] = [Action AddNewCashFlowType()]"/>
                 </WrapPanel>
                 <DataGrid Grid.Row="1" ItemsSource="{Binding CashFlows}"
-                          ScrollViewer.VerticalScrollBarVisibility="Auto"
-                          ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                          VerticalScrollBarVisibility="Auto" RowHeaderWidth="0"
+                          HorizontalScrollBarVisibility="Auto"
                           AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False">
                     <DataGrid.Columns>
                         <DataGridTemplateColumn>
@@ -59,8 +59,10 @@
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <StackPanel>
-                                        <TextBox x:Name="TextBox" Text="{Binding Name, UpdateSourceTrigger=LostFocus}" HorizontalAlignment="Stretch" />
-                                        <TextBlock x:Name="TextBoxReadOnly" Text="{Binding Name}" Visibility="Collapsed"/>
+                                        <TextBox x:Name="TextBox" Text="{Binding Name, UpdateSourceTrigger=LostFocus}"
+                                                 HorizontalAlignment="Stretch" BorderThickness="0" />
+                                        <TextBlock x:Name="TextBoxReadOnly" Text="{Binding Name}" 
+                                                   Visibility="Collapsed" />
                                     </StackPanel>
                                     <DataTemplate.Triggers>
                                         <DataTrigger Binding="{Binding IsReadOnly}" Value="true">
@@ -75,7 +77,8 @@
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <StackPanel>
-                                        <TextBox x:Name="TextBox" Text="{Binding Description, UpdateSourceTrigger=LostFocus}" />
+                                        <TextBox x:Name="TextBox" Text="{Binding Description, UpdateSourceTrigger=LostFocus}"
+                                                 BorderThickness="0"/>
                                         <TextBlock x:Name="TextBoxReadOnly" Text="{Binding Description, UpdateSourceTrigger=LostFocus}" Visibility="Collapsed"/>
                                     </StackPanel>
                                     <DataTemplate.Triggers>
@@ -93,9 +96,8 @@
                                 <DataTemplate>
                                     <StackPanel>
                                         <ComboBox x:Name="CashFlowGroupsCB" ItemsSource="{Binding DataContext.CashFlowGroups, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}" 
-                                      SelectedItem="{Binding Group, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                      IsSynchronizedWithCurrentItem="False"     
-                                      />
+                                                  SelectedItem="{Binding Group, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                  IsSynchronizedWithCurrentItem="False" BorderThickness="0"/>
                                         <TextBlock x:Name="TextBoxReadOnly" Text="{Binding Group}" Visibility="Collapsed"/>
                                     </StackPanel>
                                     <DataTemplate.Triggers>
@@ -142,7 +144,9 @@
 
                     <Button Content="Wstaw" cal:Message.Attach="[Event Click] = [Action AddNewCashFlowGroup()]"/>
                 </WrapPanel>
-                <DataGrid  Grid.Row="1" ItemsSource="{Binding CashFlowGroups}" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False">
+                <DataGrid  Grid.Row="1" ItemsSource="{Binding CashFlowGroups}" AutoGenerateColumns="False"
+                           CanUserAddRows="False" CanUserDeleteRows="False" RowHeaderWidth="0"
+                           VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
                     <DataGrid.Columns>
                         <DataGridTemplateColumn>
                             <DataGridTemplateColumn.CellTemplate>
@@ -160,7 +164,8 @@
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <StackPanel>
-                                        <TextBox x:Name="TextBox" Text="{Binding Name, UpdateSourceTrigger=LostFocus}" HorizontalAlignment="Stretch" />
+                                        <TextBox x:Name="TextBox" Text="{Binding Name, UpdateSourceTrigger=LostFocus}"
+                                                 HorizontalAlignment="Stretch" BorderThickness="0"/>
                                         <TextBlock x:Name="TextBoxReadOnly" Text="{Binding Name}" Visibility="Collapsed"/>
                                     </StackPanel>
                                     <DataTemplate.Triggers>
@@ -176,7 +181,8 @@
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <StackPanel>
-                                        <TextBox x:Name="TextBox" Text="{Binding Description, UpdateSourceTrigger=LostFocus}" />
+                                        <TextBox x:Name="TextBox" Text="{Binding Description, UpdateSourceTrigger=LostFocus}"
+                                                 BorderThickness="0"/>
                                         <TextBlock x:Name="TextBoxReadOnly" Text="{Binding Name}" Visibility="Collapsed"/>
                                     </StackPanel>
                                     <DataTemplate.Triggers>
@@ -192,7 +198,8 @@
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <StackPanel>
-                                        <TextBox x:Name="TextBox" Text="{Binding Position, UpdateSourceTrigger=LostFocus}" />
+                                        <TextBox x:Name="TextBox" Text="{Binding Position, UpdateSourceTrigger=LostFocus}"
+                                                 BorderThickness="0"/>
                                     </StackPanel>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>

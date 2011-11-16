@@ -24,6 +24,52 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             }
         }
 
+        private bool _isFilterEnabled;
+
+        public bool IsFilterEnabled
+        {
+            get { return _isFilterEnabled; }
+            set
+            {
+                _isFilterEnabled = value;
+                NotifyOfPropertyChange(() => IsFilterEnabled);
+            }
+        }
+
+
+        private decimal? _newValue;
+        public decimal? NewValue
+        {
+            get { return _newValue; }
+            set
+            {
+                _newValue = value;
+                NotifyOfPropertyChange(() => NewValue);
+            }
+        }
+
+        private bool _isNewValueFocused;
+        public bool IsNewValueFocused
+        {
+            get { return _isNewValueFocused; }
+            set
+            {
+                _isNewValueFocused = value;
+                NotifyOfPropertyChange(() => IsNewValueFocused);
+            }
+        }
+
+        private string _newDescription;
+        public string NewDescription
+        {
+            get { return _newDescription; }
+            set
+            {
+                _newDescription = value;
+                NotifyOfPropertyChange(() => NewDescription);
+            }
+        }
+
         public virtual decimal TotalValue
         {
             get
@@ -68,10 +114,9 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             }
         }
 
-        public BudgetPlan AddedBudgetPlanItem { get; private set; }
-
         public BudgetPlanItemVM(Budget budget, CashFlow cashFlow, IEnumerable<BudgetPlan> planItems)
         {
+            IsFilterEnabled = true;
             Budget = budget;
             CashFlow = cashFlow;
             Values = new BindableCollectionExt<BudgetPlan>(planItems);
@@ -83,18 +128,31 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         {
             NotifyOfPropertyChange(() => TotalValue);
             NotifyOfPropertyChange(() => TotalExpenseValue);
-            NotifyOfPropertyChange(() => TotalBalanceValue); 
+            NotifyOfPropertyChange(() => TotalBalanceValue);
             NotifyOfPropertyChange(() => TotalBalanceProcentValue);
         }
 
         private void Values_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            if (e.Action == NotifyCollectionChangedAction.Add)
+            if (e.Action == NotifyCollectionChangedAction.Remove)
             {
-                var item = e.NewItems[0] as BudgetPlan;
-                item.Budget = Budget;
-                item.CashFlow = CashFlow;
+                var item = e.OldItems[0] as BudgetPlan;
+                Budget.BudgetPlanItems.Remove(item);
             }
+        }
+
+        public BudgetPlan AddValue(decimal value, string description)
+        {
+            var plan = new BudgetPlan
+            {
+                Value = value,
+                Description = description,
+                Budget = Budget,
+                CashFlow = CashFlow,
+            };
+            Budget.BudgetPlanItems.Add(plan);
+            Values.Add(plan);
+            return plan;
         }
     }
 

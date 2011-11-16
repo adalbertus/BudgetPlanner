@@ -5,6 +5,7 @@ using System.Text;
 using System.Windows.Interactivity;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Controls;
 
 namespace Adalbertus.BudgetPlanner.Extensions
 {
@@ -19,6 +20,13 @@ namespace Adalbertus.BudgetPlanner.Extensions
         public static readonly DependencyProperty ModifiersProperty =
         DependencyProperty.Register("Modifiers", typeof(ModifierKeys), typeof(KeyTrigger), null);
 
+        public static readonly DependencyProperty FocusTargetProperty =
+            DependencyProperty.Register("FocusTarget", typeof(UIElement), typeof(KeyTrigger), new UIPropertyMetadata(null));
+        public UIElement FocusTarget
+        {
+            get { return (UIElement)GetValue(FocusTargetProperty); }
+            set { SetValue(FocusTargetProperty, value); }
+        }
 
         public KeyTrigger()
         {
@@ -55,6 +63,11 @@ namespace Adalbertus.BudgetPlanner.Extensions
         {
             if ((e.Key == this.Key) && (Keyboard.Modifiers == GetActualModifiers(e.Key, this.Modifiers)))
             {
+                if (FocusTarget != null)
+                {
+                    FocusTarget.Focus();           
+                    Keyboard.Focus(FocusTarget);                    
+                }
                 base.InvokeActions(e);
             }
         }

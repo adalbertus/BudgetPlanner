@@ -196,6 +196,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
                 Database.Save(cashFlow);
                 tx.Complete();
             }
+            CachedService.Clear();
             NewName = string.Empty;
             NewDescription = string.Empty;
             NewCashFlowGroup = CashFlowGroups.First();

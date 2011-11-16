@@ -39,11 +39,11 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         {
             Budget = budget;
             BudgetIncomeValues = Budget.IncomeValues as BindableCollectionExt<IncomeValue>;
-            BudgetIncomeValues.PropertyChanged += (s, e) => { Save(s as Entity); };
+            BudgetIncomeValues.PropertyChanged += (s, e) => { SaveRevenue(s as Entity); };
             NotifyOfPropertyChange(() => BudgetIncomeValues);
 
             BudgetSavingValues = Budget.SavingValues as BindableCollectionExt<SavingValue>;
-            BudgetSavingValues.PropertyChanged += (s, e) => { Save(s as Entity); };
+            BudgetSavingValues.PropertyChanged += (s, e) => { SaveRevenue(s as Entity); };
             NotifyOfPropertyChange(() => BudgetSavingValues);
 
             LoadIncomes();
@@ -152,14 +152,14 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             if (SelectedAvailableIncome != null)
             {
                 var incomeValue = Budget.AddIncomeValue(SelectedAvailableIncome, IncomeValueValue, IncomeValueDate, IncomeValueDescription);
-                Save(incomeValue);
+                SaveRevenue(incomeValue);
             }
         }
 
         public void RemoveIncomeValue(IncomeValue incomeValue)
         {
             Budget.RemoveIncomeValue(incomeValue);
-            Delete(incomeValue);
+            DeleteRevenue(incomeValue);
         }
 
         #endregion
@@ -266,38 +266,28 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             if (SelectedAvailableSaving != null)
             {
                 var savingValue = Budget.WithdrawSavingValue(SelectedAvailableSaving, SavingValueValue, SavingValueDate, SavingValueDescription);
-                Save(savingValue);
+                SaveRevenue(savingValue);
             }
         }
 
         public void RemoveSavingValue(SavingValue savingValue)
         {
             Budget.CancelWithdrawSavingValue(savingValue);
-            Delete(savingValue);
+            DeleteRevenue(savingValue);
         }
 
         #endregion
 
-        private void Save(Entity entity)
+        private void SaveRevenue(Entity entity)
         {
-            using (var tx = Database.GetTransaction())
-            {
-                Database.Save(entity);
-                tx.Complete();
-            }
+            Save(entity);
             RefreshSummaryValues();
-            PublishRefreshRequest();
         }
 
-        private void Delete(Entity entity)
+        private void DeleteRevenue(Entity entity)
         {
-            using (var tx = Database.GetTransaction())
-            {
-                Database.Delete(entity);
-                tx.Complete();
-            }
+            Delete(entity);
             RefreshSummaryValues();
-            PublishRefreshRequest();
         }
     }
 }
