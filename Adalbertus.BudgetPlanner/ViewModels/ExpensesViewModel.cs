@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Adalbertus.BudgetPlanner.Database;
 using Adalbertus.BudgetPlanner.Core;
+using Adalbertus.BudgetPlanner.Extensions;
 using Adalbertus.BudgetPlanner.Models;
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -11,14 +11,14 @@ using Caliburn.Micro;
 
 namespace Adalbertus.BudgetPlanner.ViewModels
 {
-    public class ExpensesViewModel : BaseViewModel, IHandle<FilterEvent>
+    public class ExpensesViewModel : BaseViewModel
     {
         public ExpensesViewModel(IDatabase database, IConfiguration configuration, ICachedService cashedService, IEventAggregator eventAggregator)
             : base(database, configuration, cashedService, eventAggregator)
         {
             ExpensesGridCashFlows = new BindableCollectionExt<CashFlow>();
             CashFlows = new BindableCollectionExt<CashFlow>();
-            Filter = new ExpensesFilter();
+            Filter = new ExpensesFilterVM();
         }
 
         protected override void Initialize()
@@ -43,12 +43,25 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         #region Budget plan expenses
         public Budget Budget { get; set; }
         private BindableCollectionExt<Expense> _budgetExpenses;
-        public IEnumerable<Expense> BudgetExpenses { 
+        public IEnumerable<Expense> BudgetExpenses
+        {
             get
             {
                 return FilteredBudgetExpenses();
             }
         }
+
+        private bool _isFilterEnabled;
+        public bool IsFilterEnabled
+        {
+            get { return _isFilterEnabled; }
+            set
+            {
+                _isFilterEnabled = value;
+                NotifyOfPropertyChange(() => IsFilterEnabled);
+            }
+        }
+
 
         private CashFlow _selectedExpenseCashFlow;
         public CashFlow SelectedExpenseCashFlow
@@ -160,26 +173,58 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         {
             Budget = budget;
             _budgetExpenses = budget.Expenses;
-            _budgetExpenses.PropertyChanged += ExpensesPropertyChanged;
-            _budgetExpenses.CollectionChanged += ExpensesCollectionChanged;
-            NotifyOfPropertyChange(() => BudgetExpenses);
 
             LoadCashFlows();
             LoadExpenses();
+            FillFilterData();
+
+            _budgetExpenses.PropertyChanged += (s, e) => { Save(s as Expense); };
+            _budgetExpenses.CollectionChanged += (s, e) =>
+            {
+                switch (e.Action)
+                {
+                    case NotifyCollectionChangedAction.Remove:
+                        Delete(e.OldItems[0] as Expense);
+                        break;
+                }
+            };
+
+            NotifyOfPropertyChange(() => BudgetExpenses);
+        }
+
+        private void FillFilterData()
+        {
+            Filter.IsNotifying = false;
+            var filterCashFlows = CachedService.GetAllCashFlows().Select(x =>
+                new ExpensesFilterCashFlowVM
+                {
+                    CashFlowId = x.Id,
+                    Name = x.Name,
+                }
+            ).ToList();
+            
+            Filter.CashFlows.IsNotifying = false;
+            Filter.DateFrom              = Budget.DateFrom;
+            Filter.DateTo                = Budget.DateTo;
+
+            Filter.CashFlows.Clear();
+            Filter.CashFlows.AddRange(filterCashFlows);
+            //Filter.PropertyChanged           += (s, e) => { NotifyOfPropertyChange(() => BudgetExpenses); };
+            Filter.CashFlows.PropertyChanged += (s, e) => { NotifyOfPropertyChange(() => BudgetExpenses); };
+            Filter.IsNotifying                = true;
+            Filter.CashFlows.IsNotifying      = true;
+            Filter.CashFlows.Refresh();
         }
 
         private void LoadCashFlows()
         {
-            CachedService.GetAllCashFlows();
             ExpensesGridCashFlows.IsNotifying = false;
             ExpensesGridCashFlows.Clear();
             CashFlows.Clear();
             var cashFlowList = CachedService.GetAllCashFlows();
-            if (cashFlowList != null)
-            {
-                cashFlowList.ForEach(x => ExpensesGridCashFlows.Add(x));
-                cashFlowList.ForEach(x => CashFlows.Add(x));
-            }
+            cashFlowList.ForEach(x => ExpensesGridCashFlows.Add(x));
+            cashFlowList.ForEach(x => CashFlows.Add(x));
+
             ExpensesGridCashFlows.IsNotifying = true;
             SelectedExpenseCashFlow = CashFlows.FirstOrDefault();
 
@@ -219,21 +264,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         public void RemoveExpense(Expense expense)
         {
             _budgetExpenses.Remove(expense);
-        }
-
-        private void ExpensesPropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            Save(sender as Expense);
-        }
-
-        private void ExpensesCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            switch (e.Action)
-            {
-                case NotifyCollectionChangedAction.Remove:
-                    Delete(e.OldItems[0] as Expense);
-                    break;
-            }
+            NotifyOfPropertyChange(() => BudgetExpenses);
         }
 
         public bool CanAddExpense
@@ -292,6 +323,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
 
                 tx.Complete();
             }
+            NotifyOfPropertyChange(() => BudgetExpenses);
             PublishRefreshRequest(expense);
         }
 
@@ -339,21 +371,50 @@ namespace Adalbertus.BudgetPlanner.ViewModels
 
 
         #endregion
-        public ExpensesFilter Filter { get; set; }
+        public ExpensesFilterVM Filter { get; set; }
 
         private IEnumerable<Expense> FilteredBudgetExpenses()
         {
-            var expenses = _budgetExpenses.Where(x => Filter.CashFlows.Any(y => y.Id == x.CashFlowId)).ToList();
+            var selectedCashFlows = Filter.CashFlows.Where(x => x.IsSelected).ToList();
+
+            var predicate = PredicateBuilder.False<Expense>();
+            predicate = predicate.Or(p => selectedCashFlows.Any(x => p.CashFlowId == x.CashFlowId));
+            predicate = predicate.And(p => p.Date >= Filter.DateFrom && p.Date <= Filter.DateTo);
+            if (Filter.ValueFrom.HasValue)
+            {
+                predicate = predicate.And(p => p.Value >= Filter.ValueFrom.Value);
+            }
+            if (Filter.ValueTo.HasValue)
+            {
+                predicate = predicate.And(p => p.Value <= Filter.ValueTo.Value);
+            }
+
+            if (!string.IsNullOrWhiteSpace(Filter.Description))
+            {
+                predicate = predicate.And(p => p.Description.IsEqual(Filter.Description, false));
+            }
+
+            var expenses = _budgetExpenses.AsQueryable().Where(predicate).ToList();
+            IsFilterEnabled = expenses.Count != _budgetExpenses.Count;
             return expenses;
         }
-        
-        #region IHandle<FilterEvent> Members
 
-        public void Handle(FilterEvent message)
+        public void SelectAllFilterCashFlows()
         {
-            Filter.CashFlows = message.CashFlows;
+            Filter.CashFlows.IsNotifying = false;
+            Filter.CashFlows.Where(x => !x.IsSelected).ForEach(x => x.IsSelected = true);
+            Filter.CashFlows.IsNotifying = true;
+            Filter.CashFlows.Refresh();
             NotifyOfPropertyChange(() => BudgetExpenses);
         }
-        #endregion
+
+        public void DeselectAllFilterCashFlows()
+        {
+            Filter.CashFlows.IsNotifying = false;
+            Filter.CashFlows.Where(x => x.IsSelected).ForEach(x => x.IsSelected = false);
+            Filter.CashFlows.IsNotifying = true;
+            Filter.CashFlows.Refresh();
+            NotifyOfPropertyChange(() => BudgetExpenses);
+        }
     }
 }

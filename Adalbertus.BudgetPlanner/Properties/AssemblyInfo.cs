@@ -10,9 +10,9 @@ using System.Windows;
 [assembly: AssemblyTitle("Adalbertus.BudgetPlanner")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Santander Consumer Bank S.A.")]
+[assembly: AssemblyCompany("Wojciech Pietkiewicz")]
 [assembly: AssemblyProduct("Adalbertus.BudgetPlanner")]
-[assembly: AssemblyCopyright("Copyright © Santander Consumer Bank S.A. 2011")]
+[assembly: AssemblyCopyright("Copyright © Wojciech Pietkiewicz 2011")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

@@ -3,14 +3,15 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:cal="http://www.caliburnproject.org"
              xmlns:conv="clr-namespace:Adalbertus.BudgetPlanner.Converters"
+             xmlns:ctrl="clr-namespace:Adalbertus.BudgetPlanner.Controls"
 >
     <UserControl.Resources>
         <conv:StringFormatConverter x:Key="DateFormatter" StringFormat="{}{0:D}" />
         <conv:StringFormatConverter x:Key="CurrencyFormatter" StringFormat="{}{0:c}" />
         <conv:StringFormatConverter x:Key="ProcentFormatter" StringFormat="{}{0:f}%" />
     </UserControl.Resources>
-    
-    <Expander IsExpanded="False" ExpandDirection="Down" Header="Wpływy budżetowe">        
+
+    <Expander IsExpanded="False" ExpandDirection="Down" Header="Wpływy budżetowe">
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
@@ -37,8 +38,8 @@
                         <DatePicker SelectedDate="{Binding IncomeValueDate}" SelectedDateFormat="Long" />
 
                         <Label>Kwota</Label>
-                        <TextBox Text="{Binding IncomeValueValue, UpdateSourceTrigger=PropertyChanged}"
-                                 Width="40"/>
+                        <ctrl:NumericTextBox Value="{Binding IncomeValueValue, UpdateSourceTrigger=PropertyChanged}"
+                                             Width="40"/>
 
                         <Label>Opis</Label>
                         <TextBox Text="{Binding IncomeValueDescription}" Width="100"/>
@@ -70,7 +71,14 @@
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
-                            <DataGridTextColumn Header="Kwota" Binding="{Binding Value, UpdateSourceTrigger=LostFocus}" />
+                            <DataGridTemplateColumn  Header="Kwota">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <ctrl:NumericTextBox Value="{Binding Value, UpdateSourceTrigger=LostFocus}"
+                                                             BorderThickness="0"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn >
                             <DataGridTextColumn Header="Opis" Binding="{Binding Description}" Width="80"/>
                         </DataGrid.Columns>
                     </DataGrid>
@@ -87,8 +95,8 @@
 
                 <StackPanel>
                     <WrapPanel>
-                        
-                        <Label>Nazwa</Label>                        
+
+                        <Label>Nazwa</Label>
                         <ComboBox ItemsSource="{Binding AvailableSavings}" 
                                   SelectedItem="{Binding SelectedAvailableSaving}"
                                   IsSynchronizedWithCurrentItem="False"
@@ -98,10 +106,10 @@
                         <Label>Data</Label>
                         <DatePicker SelectedDate="{Binding SavingValueDate}" SelectedDateFormat="Long"
                                     Width="70"/>
-                        
+
                         <Label>Kwota</Label>
-                        <TextBox Text="{Binding SavingValueValue, UpdateSourceTrigger=PropertyChanged}"
-                                 Width="40"/>
+                        <ctrl:NumericTextBox Value="{Binding SavingValueValue, UpdateSourceTrigger=PropertyChanged}"
+                                             Width="40"/>
 
                         <Label>Opis</Label>
                         <TextBox Text="{Binding SavingValueDescription}" Width="100"/>
@@ -133,8 +141,16 @@
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
+                            <DataGridTemplateColumn  Header="Kwota">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <ctrl:NumericTextBox Value="{Binding BudgetValue, UpdateSourceTrigger=LostFocus}"
+                                                             BorderThickness="0"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn >
+
                             <DataGridTextColumn Header="Opis" Binding="{Binding Description}" Width="80"/>
-                            <DataGridTextColumn Header="Kwota" Binding="{Binding BudgetValue}" />
                         </DataGrid.Columns>
                     </DataGrid>
                 </StackPanel>

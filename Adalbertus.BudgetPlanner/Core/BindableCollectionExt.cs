@@ -96,5 +96,10 @@ namespace Adalbertus.BudgetPlanner.Core
                 }
             }
         }
+
+        internal object Where(Func<Models.Expense, int, bool> func)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

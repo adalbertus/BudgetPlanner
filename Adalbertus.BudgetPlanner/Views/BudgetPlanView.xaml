@@ -7,6 +7,7 @@
              xmlns:ext="clr-namespace:Adalbertus.BudgetPlanner.Extensions"
              xmlns:conv="clr-namespace:Adalbertus.BudgetPlanner.Converters"
              xmlns:extToolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit/extended"
+             xmlns:ctrl="clr-namespace:Adalbertus.BudgetPlanner.Controls"
 >
     <UserControl.Resources>
         <conv:StringFormatConverter x:Key="DateFormatter" StringFormat="{}{0:yyyy-MM-dd}" />
@@ -32,36 +33,23 @@
                             <Style TargetType="{x:Type GroupItem}">
                                 <Setter Property="Template">
                                     <Setter.Value>
-                                        <ControlTemplate TargetType="{x:Type GroupItem}">
-                                            <Grid>
-                                                <Grid.RowDefinitions>
-                                                    <RowDefinition Height="*"/>
-                                                    <RowDefinition Height="Auto"/>
-                                                </Grid.RowDefinitions>
+                                        <ControlTemplate TargetType="{x:Type GroupItem}">                                            
+                                            <Grid Margin="4">
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="Auto"/>
                                                     <ColumnDefinition Width="*" />
                                                 </Grid.ColumnDefinitions>
-                                                <TextBlock Grid.Row="0" Grid.RowSpan="2" Text="{Binding Name}" TextAlignment="Center" Padding="4 4 4 4">
-                                                        <TextBlock.Background>
-                                                            <LinearGradientBrush StartPoint="0,1" EndPoint="1,0">
-                                                                <GradientStop Offset="1" Color="AliceBlue"/>
-                                                                <GradientStop Offset="0" Color="LightBlue"/>
-                                                            </LinearGradientBrush>
-                                                        </TextBlock.Background>
-                                                        <TextBlock.LayoutTransform>
-                                                            <RotateTransform Angle="-90"/>
-                                                        </TextBlock.LayoutTransform>
-                                                </TextBlock>
-                                                <ItemsPresenter Grid.Row="0" Grid.Column="1" VerticalAlignment="Stretch"/>
-                                                <Border Grid.Row="1" Grid.Column="1" Margin="0 8 0 0"
-                                                        Height="2" HorizontalAlignment="Stretch" BorderThickness="2">
-                                                    <Border.BorderBrush>
-                                                        <LinearGradientBrush StartPoint="0,1" EndPoint="1,0">
-                                                            <GradientStop Offset="1" Color="AliceBlue"/>
-                                                            <GradientStop Offset="0" Color="LightBlue"/>
-                                                        </LinearGradientBrush>
-                                                    </Border.BorderBrush>
+                                                <Border Grid.Row="0" Grid.RowSpan="2" CornerRadius="4 4 0 0" 
+                                                        Background="{StaticResource LightBlueGradient}" 
+                                                        BorderBrush="LightGray" BorderThickness="1">
+                                                    <Border.LayoutTransform>
+                                                        <RotateTransform Angle="-90"/>
+                                                    </Border.LayoutTransform>
+                                                    <Label Content="{Binding Name}" HorizontalContentAlignment="Center" HorizontalAlignment="Stretch"
+                                                           FontWeight="Bold"/>
+                                                </Border>
+                                                <Border Grid.Column="1" BorderBrush="LightGray" BorderThickness="0 1 1 1">
+                                                    <ItemsPresenter Grid.Row="0" Grid.Column="1" VerticalAlignment="Stretch"/>
                                                 </Border>
                                             </Grid>
                                         </ControlTemplate>
@@ -76,9 +64,7 @@
                         <Expander HorizontalContentAlignment="Stretch">
                             <Expander.Header>
                                 <StackPanel>
-                                    <CheckBox IsChecked="{Binding IsFilterEnabled}">
-                                        <TextBlock Padding="0 4 0 4" FontWeight="Bold" Text="{Binding Name}"/>
-                                    </CheckBox>
+                                    <TextBlock Padding="0 4 0 4" FontWeight="Bold" Text="{Binding Name}"/>
                                     <Grid>
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="Auto"/>
@@ -121,18 +107,16 @@
                                     </Grid>
                                 </StackPanel>
                             </Expander.Header>
-                            <Grid>
+                            <Grid Margin="4">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition />
                                 </Grid.RowDefinitions>
                                 <WrapPanel Grid.Row="0">
-                                    <extToolkit:DecimalUpDown x:Name="NewValue" FontSize="10" Style="{StaticResource DecimalUpDownPropertyChanged}"
-                                                              Value="{Binding NewValue}" Focusable="True"
-                                                              ext:FocusExtension.IsFocused="{Binding IsNewValueFocused}"
-                                                              SelectAllOnGotFocus="True" ShowButtonSpinner="False"
-                                                              Watermark="Wstaw wartość" FormatString="C2"
-                                                              Width="100">
+                                    <ctrl:NumericTextBox x:Name="NewValueControl" FontSize="10" Value="{Binding NewValue}" 
+                                                         ext:FocusExtension.IsFocused="{Binding IsNewValueFocused}"
+                                                         Watermark="Wstaw wartość"
+                                                         Width="100">
                                         <i:Interaction.Triggers>
                                             <ext:KeyTrigger Key="Enter" Modifiers="Control">
                                                 <cal:ActionMessage MethodName="AddNewValueToBudgetPlan">
@@ -142,11 +126,11 @@
                                             <ext:KeyTrigger Key="Enter" FocusTarget="{Binding ElementName=NewDescription}">
                                             </ext:KeyTrigger>
                                         </i:Interaction.Triggers>
-                                    </extToolkit:DecimalUpDown>
+                                    </ctrl:NumericTextBox>
                                     <extToolkit:WatermarkTextBox x:Name="NewDescription"  Text="{Binding NewDescription}" Watermark="Opis"
                                                                  Margin="4 0 4 0"  Width="100" FontSize="10">
                                         <i:Interaction.Triggers>
-                                            <ext:KeyTrigger Key="Enter" FocusTarget="{Binding ElementName=NewValue}">
+                                            <ext:KeyTrigger Key="Enter" FocusTarget="{Binding ElementName=NewValueControl}">
                                                 <cal:ActionMessage MethodName="AddNewValueToBudgetPlan">
                                                     <cal:Parameter Value="$dataContext"/>
                                                 </cal:ActionMessage>
@@ -173,10 +157,8 @@
                                         <DataGridTemplateColumn Header="Wartość" Width="80">
                                             <DataGridTemplateColumn.CellTemplate>
                                                 <DataTemplate>
-                                                    <extToolkit:DecimalUpDown Value="{Binding Value, UpdateSourceTrigger=LostFocus}"
-                                                                              SelectAllOnGotFocus="True" ShowButtonSpinner="False"
-                                                                              FormatString="C2"
-                                                                              BorderThickness="0"/>
+                                                    <ctrl:NumericTextBox Value="{Binding Value, UpdateSourceTrigger=LostFocus}"
+                                                                         BorderThickness="0"/>
                                                 </DataTemplate>
                                             </DataGridTemplateColumn.CellTemplate>
                                         </DataGridTemplateColumn>

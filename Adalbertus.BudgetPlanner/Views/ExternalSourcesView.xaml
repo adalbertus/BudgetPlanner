@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:cal="http://www.caliburnproject.org"
              xmlns:conv="clr-namespace:Adalbertus.BudgetPlanner.Converters"
+             xmlns:ctrl="clr-namespace:Adalbertus.BudgetPlanner.Controls"
 >
     <UserControl.Resources>
         <conv:StringFormatConverter x:Key="DateFormatter" StringFormat="{}{0:D}" />
@@ -59,19 +60,11 @@
                                                 </DataTemplate>
                                             </DataGridTemplateColumn.CellTemplate>
                                         </DataGridTemplateColumn>
-                                        <DataGridTemplateColumn Header="Kwota" Width="50">
+                                        <DataGridTemplateColumn  Header="Kwota" Width="120">
                                             <DataGridTemplateColumn.CellTemplate>
                                                 <DataTemplate>
-                                                    <StackPanel>
-                                                        <TextBox x:Name="Text" Text="{Binding Value, UpdateSourceTrigger=LostFocus}" BorderThickness="0"/>
-                                                        <TextBlock x:Name="TextReadOnly" Text="{Binding Value}" Visibility="Collapsed"/>
-                                                    </StackPanel>
-                                                    <DataTemplate.Triggers>
-                                                        <DataTrigger Binding="{Binding IsReadOnly}" Value="true">
-                                                            <Setter TargetName="Text" Property="Visibility" Value="Collapsed" />
-                                                            <Setter TargetName="TextReadOnly" Property="Visibility" Value="Visible" />
-                                                        </DataTrigger>
-                                                    </DataTemplate.Triggers>
+                                                    <ctrl:NumericTextBox Value="{Binding Value, UpdateSourceTrigger=LostFocus}" 
+                                                                         BorderThickness="0" IsReadOnly="{Binding IsReadOnly}"/>
                                                 </DataTemplate>
                                             </DataGridTemplateColumn.CellTemplate>
                                         </DataGridTemplateColumn>
@@ -140,7 +133,14 @@
                                           VerticalScrollBarVisibility="Auto">
                                     <DataGrid.Columns>                                        
                                         <DataGridTextColumn Header="Data" Binding="{Binding Date, Converter={StaticResource DateFormatter}}" Width="90"/>
-                                        <DataGridTextColumn Header="Kwota" Binding="{Binding Value}" Width="50"/>
+                                        <DataGridTemplateColumn  Header="Kwota" Width="120">
+                                            <DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <ctrl:NumericTextBox Value="{Binding Value, UpdateSourceTrigger=LostFocus}"
+                                                                         BorderThickness="0" IsReadOnly="{Binding IsReadOnly}"/>
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellTemplate>
+                                        </DataGridTemplateColumn>
                                         <DataGridTextColumn Header="Uwagi" Binding="{Binding Description}" Width="*" />
                                     </DataGrid.Columns>
                                 </DataGrid>

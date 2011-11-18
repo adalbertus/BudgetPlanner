@@ -7,6 +7,7 @@
              xmlns:ext="clr-namespace:Adalbertus.BudgetPlanner.Extensions"
              xmlns:conv="clr-namespace:Adalbertus.BudgetPlanner.Converters"
              xmlns:extToolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit/extended"
+             xmlns:ctrl="clr-namespace:Adalbertus.BudgetPlanner.Controls"
 >
     <UserControl.Resources>
         <conv:StringFormatConverter x:Key="DateFormatter" StringFormat="{}{0:yyyy-MM-dd}" />
@@ -49,10 +50,9 @@
                         <TextBlock Grid.Column="1" Grid.Row="0" Padding="0 4 0 4" TextAlignment="Right" Text="{Binding TotalSumOfRevenues, Converter={StaticResource CurrencyFormatter}}"/>
 
                         <TextBlock Grid.Column="0" Grid.Row="1" Padding="0 4 0 4">Z poprzedniego okresu</TextBlock>
-                        <extToolkit:DecimalUpDown Grid.Column="1" Grid.Row="1" Padding="0 4 0 4" HorizontalAlignment="Stretch" 
-                                                  Value="{Binding TransferedValue, UpdateSourceTrigger=PropertyChanged}"
-                                                  SelectAllOnGotFocus="True" ShowButtonSpinner="False"
-                                                  FormatString="C2"/>
+                        <ctrl:NumericTextBox Grid.Column="1" Grid.Row="1" Padding="0 4 0 4"
+                                             HorizontalAlignment="Stretch" Value="{Binding TransferedValue, UpdateSourceTrigger=PropertyChanged}"
+                                            />
 
                         <TextBlock Grid.Column="0" Grid.Row="2" Padding="0 4 0 4">Wpływy z dochodów</TextBlock>
                         <TextBlock Grid.Column="1" Grid.Row="2" Padding="0 4 0 4" TextAlignment="Right" Text="{Binding SumOfRevenueIncomes, Converter={StaticResource CurrencyFormatter}}"/>

@@ -40,8 +40,9 @@ namespace Adalbertus.BudgetPlanner.ViewModels
 
         private void RefreshBudgetPlanItems(Expense expense)
         {
-            var planToRefresh = BudgetPlanList.First(x => x.CashFlow.Id == expense.CashFlowId);
-            planToRefresh.RefreshUI();
+            //var planToRefresh = BudgetPlanList.First(x => x.CashFlow.Id == expense.CashFlowId);
+            //planToRefresh.RefreshUI();
+            BudgetPlanList.ForEach(x => x.RefreshUI());
         }
         #endregion
 
@@ -88,7 +89,6 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             NotifyOfPropertyChange(() => BudgetPlanList);
             BudgetPlanList.Refresh();
             AttachToBudgetPlanItems();
-            PublishExpensesFiltering();
         }
 
         private void AttachToBudgetPlanItems()
@@ -97,7 +97,6 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             {
                 x.Values.CollectionChanged += BudgetPlanListCollectionChanged;
                 x.Values.PropertyChanged += (s, e) => { SaveBudgetPlan(s as BudgetPlan); };
-                x.PropertyChanged += BudgetPlanItemVMPropertyChanged;
             });
         }
 
@@ -106,24 +105,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             BudgetPlanList.ForEach(x =>
             {
                 x.Values.CollectionChanged -= BudgetPlanListCollectionChanged;
-                x.PropertyChanged -= BudgetPlanItemVMPropertyChanged;
             });
-        }
-
-        private void BudgetPlanItemVMPropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            switch(e.PropertyName)
-            {
-                case "IsFilterEnabled":
-                    PublishExpensesFiltering();
-                    break;
-            }
-        }
-
-        private void PublishExpensesFiltering()
-        {
-            var filteredCashFlows = BudgetPlanList.Where(x => x.IsFilterEnabled).Select(x => x.CashFlow);
-            EventAggregator.Publish(new FilterEvent { CashFlows = filteredCashFlows });
         }
 
         private void SaveBudgetPlan(BudgetPlan budgetPlan)

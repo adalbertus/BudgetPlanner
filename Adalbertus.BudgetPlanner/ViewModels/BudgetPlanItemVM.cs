@@ -24,19 +24,6 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             }
         }
 
-        private bool _isFilterEnabled;
-
-        public bool IsFilterEnabled
-        {
-            get { return _isFilterEnabled; }
-            set
-            {
-                _isFilterEnabled = value;
-                NotifyOfPropertyChange(() => IsFilterEnabled);
-            }
-        }
-
-
         private decimal? _newValue;
         public decimal? NewValue
         {
@@ -116,7 +103,6 @@ namespace Adalbertus.BudgetPlanner.ViewModels
 
         public BudgetPlanItemVM(Budget budget, CashFlow cashFlow, IEnumerable<BudgetPlan> planItems)
         {
-            IsFilterEnabled = true;
             Budget = budget;
             CashFlow = cashFlow;
             Values = new BindableCollectionExt<BudgetPlan>(planItems);
