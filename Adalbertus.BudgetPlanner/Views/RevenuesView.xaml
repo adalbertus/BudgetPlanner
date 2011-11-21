@@ -44,7 +44,7 @@
                         <Label>Opis</Label>
                         <TextBox Text="{Binding IncomeValueDescription}" Width="100"/>
 
-                        <Button Content="Dodaj wpływy z dochodów" ToolTip="Wstawienie wpływów z nowego dochodu" cal:Message.Attach="[Event Click] = [Action AddIncomeValue()]" />
+                        <ctrl:ImageButton Content="Dodaj wpływy z dochodów" ToolTip="Wstawienie wpływów z nowego dochodu" cal:Message.Attach="[Event Click] = [Action AddIncomeValue()]" />
                     </WrapPanel>
 
                     <DataGrid ItemsSource="{Binding BudgetIncomeValues}" AutoGenerateColumns="False" 
@@ -56,7 +56,9 @@
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <WrapPanel>
-                                            <Button Content="Usuń" cal:Message.Attach="[Event Click] = [Action RemoveIncomeValue($dataContext)]" />
+                                            <!-- I don't know why setting ImageUrl in style doesn't work here (in datagrid) -->
+                                            <ctrl:ImageButton ToolTip="Usuń" ImageUrl="Images/delete.png"
+                                                              cal:Message.Attach="[Event Click] = [Action RemoveIncomeValue($dataContext)]" />
                                         </WrapPanel>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
@@ -114,7 +116,7 @@
                         <Label>Opis</Label>
                         <TextBox Text="{Binding SavingValueDescription}" Width="100"/>
 
-                        <Button Content="Dodaj wpływy z oszczędności" ToolTip="Wstawienie wpływu pochodzącego z oszczędności" cal:Message.Attach="[Event Click] = [Action AddSavingValue()]" />
+                        <ctrl:ImageButton Content="Dodaj wpływy z oszczędności" ToolTip="Wstawienie wpływu pochodzącego z oszczędności" cal:Message.Attach="[Event Click] = [Action AddSavingValue()]" />
                     </WrapPanel>
 
                     <DataGrid ItemsSource="{Binding BudgetSavingValues}" AutoGenerateColumns="False"
@@ -126,7 +128,9 @@
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <WrapPanel>
-                                            <Button Content="Usuń" cal:Message.Attach="[Event Click] = [Action RemoveSavingValue($dataContext)]" />
+                                            <!-- I don't know why setting ImageUrl in style doesn't work here (in datagrid) -->
+                                            <ctrl:ImageButton ToolTip="Usuń" ImageUrl="Images/delete.png"
+                                                              cal:Message.Attach="[Event Click] = [Action RemoveSavingValue($dataContext)]" />
                                         </WrapPanel>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>

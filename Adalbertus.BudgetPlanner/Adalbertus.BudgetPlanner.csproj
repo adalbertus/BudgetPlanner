@@ -85,7 +85,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>BudgetPlanner.resx</DependentUpon>
     </Compile>
+    <Compile Include="Controls\ImageButton.xaml.cs">
+      <DependentUpon>ImageButton.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Converters\CompareConverter.cs" />
+    <Compile Include="Converters\DebugConverter.cs" />
     <Compile Include="Converters\NumericToBoolConverter.cs" />
     <Compile Include="Converters\VisibilityConverter.cs" />
     <Compile Include="Core\BindableCollectionExt.cs" />
@@ -104,6 +108,7 @@
     <Compile Include="Core\IConfiguration.cs">
       <DependentUpon>Configuration.cs</DependentUpon>
     </Compile>
+    <Compile Include="Extensions\ImageExtension.cs" />
     <Compile Include="Extensions\KeyDownFocusAction.cs" />
     <Compile Include="Extensions\KeyTrigger.cs" />
     <Compile Include="Core\Configuration.cs" />
@@ -148,6 +153,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="IShell.cs" />
+    <Page Include="Controls\ImageButton.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Styles.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -221,7 +230,7 @@
     <Resource Include="README.txt" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Images\delete.png" />
+    <Resource Include="Images\delete.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

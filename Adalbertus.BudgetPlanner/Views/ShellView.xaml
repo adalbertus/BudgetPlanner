@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:cal="http://www.caliburnproject.org"
         xmlns:conv="clr-namespace:Adalbertus.BudgetPlanner.Converters"
+        xmlns:ctrl="clr-namespace:Adalbertus.BudgetPlanner.Controls"
         WindowState="Maximized"
 >
     <Window.Resources>
@@ -15,18 +16,18 @@
         </Grid.RowDefinitions>
         <Border Grid.Row="0" Background="WhiteSmoke" BorderBrush="Black" BorderThickness="0 0 0 1">
             <StackPanel Orientation="Horizontal" Margin="4">                
-                <Button Content="&lt;&lt;" ToolTip="Poprzedni budżet" cal:Message.Attach="[Event Click] = [Action ShowPreviousBudget()]"/>
+                <ctrl:ImageButton Content="&lt;&lt;" ToolTip="Poprzedni budżet" cal:Message.Attach="[Event Click] = [Action ShowPreviousBudget()]"/>
                 <WrapPanel>
                     <Label>Budżet za okres: </Label>
                     <Label Content="{Binding CurrentBudgetDate, Converter={StaticResource DateFormatter}}" Width="100" />
-                    <Button Content="Pokaż" ToolTip="Pokaż budżet" cal:Message.Attach="[Event Click] = [Action ShowCurrentBudget()]"/>                    
+                    <ctrl:ImageButton Content="Pokaż" ToolTip="Pokaż budżet" cal:Message.Attach="[Event Click] = [Action ShowCurrentBudget()]"/>                    
                 </WrapPanel>                
-                <Button Content=">>"  ToolTip="Następny budżet" cal:Message.Attach="[Event Click] = [Action ShowNextBudget()]"/>
-                <!--<Button Content=" + "  ToolTip="Nowy plan budżetowy" cal:Message.Attach="[Event Click] = [Action CreateNewBudgetPlan()]"/>-->
+                <ctrl:ImageButton Content=">>"  ToolTip="Następny budżet" cal:Message.Attach="[Event Click] = [Action ShowNextBudget()]"/>
+                <!--<ctrl:ImageButton Content=" + "  ToolTip="Nowy plan budżetowy" cal:Message.Attach="[Event Click] = [Action CreateNewBudgetPlan()]"/>-->
                 
-                <Button Content="Kategorie wydatków" HorizontalAlignment="Right"
+                <ctrl:ImageButton Content="Kategorie wydatków" HorizontalAlignment="Right"
                         cal:Message.Attach="[Event Click] = [Action ShowCashFlowTypes()]"/>
-                <Button Content="Środki zewnętrzne" HorizontalAlignment="Right"
+                <ctrl:ImageButton Content="Środki zewnętrzne" HorizontalAlignment="Right"
                         cal:Message.Attach="[Event Click] = [Action ShowExternalSources()]"/>
             
             </StackPanel>

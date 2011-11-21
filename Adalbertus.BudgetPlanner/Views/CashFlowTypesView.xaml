@@ -3,7 +3,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
              xmlns:ext="clr-namespace:Adalbertus.BudgetPlanner.Extensions"
-             xmlns:cal="http://www.caliburnproject.org">
+             xmlns:cal="http://www.caliburnproject.org"
+             xmlns:ctrl="clr-namespace:Adalbertus.BudgetPlanner.Controls"
+>
     <UniformGrid Columns="2">
         <GroupBox Header="Kategorie wydatków">
             <Grid>
@@ -36,7 +38,7 @@
                               SelectedItem="{Binding NewCashFlowGroup, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"                              
                               DisplayMemberPath="Name"/>
 
-                    <Button Content="Wstaw" cal:Message.Attach="[Event Click] = [Action AddNewCashFlowType()]"/>
+                    <ctrl:ImageButton Content="Wstaw" cal:Message.Attach="[Event Click] = [Action AddNewCashFlowType()]"/>
                 </WrapPanel>
                 <DataGrid Grid.Row="1" ItemsSource="{Binding CashFlows}"
                           VerticalScrollBarVisibility="Auto" RowHeaderWidth="0"
@@ -46,7 +48,10 @@
                         <DataGridTemplateColumn>
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <Button x:Name="DeleteButton" Content="Usuń" cal:Message.Attach="[Event Click] = [Action DeleteCashFlowType($dataContext)]" />
+                                    <!-- I don't know why setting ImageUrl in style doesn't work here (in datagrid) -->
+                                    <ctrl:ImageButton x:Name="DeleteButton"
+                                                      ToolTip="Usuń" ImageUrl="Images/delete.png"
+                                                      cal:Message.Attach="[Event Click] = [Action DeleteCashFlowType($dataContext)]" />
                                     <DataTemplate.Triggers>
                                         <DataTrigger Binding="{Binding IsReadOnly}" Value="true">
                                             <Setter TargetName="DeleteButton" Property="Visibility" Value="Collapsed" />
@@ -142,7 +147,7 @@
                         </i:Interaction.Triggers>
                     </TextBox>
 
-                    <Button Content="Wstaw" cal:Message.Attach="[Event Click] = [Action AddNewCashFlowGroup()]"/>
+                    <ctrl:ImageButton Content="Wstaw" cal:Message.Attach="[Event Click] = [Action AddNewCashFlowGroup()]"/>
                 </WrapPanel>
                 <DataGrid  Grid.Row="1" ItemsSource="{Binding CashFlowGroups}" AutoGenerateColumns="False"
                            CanUserAddRows="False" CanUserDeleteRows="False" RowHeaderWidth="0"
@@ -151,7 +156,9 @@
                         <DataGridTemplateColumn>
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <Button x:Name="DeleteButton" Content="Usuń" cal:Message.Attach="[Event Click] = [Action DeleteCashFlowGroup($dataContext)]" />
+                                    <!-- I don't know why setting ImageUrl in style doesn't work here (in datagrid) -->
+                                    <ctrl:ImageButton x:Name="DeleteButton" ToolTip="Usuń" ImageUrl="Images/delete.png"
+                                                      cal:Message.Attach="[Event Click] = [Action DeleteCashFlowGroup($dataContext)]" />
                                     <DataTemplate.Triggers>
                                         <DataTrigger Binding="{Binding IsReadOnly}" Value="true">
                                             <Setter TargetName="DeleteButton" Property="Visibility" Value="Collapsed" />

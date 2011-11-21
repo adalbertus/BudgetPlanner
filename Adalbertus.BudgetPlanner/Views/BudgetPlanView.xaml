@@ -112,11 +112,15 @@
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition />
                                 </Grid.RowDefinitions>
-                                <WrapPanel Grid.Row="0">
-                                    <ctrl:NumericTextBox x:Name="NewValueControl" FontSize="10" Value="{Binding NewValue}" 
-                                                         ext:FocusExtension.IsFocused="{Binding IsNewValueFocused}"
-                                                         Watermark="Wstaw wartość"
-                                                         Width="100">
+                                <Grid Grid.Row="0" Margin="0 0 0 4">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <ctrl:NumericTextBox x:Name="NewValueControl" Grid.Column="0" FontSize="10"
+                                                         Value="{Binding NewValue}" ext:FocusExtension.IsFocused="{Binding IsNewValueFocused}"
+                                                         Watermark="Wstaw wartość" Width="80">
                                         <i:Interaction.Triggers>
                                             <ext:KeyTrigger Key="Enter" Modifiers="Control">
                                                 <cal:ActionMessage MethodName="AddNewValueToBudgetPlan">
@@ -127,8 +131,9 @@
                                             </ext:KeyTrigger>
                                         </i:Interaction.Triggers>
                                     </ctrl:NumericTextBox>
-                                    <extToolkit:WatermarkTextBox x:Name="NewDescription"  Text="{Binding NewDescription}" Watermark="Opis"
-                                                                 Margin="4 0 4 0"  Width="100" FontSize="10">
+                                    <extToolkit:WatermarkTextBox x:Name="NewDescription" Grid.Column="1"
+                                                                 Text="{Binding NewDescription}" Watermark="Opis"
+                                                                 Margin="4 0 4 0" FontSize="10">
                                         <i:Interaction.Triggers>
                                             <ext:KeyTrigger Key="Enter" FocusTarget="{Binding ElementName=NewValueControl}">
                                                 <cal:ActionMessage MethodName="AddNewValueToBudgetPlan">
@@ -137,9 +142,10 @@
                                             </ext:KeyTrigger>
                                         </i:Interaction.Triggers>
                                     </extToolkit:WatermarkTextBox>
-                                    <Button Content="Wstaw" IsEnabled="{Binding NewValue, Converter={StaticResource NumericToBool}}"
-                                            cal:Message.Attach="[Event Click] = [Action AddNewValueToBudgetPlan($dataContext)]" />
-                                </WrapPanel>
+                                    <ctrl:ImageButton Grid.Column="2" Content="Wstaw" IsEnabled="{Binding NewValue, Converter={StaticResource NumericToBool}}"
+                                            cal:Message.Attach="[Event Click] = [Action AddNewValueToBudgetPlan($dataContext)]"
+                                            FontSize="10"/>
+                                </Grid>
                                 <DataGrid Grid.Row="1" ItemsSource="{Binding Values, UpdateSourceTrigger=PropertyChanged}"
                                           AutoGenerateColumns="False" CanUserAddRows="False"
                                           CanUserReorderColumns="False" CanUserResizeColumns="False"
@@ -147,10 +153,12 @@
                                           MaxHeight="140" FontSize="10"
                                           RowHeaderWidth="0">
                                     <DataGrid.Columns>
-                                        <DataGridTemplateColumn Width="Auto">
+                                        <DataGridTemplateColumn Width="22">
                                             <DataGridTemplateColumn.CellTemplate>
                                                 <DataTemplate>
-                                                    <Button Content="Usuń" cal:Message.Attach="[Event Click] = [Action DeleteBudgetPlanItem($dataContext)]" />
+                                                    <!-- I don't know why setting ImageUrl in style doesn't work here (in datagrid) -->
+                                                    <ctrl:ImageButton ToolTip="Usuń" ImageUrl="Images/delete.png"
+                                                                      cal:Message.Attach="[Event Click] = [Action DeleteBudgetPlanItem($dataContext)]" />
                                                 </DataTemplate>
                                             </DataGridTemplateColumn.CellTemplate>
                                         </DataGridTemplateColumn>

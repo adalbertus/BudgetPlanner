@@ -20,7 +20,7 @@
             <GroupBox.Header>
                 <WrapPanel>
                     <Label>Oszczędności</Label>
-                    <Button Content="+" ToolTip="Dodaj nowe oszczędności" cal:Message.Attach="[Event Click] = [Action AddSaving()]"/>
+                    <ctrl:ImageButton Content="+" ToolTip="Dodaj nowe oszczędności" cal:Message.Attach="[Event Click] = [Action AddSaving()]"/>
                 </WrapPanel>
             </GroupBox.Header>
             <ScrollViewer VerticalScrollBarVisibility="Auto" CanContentScroll="True">
@@ -34,8 +34,10 @@
                                         <TextBox Text="{Binding Name}" Width="150" />
                                         <Label>Łącznie</Label>
                                         <Label Content="{Binding TotalValue, Converter={StaticResource CurrencyFormatter}}" />
-                                        <Button Content="X" ToolTip="Usuń oszczędności" cal:Message.Attach="[Event Click] = [Action RemoveSaving($dataContext)]"/>
-                                        <Button Content="+" ToolTip="Dodaj nowe oszczędności" cal:Message.Attach="[Event Click] = [Action AddSavingValue($dataContext)]"/>
+                                        <!-- I don't know why setting ImageUrl in style doesn't work here (in datagrid) -->
+                                        <ctrl:ImageButton ToolTip="Usuń oszczędności" ImageUrl="Images/delete.png"
+                                                          cal:Message.Attach="[Event Click] = [Action RemoveSaving($dataContext)]"/>
+                                        <ctrl:ImageButton Content="+" ToolTip="Dodaj nowe oszczędności" cal:Message.Attach="[Event Click] = [Action AddSavingValue($dataContext)]"/>
                                     </WrapPanel>
                                 </GroupBox.Header>
                                 <DataGrid ItemsSource="{Binding Values}" CanUserAddRows="False" 
@@ -43,6 +45,19 @@
                                           VerticalScrollBarVisibility="Auto"
                                           AutoGenerateColumns="False" MaxHeight="220">
                                     <DataGrid.Columns>
+                                        <DataGridTemplateColumn Width="22">
+                                            <DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <ctrl:ImageButton x:Name="RemoveButton" ToolTip="Usuń" ImageUrl="Images/delete.png"
+                                                                      cal:Message.Attach="[Event Click] = [Action RemoveSavingValue($dataContext)]"/>
+                                                    <DataTemplate.Triggers>
+                                                        <DataTrigger Binding="{Binding IsReadOnly}" Value="true">
+                                                            <Setter TargetName="RemoveButton" Property="Visibility" Value="Collapsed" />
+                                                        </DataTrigger>
+                                                    </DataTemplate.Triggers>
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellTemplate>
+                                        </DataGridTemplateColumn>
                                         <DataGridTemplateColumn Header="Data" Width="110">
                                             <DataGridTemplateColumn.CellTemplate>
                                                 <DataTemplate>
@@ -84,18 +99,6 @@
                                                 </DataTemplate>
                                             </DataGridTemplateColumn.CellTemplate>
                                         </DataGridTemplateColumn>
-                                        <DataGridTemplateColumn Width="20">
-                                            <DataGridTemplateColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <Button x:Name="RemoveButton" Content="X" cal:Message.Attach="[Event Click] = [Action RemoveSavingValue($dataContext)]"/>
-                                                    <DataTemplate.Triggers>
-                                                        <DataTrigger Binding="{Binding IsReadOnly}" Value="true">
-                                                            <Setter TargetName="RemoveButton" Property="Visibility" Value="Collapsed" />
-                                                        </DataTrigger>
-                                                    </DataTemplate.Triggers>
-                                                </DataTemplate>
-                                            </DataGridTemplateColumn.CellTemplate>
-                                        </DataGridTemplateColumn>
                                     </DataGrid.Columns>
                                 </DataGrid>
                             </GroupBox>
@@ -110,7 +113,7 @@
             <GroupBox.Header>
                 <WrapPanel>
                     <Label>Przychody</Label>
-                    <Button Content="+" ToolTip="Dodaj nowe źródło przychodów" cal:Message.Attach="[Event Click] = [Action AddIncome()]"/>
+                    <ctrl:ImageButton Content="+" ToolTip="Dodaj nowe źródło przychodów" cal:Message.Attach="[Event Click] = [Action AddIncome()]"/>
                 </WrapPanel>
             </GroupBox.Header>
             <ScrollViewer VerticalScrollBarVisibility="Auto" CanContentScroll="True">
@@ -124,7 +127,9 @@
                                         <TextBox Text="{Binding Name}" Width="150" />
                                         <Label>Łącznie</Label>
                                         <Label Content="{Binding TotalValue, Converter={StaticResource CurrencyFormatter}}" />
-                                        <Button Content="X" ToolTip="Usuń źródło przychodów" cal:Message.Attach="[Event Click] = [Action RemoveIncome($dataContext)]"/>
+                                        <!-- I don't know why setting ImageUrl in style doesn't work here (in datagrid) -->
+                                        <ctrl:ImageButton ToolTip="Usuń źródło przychodów" ImageUrl="Images/delete.png"
+                                                          cal:Message.Attach="[Event Click] = [Action RemoveIncome($dataContext)]"/>
                                     </WrapPanel>
                                 </GroupBox.Header>
                                 <DataGrid ItemsSource="{Binding Values}" CanUserAddRows="False" 

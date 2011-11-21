@@ -110,7 +110,9 @@
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <WrapPanel>
-                                <Button Content="Usuń" cal:Message.Attach="[Event Click] = [Action RemoveExpense($dataContext)]" />
+                                <!-- I don't know why setting ImageUrl in style doesn't work here (in datagrid) -->
+                                <ctrl:ImageButton ToolTip="Usuń" ImageUrl="Images/delete.png"
+                                                  cal:Message.Attach="[Event Click] = [Action RemoveExpense($dataContext)]" />
                             </WrapPanel>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
@@ -213,7 +215,7 @@
                         </ext:KeyTrigger>
                     </i:Interaction.Triggers>
                 </extToolkit:WatermarkTextBox>
-                <Button Content="Wstaw" cal:Message.Attach="[Event Click] = [Action AddExpense()]"/>
+                <ctrl:ImageButton Content="Wstaw" cal:Message.Attach="[Event Click] = [Action AddExpense()]" />
             </StackPanel>
         </Border>
     </Grid>
