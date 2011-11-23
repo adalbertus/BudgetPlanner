@@ -1,0 +1,20 @@
+﻿<UserControl x:Class="Adalbertus.BudgetPlanner.Views.SampleDailogView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:cal="http://www.caliburnproject.org"
+             MinWidth="100" MinHeight="50"
+             >
+    <!-- http://devlicio.us/blogs/rob_eisenberg/archive/2010/11/18/caliburn-micro-soup-to-nuts-part-6d-a-billy-hollis-hybrid-shell.aspx -->
+    <Border Background="AntiqueWhite" BorderBrush="AliceBlue" BorderThickness="2" CornerRadius="4">
+        <DockPanel LastChildFill="True">
+            <WrapPanel DockPanel.Dock="Bottom" HorizontalAlignment="Stretch">
+                <Button Content="Anuluj" cal:Message.Attach="[Event Click] = [Action Cancel()]"/>
+                <Button Content="Zamknij" cal:Message.Attach="[Event Click] = [Action Close()]"/>
+            </WrapPanel>
+            <TextBlock>
+            Ala ma kota
+            </TextBlock>
+        </DockPanel>
+    </Border>
+</UserControl>

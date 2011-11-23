@@ -13,8 +13,8 @@ namespace Adalbertus.BudgetPlanner.ViewModels
 {
     public class BudgetViewModel : BaseViewModel
     {
-        public BudgetViewModel(IDatabase database, IConfiguration configuration, ICachedService cashedService, IEventAggregator eventAggregator)
-            : base(database, configuration, cashedService, eventAggregator)
+        public BudgetViewModel(IShellViewModel shell, IDatabase database, IConfiguration configuration, ICachedService cashedService, IEventAggregator eventAggregator)
+            : base(shell, database, configuration, cashedService, eventAggregator)
         {
             ExpensesViewModel   = IoC.Get<ExpensesViewModel>();
             RevenuesViewModel   = IoC.Get<RevenuesViewModel>();
@@ -30,7 +30,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
 
         #region Loading data
 
-        protected override void LoadData()
+        public override void LoadData()
         {
             LoadOrCreateDefaultBudget();
 
@@ -85,6 +85,8 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         {
             NotifyOfPropertyChange(() => DateFrom);
             NotifyOfPropertyChange(() => DateTo);
+            NotifyOfPropertyChange(() => TransferedValue);
+            RefreshBudgetSummary();
         }
         #endregion
 

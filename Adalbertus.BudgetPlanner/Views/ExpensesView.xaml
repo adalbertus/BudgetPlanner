@@ -5,15 +5,8 @@
              xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
              xmlns:ext="clr-namespace:Adalbertus.BudgetPlanner.Extensions"
              xmlns:extToolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit/extended"
-             xmlns:conv="clr-namespace:Adalbertus.BudgetPlanner.Converters"
              xmlns:ctrl="clr-namespace:Adalbertus.BudgetPlanner.Controls"
 >
-    <UserControl.Resources>
-        <conv:StringFormatConverter x:Key="DateFormatter" StringFormat="{}{0:yyyy-MM-dd}" />
-        <conv:StringFormatConverter x:Key="CurrencyFormatter" StringFormat="{}{0:c}" />
-        <conv:StringFormatConverter x:Key="ProcentFormatter" StringFormat="{}{0:f}%" />
-        <conv:VisibilityConverter x:Key="Visibility" />
-    </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -35,8 +28,10 @@
                     <GroupBox.Header>
                         <WrapPanel>
                             <TextBlock Margin="4 0">Kategorie</TextBlock>
-                            <Button Content="Zaznacz wszystko" Margin="4 0" cal:Message.Attach="[Event Click] = [Action SelectAllFilterCashFlows()]"/>
-                            <Button Content="Odznacz wszystko" Margin="4 0" cal:Message.Attach="[Event Click] = [Action DeselectAllFilterCashFlows()]"/>
+                            <ctrl:ImageButton ToolTip="Zaznacz wszystko" Margin="4 0" ImageUrl="Images/check-all.png"
+                                              cal:Message.Attach="[Event Click] = [Action SelectAllFilterCashFlows()]"/>
+                            <ctrl:ImageButton ToolTip="Odznacz wszystko" Margin="4 0" ImageUrl="Images/check-none.png"
+                                              cal:Message.Attach="[Event Click] = [Action DeselectAllFilterCashFlows()]"/>
                         </WrapPanel>
                     </GroupBox.Header>
                     <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0 4 0 0">
@@ -110,7 +105,7 @@
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <WrapPanel>
-                                <!-- I don't know why setting ImageUrl in style doesn't work here (in datagrid) -->
+                                <!-- I don't know why setting ImageUrl in style doesn't work in DataTemplate -->
                                 <ctrl:ImageButton ToolTip="Usuń" ImageUrl="Images/delete.png"
                                                   cal:Message.Attach="[Event Click] = [Action RemoveExpense($dataContext)]" />
                             </WrapPanel>
@@ -149,7 +144,7 @@
         </DataGrid>
 
         <Border Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-            <StackPanel>
+            <StackPanel Margin="4">
                 <Label>Kategoria</Label>
                 <ComboBox ItemsSource="{Binding CashFlows}"
                           SelectedItem="{Binding SelectedExpenseCashFlow}"                          
@@ -170,13 +165,17 @@
                 </DatePicker>
 
                 <Label>Kwota</Label>
-                <ctrl:NumericTextBox x:Name="ExpenseValueControl" Value="{Binding ExpenseValue}" VerticalAlignment="Stretch"
+                <ctrl:NumericTextBox x:Name="ExpenseValueControl" Value="{Binding ExpenseValue}"
+                                     VerticalAlignment="Stretch"
                                      ext:FocusExtension.IsFocused="{Binding IsExpenseValueFocused}"
-                                     ToolTip="Wciśnięcie klawisza Ctrl+Enter wstawi kwotę do kalkulatora"
+                                     ToolTip="Shift+Enter wstawi kwotę do kalkulatora, Ctrl+Enter wstawia kwotę do tabeli"
                                      >
 
                     <i:Interaction.Triggers>
                         <ext:KeyTrigger Key="Enter" Modifiers="Control">
+                            <cal:ActionMessage MethodName="AddAndMoveToExpenseValue" />
+                        </ext:KeyTrigger>
+                        <ext:KeyTrigger Key="Enter" Modifiers="Shift">
                             <cal:ActionMessage MethodName="AddExpenseValueToCalculator" />
                         </ext:KeyTrigger>
                         <ext:KeyTrigger Key="Enter" FocusTarget="{Binding ElementName=ExpenseDescription}">
@@ -196,7 +195,7 @@
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
                                     <WrapPanel>
-                                        <Button Content="Usuń" cal:Message.Attach="[Event Click] = [Action RemoveExpenseValueFromCalculator($dataContext)]" />
+                                        <ctrl:ImageButton ToolTip="Usuń" ImageUrl="Images/delete.png" cal:Message.Attach="[Event Click] = [Action RemoveExpenseValueFromCalculator($dataContext)]" />
                                         <Label Content="{Binding Converter={StaticResource CurrencyFormatter}}" Width="80" />
                                     </WrapPanel>
                                 </DataTemplate>
@@ -215,7 +214,7 @@
                         </ext:KeyTrigger>
                     </i:Interaction.Triggers>
                 </extToolkit:WatermarkTextBox>
-                <ctrl:ImageButton Content="Wstaw" cal:Message.Attach="[Event Click] = [Action AddExpense()]" />
+                <ctrl:ImageButton Content="Wstaw" ImageUrl="Images/basket-add.png" cal:Message.Attach="[Event Click] = [Action AddExpense()]" />
             </StackPanel>
         </Border>
     </Grid>

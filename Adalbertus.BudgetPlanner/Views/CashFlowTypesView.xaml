@@ -38,25 +38,20 @@
                               SelectedItem="{Binding NewCashFlowGroup, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"                              
                               DisplayMemberPath="Name"/>
 
-                    <ctrl:ImageButton Content="Wstaw" cal:Message.Attach="[Event Click] = [Action AddNewCashFlowType()]"/>
+                    <ctrl:ImageButton ImageUrl="Images/save.png" Content="Wstaw" cal:Message.Attach="[Event Click] = [Action AddNewCashFlowType()]"/>
                 </WrapPanel>
                 <DataGrid Grid.Row="1" ItemsSource="{Binding CashFlows}"
                           VerticalScrollBarVisibility="Auto" RowHeaderWidth="0"
                           HorizontalScrollBarVisibility="Auto"
                           AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False">
                     <DataGrid.Columns>
-                        <DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="28">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <!-- I don't know why setting ImageUrl in style doesn't work here (in datagrid) -->
-                                    <ctrl:ImageButton x:Name="DeleteButton"
+                                    <!-- I don't know why setting ImageUrl in style doesn't work in DataTemplate -->
+                                    <ctrl:ImageButton x:Name="DeleteButton" IsEnabled="{Binding IsReadOnly, Converter={StaticResource NotConverter}}"
                                                       ToolTip="Usuń" ImageUrl="Images/delete.png"
                                                       cal:Message.Attach="[Event Click] = [Action DeleteCashFlowType($dataContext)]" />
-                                    <DataTemplate.Triggers>
-                                        <DataTrigger Binding="{Binding IsReadOnly}" Value="true">
-                                            <Setter TargetName="DeleteButton" Property="Visibility" Value="Collapsed" />
-                                        </DataTrigger>
-                                    </DataTemplate.Triggers>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
@@ -70,7 +65,7 @@
                                                    Visibility="Collapsed" />
                                     </StackPanel>
                                     <DataTemplate.Triggers>
-                                        <DataTrigger Binding="{Binding IsReadOnly}" Value="true">
+                                        <DataTrigger Binding="{Binding IsReadOnly}" Value="True">
                                             <Setter TargetName="TextBox" Property="Visibility" Value="Collapsed" />
                                             <Setter TargetName="TextBoxReadOnly" Property="Visibility" Value="Visible" />
                                         </DataTrigger>
@@ -147,23 +142,19 @@
                         </i:Interaction.Triggers>
                     </TextBox>
 
-                    <ctrl:ImageButton Content="Wstaw" cal:Message.Attach="[Event Click] = [Action AddNewCashFlowGroup()]"/>
+                    <ctrl:ImageButton ImageUrl="Images/save.png" Content="Wstaw" cal:Message.Attach="[Event Click] = [Action AddNewCashFlowGroup()]"/>
                 </WrapPanel>
                 <DataGrid  Grid.Row="1" ItemsSource="{Binding CashFlowGroups}" AutoGenerateColumns="False"
                            CanUserAddRows="False" CanUserDeleteRows="False" RowHeaderWidth="0"
                            VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
                     <DataGrid.Columns>
-                        <DataGridTemplateColumn>
+                        <DataGridTemplateColumn Width="28">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <!-- I don't know why setting ImageUrl in style doesn't work here (in datagrid) -->
+                                    <!-- I don't know why setting ImageUrl in style doesn't work in DataTemplate -->
                                     <ctrl:ImageButton x:Name="DeleteButton" ToolTip="Usuń" ImageUrl="Images/delete.png"
-                                                      cal:Message.Attach="[Event Click] = [Action DeleteCashFlowGroup($dataContext)]" />
-                                    <DataTemplate.Triggers>
-                                        <DataTrigger Binding="{Binding IsReadOnly}" Value="true">
-                                            <Setter TargetName="DeleteButton" Property="Visibility" Value="Collapsed" />
-                                        </DataTrigger>
-                                    </DataTemplate.Triggers>
+                                                      IsEnabled="{Binding IsReadOnly, Converter={StaticResource NotConverter}}"
+                                                      cal:Message.Attach="[Event Click] = [Action DeleteCashFlowGroup($dataContext)]" />                                    
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>

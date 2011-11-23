@@ -4,6 +4,7 @@ using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using Adalbertus.BudgetPlanner.Database;
 using Adalbertus.BudgetPlanner.Core;
+using Adalbertus.BudgetPlanner.ViewModels;
 
 namespace Adalbertus.BudgetPlanner
 {
@@ -24,7 +25,7 @@ namespace Adalbertus.BudgetPlanner
                 Component.For<IDatabase>().ImplementedBy<Database.Database>().LifeStyle.Is(LifestyleType.Singleton),
                 Component.For<IConfiguration>().ImplementedBy<Configuration>().LifeStyle.Is(LifestyleType.Singleton),
                 Component.For<ICachedService>().ImplementedBy<Database.CachedService>().LifeStyle.Is(LifestyleType.Singleton),
-                AllTypes.FromAssemblyContaining<App>().Pick().Configure(x => x.LifeStyle.Is(LifestyleType.Singleton))
+                AllTypes.FromAssemblyContaining<App>().Pick().WithService.DefaultInterface().Configure(x => x.LifeStyle.Is(LifestyleType.Singleton))
             );
         }
     }

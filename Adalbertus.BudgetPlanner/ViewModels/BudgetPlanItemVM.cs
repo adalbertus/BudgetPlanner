@@ -35,6 +35,17 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             }
         }
 
+        private decimal? _clearValue;
+        public decimal? ClearValue
+        {
+            get { return _clearValue; }
+            set
+            {
+                _clearValue = value;
+                NotifyOfPropertyChange(() => ClearValue);
+            }
+        }
+
         private bool _isNewValueFocused;
         public bool IsNewValueFocused
         {

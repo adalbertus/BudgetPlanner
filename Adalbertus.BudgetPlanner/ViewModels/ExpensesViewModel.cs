@@ -13,8 +13,8 @@ namespace Adalbertus.BudgetPlanner.ViewModels
 {
     public class ExpensesViewModel : BaseViewModel
     {
-        public ExpensesViewModel(IDatabase database, IConfiguration configuration, ICachedService cashedService, IEventAggregator eventAggregator)
-            : base(database, configuration, cashedService, eventAggregator)
+        public ExpensesViewModel(IShellViewModel shell, IDatabase database, IConfiguration configuration, ICachedService cashedService, IEventAggregator eventAggregator)
+            : base(shell ,database, configuration, cashedService, eventAggregator)
         {
             ExpensesGridCashFlows = new BindableCollectionExt<CashFlow>();
             CashFlows = new BindableCollectionExt<CashFlow>();
@@ -107,7 +107,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
                 NotifyOfPropertyChange(() => CanAddExpense);
             }
         }
-
+        
         private string _expenseDescription;
         public string ExpenseDescription
         {

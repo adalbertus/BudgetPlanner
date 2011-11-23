@@ -12,10 +12,11 @@ namespace Adalbertus.BudgetPlanner.ViewModels
 {
     public class RevenuesViewModel : BaseViewModel
     {
-        public RevenuesViewModel(IDatabase database, IConfiguration configuration, ICachedService cashedService, IEventAggregator eventAggregator)
-            : base(database, configuration, cashedService, eventAggregator)
+        public RevenuesViewModel(IShellViewModel shell, IDatabase database, IConfiguration configuration, ICachedService cashedService, IEventAggregator eventAggregator)
+            : base(shell, database, configuration, cashedService, eventAggregator)
         {
             AvailableIncomes = new BindableCollectionExt<Income>();
+            AvailableSavings = new BindableCollectionExt<Saving>();
         }
 
         public Budget Budget { get; set; }

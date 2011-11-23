@@ -13,7 +13,7 @@ namespace Adalbertus.BudgetPlanner
     /// <summary>
     /// http://www.iamnotmyself.com/2010/07/31/AnImplementationOfCastleWindsorBootstrapperForCaliburnMicro.aspx
     /// </summary>
-    public class CastleBootstrapper : Bootstrapper<ShellViewModel>
+    public class CastleBootstrapper : Bootstrapper<IShellViewModel>
     {
         private IWindsorContainer container;
 

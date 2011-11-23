@@ -2,7 +2,7 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:extToolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit/extended"
                     xmlns:ctrl="clr-namespace:Adalbertus.BudgetPlanner.Controls">
-    <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="LightBlue"/>
+    <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="AliceBlue"/>
     <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey }" Color="DodgerBlue"/>
     <LinearGradientBrush x:Key="LightBlueGradient" StartPoint="0,1" EndPoint="0,0">
         <GradientStop Offset="1" Color="LightBlue"/>
@@ -54,6 +54,26 @@
 
     <Style x:Key="DeleteButton" TargetType="{x:Type ctrl:ImageButton}" BasedOn="{StaticResource {x:Type Button}}">
         <Setter Property="ImageUrl" Value="Images/delete.png" />
+    </Style>
+
+    <Style x:Key="LinkButton" TargetType="{x:Type Button}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <TextBlock TextDecorations="Underline">
+                    <ContentPresenter />
+                    </TextBlock>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Foreground" Value="Blue" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="true">
+                <Setter Property="Foreground" Value="Red" />
+            </Trigger>
+        </Style.Triggers>
     </Style>
 
     <Style x:Key="ImageButton" TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Type Button}}">

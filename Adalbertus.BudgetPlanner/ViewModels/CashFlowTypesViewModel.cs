@@ -10,13 +10,14 @@ using Adalbertus.BudgetPlanner.Core;
 using Adalbertus.BudgetPlanner.Models;
 using Adalbertus.BudgetPlanner.Database;
 using System.Diagnostics;
+using Microsoft.Windows.Controls;
 
 namespace Adalbertus.BudgetPlanner.ViewModels
 {
     public class CashFlowTypesViewModel : BaseViewModel
     {
-        public CashFlowTypesViewModel(IDatabase database, IConfiguration configuration, ICachedService cashedService, IEventAggregator eventAggregator)
-            : base(database, configuration, cashedService, eventAggregator)
+        public CashFlowTypesViewModel(IShellViewModel shell, IDatabase database, IConfiguration configuration, ICachedService cashedService, IEventAggregator eventAggregator)
+            : base(shell, database, configuration, cashedService, eventAggregator)
         {
             CashFlows = new BindableCollectionExt<CashFlow>();
             CashFlows.PropertyChanged += (s, e) => { OnPropertyChanged(s, e); };
@@ -44,7 +45,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             }
         }
 
-        private void LoadData()
+        public override void LoadData()
         {
             CashFlowGroups.IsNotifying = false;
             CashFlowGroups.Clear();
@@ -187,11 +188,11 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             using (var tx = Database.GetTransaction())
             {
                 var cashFlow = new CashFlow
-                                {
-                                    Name = NewName,
-                                    Description = NewDescription,
-                                    Group = NewCashFlowGroup,
-                                };
+                {
+                    Name = NewName,
+                    Description = NewDescription,
+                    Group = NewCashFlowGroup,
+                };
 
                 Database.Save(cashFlow);
                 tx.Complete();
@@ -272,40 +273,33 @@ namespace Adalbertus.BudgetPlanner.ViewModels
 
         public void DeleteCashFlowType(CashFlow cashFlow)
         {
-            var budgetPlansCount = Database.ExecuteScalar<int>(PetaPoco.Sql.Builder
-                .Select("COUNT(*)")
-                .From("BudgetPlan")
-                .Where("CashFlowId = @0", cashFlow.Id));
-
-            if (budgetPlansCount > 0)
+            DeleteCashFlowType(cashFlow, false);
+        }
+        public void DeleteCashFlowType(CashFlow cashFlow, bool omitConfirmation)
+        {
+            if (!omitConfirmation)
             {
-                System.Windows.MessageBox.Show("Są przypisane plany budżetowe. Usuwanie kategorii wydatków wymaga refaktoryzacji");
-            }
+                var hasBudgetPlansDefined = Database.ExecuteScalar<int>(PetaPoco.Sql.Builder
+                    .Select("COUNT(*)")
+                    .From("BudgetPlan")
+                    .Where("CashFlowId = @0", cashFlow.Id)) > 0;
 
-            var expensesCount = Database.ExecuteScalar<int>(PetaPoco.Sql.Builder
-                .Select("COUNT(*)")
-                .From("Expense")
-                .Where("CashFlowId = @0", cashFlow.Id));
-            if (expensesCount > 0)
-            {
-                System.Windows.MessageBox.Show("Są przypisane wydatki. Usuwanie kategorii wydatków wymaga refaktoryzacji");
-            }
+                var hasExpensesDefined = Database.ExecuteScalar<int>(PetaPoco.Sql.Builder
+                    .Select("COUNT(*)")
+                    .From("Expense")
+                    .Where("CashFlowId = @0", cashFlow.Id)) > 0;
 
-            var savingsCount = Database.ExecuteScalar<int>(PetaPoco.Sql.Builder
-                .Select("COUNT(*)")
-                .From("Saving")
-                .Where("CashFlowId = @0", cashFlow.Id));
-            if (savingsCount > 0)
-            {
-                System.Windows.MessageBox.Show("Są przypisane oszczęgności. Usuwanie kategorii wydatków wymaga refaktoryzacji");
+                if (hasBudgetPlansDefined || hasExpensesDefined)
+                {
+                    Shell.ShowDialog<CashFlowDeleteConfirmationViewModel>(new { CashFlow = cashFlow }, () => DeleteCashFlowType(cashFlow, true), null);
+                    return;
+                }
             }
 
             using (var tx = Database.GetTransaction())
             {
-                //Database.Delete<BudgetPlanItem>("WHERE CashFlowId = @0", cashFlow.Id);
+                Database.Delete<BudgetPlan>("WHERE CashFlowId = @0", cashFlow.Id);
                 Database.Delete<Expense>("WHERE CashFlowId = @0", cashFlow.Id);
-                //Database.Delete<SavingValue>("WHERE SavingId IN (SELECT Id FROM [Saving] WHERE [Saving].CashFlowId = @0)", cashFlow.Id);
-                //Database.Delete<Saving>("WHERE CashFlowId = @0", cashFlow.Id);
                 Database.Delete<CashFlow>(cashFlow);
                 tx.Complete();
             }

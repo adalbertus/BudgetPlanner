@@ -13,6 +13,16 @@ namespace Adalbertus.BudgetPlanner.ViewModels
 {
     public class ExternalSourcesViewModel : BaseViewModel
     {
+        public ExternalSourcesViewModel(IShellViewModel shell, IDatabase database, IConfiguration configuration, ICachedService cashedService, IEventAggregator eventAggregator)
+            : base(shell, database, configuration, cashedService, eventAggregator)
+        {
+            _savings = new BindableCollectionExt<Saving>();
+            _incomes = new BindableCollectionExt<Income>();
+
+            _savings.PropertyChanged += (s, e) => { OnPropertyChanged(s, e); };
+            _incomes.PropertyChanged += (s, e) => { OnPropertyChanged(s, e); };
+        }
+
         private BindableCollectionExt<Saving> _savings;
         public BindableCollectionExt<Saving> Savings
         {
@@ -32,17 +42,6 @@ namespace Adalbertus.BudgetPlanner.ViewModels
                 return _incomes;
             }
         }
-
-        public ExternalSourcesViewModel(IDatabase database, IConfiguration configuration, ICachedService cashedService, IEventAggregator eventAggregator)
-            : base(database, configuration, cashedService, eventAggregator)
-        {
-            _savings = new BindableCollectionExt<Saving>();
-            _incomes = new BindableCollectionExt<Income>();
-
-            _savings.PropertyChanged += (s, e) => { OnPropertyChanged(s, e); };
-            _incomes.PropertyChanged += (s, e) => { OnPropertyChanged(s, e); };
-        }
-
 
         protected override void OnActivate()
         {

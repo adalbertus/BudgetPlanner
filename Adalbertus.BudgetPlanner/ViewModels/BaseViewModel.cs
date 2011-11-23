@@ -17,11 +17,13 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         public IConfiguration Configuration { get; private set; }
         public IEventAggregator EventAggregator { get; private set; }
         public ICachedService CachedService { get; private set; }
+        public IShellViewModel Shell { get; set; }
 
-        public BaseViewModel(IDatabase database, IConfiguration configuration, ICachedService cashedService, IEventAggregator eventAggregator)
+        public BaseViewModel(IShellViewModel shell, IDatabase database, IConfiguration configuration, ICachedService cashedService, IEventAggregator eventAggregator)
         {
             Initialize();
 
+            Shell           = shell;
             Database        = database;
             Configuration   = configuration;
             EventAggregator = eventAggregator;
@@ -53,7 +55,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             AttachEvents();
         }
 
-        protected virtual void LoadData()
+        public virtual void LoadData()
         {
         }
 

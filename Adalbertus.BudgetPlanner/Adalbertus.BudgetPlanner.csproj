@@ -35,6 +35,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>wallet_money.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Caliburn.Micro">
       <HintPath>..\packages\Caliburn.Micro.1.2.0\lib\Net40\Caliburn.Micro.dll</HintPath>
@@ -90,6 +93,9 @@
     </Compile>
     <Compile Include="Converters\CompareConverter.cs" />
     <Compile Include="Converters\DebugConverter.cs" />
+    <Compile Include="Converters\IsNullConverter.cs" />
+    <Compile Include="Converters\NotConverter.cs" />
+    <Compile Include="Converters\NullToCollapsedConverter.cs" />
     <Compile Include="Converters\NumericToBoolConverter.cs" />
     <Compile Include="Converters\VisibilityConverter.cs" />
     <Compile Include="Core\BindableCollectionExt.cs" />
@@ -98,6 +104,7 @@
     <Compile Include="Core\ConfigurationHelper.cs" />
     <Compile Include="Core\FilterEvent.cs" />
     <Compile Include="Controls\NumericTextBox.cs" />
+    <Compile Include="Core\IDialog.cs" />
     <Compile Include="Core\PredicateBuilder.cs" />
     <Compile Include="Core\RefreshEvent.cs" />
     <Compile Include="Database\CachedService.cs" />
@@ -141,18 +148,23 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="ViewModels\BudgetViewModel.cs" />
+    <Compile Include="ViewModels\CashFlowDeleteConfirmationViewModel.cs" />
     <Compile Include="ViewModels\CashFlowTypesViewModel.cs" />
     <Compile Include="ViewModels\ExpensesFilterCashFlowVM.cs" />
     <Compile Include="ViewModels\ExpensesFilterVM.cs" />
     <Compile Include="ViewModels\ExpensesViewModel.cs" />
     <Compile Include="ViewModels\ExternalSourcesViewModel.cs" />
+    <Compile Include="ViewModels\MessageBoxViewModel.cs" />
     <Compile Include="ViewModels\RevenuesViewModel.cs" />
+    <Compile Include="ViewModels\BaseDailogViewModel.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="IShell.cs" />
+    <Compile Include="ViewModels\IShellViewModel.cs">
+      <DependentUpon>ShellViewModel.cs</DependentUpon>
+    </Compile>
     <Page Include="Controls\ImageButton.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -173,6 +185,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\CashFlowDeleteConfirmationView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\ExpensesView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -181,9 +197,17 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\MessageBoxView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\RevenuesView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\SampleDailogView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\ShellView.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -231,6 +255,32 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\delete.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\check-all.png" />
+    <Resource Include="Images\check-none.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\save.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\basket-add.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\arrow-left.png" />
+    <Resource Include="Images\arrow-right.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\wallet_money-v2.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="wallet_money.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\wallet_money.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\button-checked.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

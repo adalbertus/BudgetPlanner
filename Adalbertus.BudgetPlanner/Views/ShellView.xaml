@@ -5,34 +5,90 @@
         xmlns:conv="clr-namespace:Adalbertus.BudgetPlanner.Converters"
         xmlns:ctrl="clr-namespace:Adalbertus.BudgetPlanner.Controls"
         WindowState="Maximized"
+        Icon="/Adalbertus.BudgetPlanner;component/Images/wallet_money.ico"
 >
-    <Window.Resources>
-        <conv:StringFormatConverter x:Key="DateFormatter" StringFormat="{}{0:yyyy-MM-dd}" />
-    </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Border Grid.Row="0" Background="WhiteSmoke" BorderBrush="Black" BorderThickness="0 0 0 1">
-            <StackPanel Orientation="Horizontal" Margin="4">                
-                <ctrl:ImageButton Content="&lt;&lt;" ToolTip="Poprzedni budżet" cal:Message.Attach="[Event Click] = [Action ShowPreviousBudget()]"/>
-                <WrapPanel>
-                    <Label>Budżet za okres: </Label>
-                    <Label Content="{Binding CurrentBudgetDate, Converter={StaticResource DateFormatter}}" Width="100" />
-                    <ctrl:ImageButton Content="Pokaż" ToolTip="Pokaż budżet" cal:Message.Attach="[Event Click] = [Action ShowCurrentBudget()]"/>                    
-                </WrapPanel>                
-                <ctrl:ImageButton Content=">>"  ToolTip="Następny budżet" cal:Message.Attach="[Event Click] = [Action ShowNextBudget()]"/>
+            <Border.Style>
+                <Style TargetType="{x:Type Border}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Content, ElementName=DialogScreen, Converter={StaticResource IsNullConverter}}" Value="False">
+                            <Setter Property="IsEnabled" Value="False"/>
+                            <Setter Property="Opacity" Value="0.35" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Border.Style>
+
+            <StackPanel Orientation="Horizontal" Margin="4">
+                <WrapPanel VerticalAlignment="Center" Margin="0 0 4 0">
+                    <TextBlock>Budżet za okres:</TextBlock>
+                    <Button Content="{Binding CurrentBudgetDate, Converter={StaticResource DateMonthFormatter}}"                            
+                            ToolTip="Pokaż budżet" cal:Message.Attach="[Event Click] = [Action ShowCurrentBudget()]"
+                            Style="{StaticResource LinkButton}"/>
+                </WrapPanel>
+                <ctrl:ImageButton ImageUrl="Images/arrow-left.png" ToolTip="Poprzedni budżet" cal:Message.Attach="[Event Click] = [Action ShowPreviousBudget()]"/>
+                <ctrl:ImageButton ImageUrl="Images/arrow-right.png" ToolTip="Następny budżet" cal:Message.Attach="[Event Click] = [Action ShowNextBudget()]"/>
                 <!--<ctrl:ImageButton Content=" + "  ToolTip="Nowy plan budżetowy" cal:Message.Attach="[Event Click] = [Action CreateNewBudgetPlan()]"/>-->
-                
-                <ctrl:ImageButton Content="Kategorie wydatków" HorizontalAlignment="Right"
+
+                <ctrl:ImageButton Content="Kategorie wydatków" HorizontalAlignment="Right" Margin="50 0 4 0"
                         cal:Message.Attach="[Event Click] = [Action ShowCashFlowTypes()]"/>
                 <ctrl:ImageButton Content="Środki zewnętrzne" HorizontalAlignment="Right"
                         cal:Message.Attach="[Event Click] = [Action ShowExternalSources()]"/>
-            
+
             </StackPanel>
         </Border>
-        <ContentControl x:Name="ActiveItem" Grid.Row="1"
-                        HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+        <Border Grid.Row="1" BorderBrush="AliceBlue" BorderThickness="0 1 0 0">
+            <Border.Style>
+                <Style TargetType="{x:Type Border}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Content, ElementName=DialogScreen, Converter={StaticResource IsNullConverter}}" Value="False">
+                            <Setter Property="IsEnabled" Value="False"/>
+                            <Setter Property="Opacity" Value="0.35" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Border.Style>
+            <ContentControl x:Name="ActiveItem" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+        </Border>
+
+        <ContentControl Grid.Row="1" x:Name="DialogScreen" HorizontalAlignment="Center" VerticalAlignment="Center"
+                        Visibility="{Binding DialogScreen, Converter={StaticResource NullToCollapsedConverter}}">
+            <ContentControl.Template>
+                <ControlTemplate TargetType="ContentControl">
+                    <!--<Border BorderBrush="LightGray" CornerRadius="10" Background="White"
+                            Padding="10" BorderThickness="1,1,3,3">                        
+                        <ContentPresenter Content="{TemplateBinding Content}"
+                                          ContentTemplate="{TemplateBinding ContentTemplate}"
+                                          Cursor="{TemplateBinding Cursor}"
+                                          Margin="{TemplateBinding Padding}"
+                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>                        
+                    </Border>-->
+                    <Grid>
+                        <Border BorderBrush="LightGray" CornerRadius="10" Background="White"
+                            Padding="10" BorderThickness="0 0 2 2">
+                            <Border.Effect>
+                                <DropShadowEffect />
+                            </Border.Effect>
+                        </Border>
+                        <Border CornerRadius="10" Background="White" Padding="10" BorderBrush="LightGray"
+                                BorderThickness="2 2 0 0">
+                            <ContentPresenter Content="{TemplateBinding Content}"
+                                          ContentTemplate="{TemplateBinding ContentTemplate}"
+                                          Cursor="{TemplateBinding Cursor}"
+                                          Margin="{TemplateBinding Padding}"
+                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                        </Border>
+
+                    </Grid>
+                </ControlTemplate>
+            </ContentControl.Template>
+        </ContentControl>
     </Grid>
 </Window>

@@ -8,10 +8,10 @@
         <Style TargetType="{x:Type ctrl:ImageButton}" BasedOn="{StaticResource {x:Type Button}}">
             <Setter Property="BorderBrush" Value="Transparent" />
             <Style.Triggers>
-               <Trigger Property="Content" Value="{x:Null}">
+                <Trigger Property="Content" Value="{x:Null}">
                     <Setter Property="Background" Value="Transparent" />
-                    <Setter Property="ImageWidth" Value="10" />
-                    <Setter Property="ImageHeight" Value="10" />
+                    <Setter Property="ImageWidth" Value="16" />
+                    <Setter Property="ImageHeight" Value="16" />
                 </Trigger>
             </Style.Triggers>
         </Style>
@@ -27,11 +27,30 @@
                            Source="{Binding ImageSource, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ctrl:ImageButton}}}"
                            HorizontalAlignment="Left" Margin="4,0,0,0"
                            Height="{Binding ImageHeight, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ctrl:ImageButton}}}"
-                           Width="{Binding ImageWidth, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ctrl:ImageButton}}}"                           
-                           />
+                           Width="{Binding ImageWidth, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ctrl:ImageButton}}}">
+                    <Image.Style>
+                        <Style TargetType="{x:Type Image}">
+                            <Style.Triggers>
+                                <Trigger Property="IsEnabled" Value="False">
+                                    <Setter Property="Opacity" Value="0.35"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Image.Style>
+                </Image>
 
                 <TextBlock x:Name="TextControl" Grid.Column="1" Margin="4,2,0,2"
-                           Text="{TemplateBinding Content}" HorizontalAlignment="Center"/>
+                           Text="{TemplateBinding Content}" HorizontalAlignment="Center">
+                    <TextBlock.Style>
+                        <Style TargetType="{x:Type TextBlock}">
+                            <Style.Triggers>
+                                <Trigger Property="IsEnabled" Value="False">
+                                    <Setter Property="Opacity" Value="0.35"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
             </Grid>
             <DataTemplate.Triggers>
                 <DataTrigger Binding="{Binding Text, ElementName=TextControl}" Value="">

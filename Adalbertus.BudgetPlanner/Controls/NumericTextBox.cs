@@ -25,13 +25,14 @@ namespace Adalbertus.BudgetPlanner.Controls
             }
             numericControl.FormatValue();
         }
-
+        
         public static readonly DependencyProperty FormatStringProperty = DependencyProperty.Register("FormatString", typeof(string), typeof(NumericTextBox), new UIPropertyMetadata(String.Empty, OnFormatStringChanged));
         public string FormatString
         {
             get { return (string)GetValue(FormatStringProperty); }
             set { SetValue(FormatStringProperty, value); }
         }
+        
         private static void OnFormatStringChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
             var numericControl = o as NumericTextBox;
@@ -52,7 +53,7 @@ namespace Adalbertus.BudgetPlanner.Controls
         protected override void OnLostFocus(RoutedEventArgs e)
         {
             base.OnLostFocus(e);
-            FormatValue();
+            FormatValue();            
         }
 
         protected override void OnGotFocus(RoutedEventArgs e)
@@ -83,6 +84,21 @@ namespace Adalbertus.BudgetPlanner.Controls
                 if (Value.HasValue)
                 {
                     Text = Value.Value.ToString(FormatString);
+                }
+                else
+                {
+                    Text = string.Empty;
+                }
+            }
+            else
+            {
+                if (Value.HasValue)
+                {
+                    if (Text != Value.ToString())
+                    {
+                        Text = Value.ToString();
+                        SelectAll();
+                    }
                 }
                 else
                 {

@@ -139,7 +139,7 @@ namespace Adalbertus.BudgetPlanner.Models
 
             StringBuilder sb = new StringBuilder();
             
-            sb.AppendFormat("Budget {0}-{1}", Budget.DateFrom.Year.ToString("0000"), Budget.DateFrom.Month.ToString("00"));
+            sb.AppendFormat("Budżet {0}-{1}", Budget.DateFrom.Year.ToString("0000"), Budget.DateFrom.Month.ToString("00"));
             if (Expense != null)
             {
                 if (!string.IsNullOrWhiteSpace(Expense.Description))

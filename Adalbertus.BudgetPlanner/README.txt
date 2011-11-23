@@ -1,6 +1,5 @@
-﻿TODO:
-1) Przeniesienie kwoty z porzedniego budżetu
-2) 
+﻿Ikonki: http://www.iconfinder.com/search/?q=iconset%3Aspirit20
+
 
 http://weblogs.asp.net/akjoshi/archive/2010/10/08/themes-for-wpf.aspx
 http://www.hightech.ir/SeeSharp/expression-clone

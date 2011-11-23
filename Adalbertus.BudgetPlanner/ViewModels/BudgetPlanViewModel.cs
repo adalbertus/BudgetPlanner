@@ -13,8 +13,8 @@ namespace Adalbertus.BudgetPlanner.ViewModels
 {
     public partial class BudgetPlanViewModel : BaseViewModel
     {
-        public BudgetPlanViewModel(IDatabase database, IConfiguration configuration, ICachedService cashedService, IEventAggregator eventAggregator)
-            : base(database, configuration, cashedService, eventAggregator)
+        public BudgetPlanViewModel(IShellViewModel shell, IDatabase database, IConfiguration configuration, ICachedService cashedService, IEventAggregator eventAggregator)
+            : base(shell, database, configuration, cashedService, eventAggregator)
         {
             BudgetPlanList = new BindableCollectionExt<BudgetPlanItemVM>();
         }
@@ -34,15 +34,8 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         {
             if (refreshEvent.Sender == typeof(ExpensesViewModel).Name)
             {
-                RefreshBudgetPlanItems(refreshEvent.ChangedEntity as Expense);
+                BudgetPlanList.ForEach(x => x.RefreshUI());
             }            
-        }
-
-        private void RefreshBudgetPlanItems(Expense expense)
-        {
-            //var planToRefresh = BudgetPlanList.First(x => x.CashFlow.Id == expense.CashFlowId);
-            //planToRefresh.RefreshUI();
-            BudgetPlanList.ForEach(x => x.RefreshUI());
         }
         #endregion
 
