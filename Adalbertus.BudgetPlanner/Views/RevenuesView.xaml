@@ -43,7 +43,7 @@
 
                         <WrapPanel Grid.Column="1">
                             <Label FontSize="10">Data</Label>
-                            <DatePicker FontSize="10" SelectedDate="{Binding IncomeValueDate}" SelectedDateFormat="Long" />
+                            <DatePicker FontSize="10" SelectedDate="{Binding IncomeValueDate}" SelectedDateFormat="Long"/>
                         </WrapPanel>
 
                         <WrapPanel Grid.Column="2">
@@ -97,7 +97,7 @@
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn >
-                            <DataGridTextColumn Header="Opis" Binding="{Binding Description}" Width="80"/>
+                            <DataGridTextColumn Header="Opis" Binding="{Binding Description}" Width="*"/>
                         </DataGrid.Columns>
                     </DataGrid>
                 </StackPanel>
@@ -191,7 +191,7 @@
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn >
 
-                            <DataGridTextColumn Header="Opis" Binding="{Binding Description}" Width="80"/>
+                            <DataGridTextColumn Header="Opis" Binding="{Binding Description}" Width="*"/>
                         </DataGrid.Columns>
                     </DataGrid>
                 </StackPanel>

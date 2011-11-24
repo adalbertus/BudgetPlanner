@@ -104,7 +104,14 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         private void SaveBudgetPlan(BudgetPlan budgetPlan)
         {
             Save(budgetPlan);
-            FindBudgetPlanItemVMFor(budgetPlan).RefreshUI();
+            var budgetPlanItemVM        = FindBudgetPlanItemVMFor(budgetPlan);
+            var budgetPlanItem          = budgetPlanItemVM.Budget.BudgetPlanItems.FirstOrDefault(x => x.Id == budgetPlan.Id);
+            budgetPlanItem.IsNotifying = false;
+            budgetPlanItem.Value        = budgetPlan.Value;
+            budgetPlanItem.Description  = budgetPlan.Description;
+            budgetPlanItem.IsNotifying = true; 
+            budgetPlanItemVM.RefreshUI();
+            PublishRefreshRequest(budgetPlanItem);
         }
 
         private BudgetPlanItemVM FindBudgetPlanItemVMFor(BudgetPlan budgetPlan)

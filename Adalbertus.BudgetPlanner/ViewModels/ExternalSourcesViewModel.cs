@@ -63,14 +63,9 @@ namespace Adalbertus.BudgetPlanner.ViewModels
                         {
                             UpdateSaving(sender as Saving, true);
                         }
-                        else if (sender is SavingValue)
-                        {
-                            //(sender as SavingValue).Saving.Refresh();
-                            Update(sender as Entity);
-                        }
                         else
                         {
-                            Update(sender as Entity);
+                            Save(sender as Entity);
                         }
                         break;
                 }
@@ -138,25 +133,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             incomesList.ForEach(x => Incomes.Add(x));
         }
 
-        private void Save(Entity entity)
-        {
-            using (var tx = Database.GetTransaction())
-            {
-                Database.Save(entity);
-                tx.Complete();
-            }
-        }
-
-        private void Update(Entity entity)
-        {
-            using (var tx = Database.GetTransaction())
-            {
-                Database.Update(entity);
-                tx.Complete();
-            }
-        }
-
-        private void Delete(Entity entity)
+        protected override void Delete(Entity entity)
         {
             using (var tx = Database.GetTransaction())
             {
@@ -278,7 +255,30 @@ namespace Adalbertus.BudgetPlanner.ViewModels
 
         public void RemoveIncome(Income income)
         {
-            Delete(income);
+            RemoveIncome(income, false);
+        }
+
+        public void RemoveIncome(Income income, bool omitConfirmation)
+        {
+            if (!omitConfirmation)
+            {
+                var hasIncomeValuesDefined = Database.ExecuteScalar<int>(PetaPoco.Sql.Builder
+                        .Select("COUNT(*)")
+                        .From("IncomeValue")
+                        .Where("IncomeId = @0", income.Id)) > 0;
+                if (hasIncomeValuesDefined)
+                {
+                    var message = string.Format("Dochód \"{0}\" jest już używany w budżecie. Usunięcie go spowoduje usunięcie jego wystąpień we wszystkich budżetach.\r\n\r\nCzy chcesz kontynuować?", income.Name);
+                    Shell.ShowMessage(message, () => RemoveIncome(income, true), null);
+                    return;
+                }
+            }
+            using (var tx = Database.GetTransaction())
+            {
+                Database.Delete<IncomeValue>("WHERE IncomeId = @0", income.Id);
+                Database.Delete(income);
+                tx.Complete();
+            }
             LoadIncomesData();
         }
 

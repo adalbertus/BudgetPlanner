@@ -49,7 +49,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         {
             CashFlowGroups.IsNotifying = false;
             CashFlowGroups.Clear();
-            var cashFlowGroups = Database.Query<CashFlowGroup>("ORDER BY Position ASC");
+            var cashFlowGroups = CachedService.GetAllCashFlowGroups();
             cashFlowGroups.ForEach(x => CashFlowGroups.Add(x));
 
             CashFlows.IsNotifying = false;
@@ -253,6 +253,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
                 Database.Save(cashFlowGroup);
                 tx.Complete();
             }
+            CachedService.Clear();
             NewGroupName = string.Empty;
             NewGroupDescription = string.Empty;
             LoadData();
@@ -299,6 +300,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             using (var tx = Database.GetTransaction())
             {
                 Database.Delete<BudgetPlan>("WHERE CashFlowId = @0", cashFlow.Id);
+                Database.Delete<SavingValue>("WHERE ExpenseId IN (SELECT [Expense].Id FROM [Expense] WHERE CashFlowId = @0)", cashFlow.Id);
                 Database.Delete<Expense>("WHERE CashFlowId = @0", cashFlow.Id);
                 Database.Delete<CashFlow>(cashFlow);
                 tx.Complete();
@@ -315,24 +317,45 @@ namespace Adalbertus.BudgetPlanner.ViewModels
 
         public void DeleteCashFlowGroup(CashFlowGroup cashFlowGroup)
         {
+            DeleteCashFlowGroup(cashFlowGroup, false);
+        }
+
+        public void DeleteCashFlowGroup(CashFlowGroup cashFlowGroup, bool omitConfirmation)
+        {
+            if (!omitConfirmation)
+            {
+                var hasCashFlowsDefined = Database.ExecuteScalar<int>(PetaPoco.Sql.Builder
+                    .Select("COUNT(*)")
+                    .From("CashFlow")
+                    .Where("CashFlowGroupId = @0", cashFlowGroup.Id)) > 0;
+
+                var hasBudgetPlansDefined = Database.ExecuteScalar<int>(PetaPoco.Sql.Builder
+                    .Select("COUNT(*)")
+                    .From("BudgetPlan")
+                    .Where("CashFlowId IN (SELECT [CashFlow].Id FROM [CashFlow] WHERE CashFlowGroupId = @0)", cashFlowGroup.Id)) > 0;
+
+                var hasExpensesDefined = Database.ExecuteScalar<int>(PetaPoco.Sql.Builder
+                    .Select("COUNT(*)")
+                    .From("Expense")
+                    .Where("CashFlowId IN (SELECT [CashFlow].Id FROM [CashFlow] WHERE CashFlowGroupId = @0)", cashFlowGroup.Id)) > 0;
+
+                if (hasCashFlowsDefined || hasBudgetPlansDefined || hasExpensesDefined)
+                {
+                    Shell.ShowDialog<CashFlowGroupDeleteConfirmationViewModel>(new { CashFlowGroup = cashFlowGroup }, () => DeleteCashFlowGroup(cashFlowGroup, true), null);
+                    return;
+                }
+            }
+
             using (var tx = Database.GetTransaction())
             {
-                if (Database.Count<CashFlowGroup>() == 0)
-                {
-                    throw new ApplicationException("Unable to delete group - this is the last one defined");
-                }
-
-                var defaultGroup = Database.FirstOrDefault<CashFlowGroup>("WHERE Id <> @0", cashFlowGroup.Id);
-                Database.Execute(PetaPoco.Sql.Builder
-                    .Append("UPDATE CashFlow SET CashFlowGroupId = @0", defaultGroup.Id)
-                    .Where("CashFlow.CashFlowGroupId = @0", cashFlowGroup.Id));
                 Database.Delete(cashFlowGroup);
                 tx.Complete();
             }
+            CachedService.Clear();
             LoadData();
         }
 
-        private void Save(Entity entity)
+        protected override void Save(Entity entity)
         {
             using (var tx = Database.GetTransaction())
             {
@@ -342,7 +365,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
                 {
                     LoadData();
                 }
-            }
+            }            
             CachedService.Clear();
         }
         #endregion

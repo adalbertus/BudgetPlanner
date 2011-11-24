@@ -36,7 +36,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>wallet_money.ico</ApplicationIcon>
+    <ApplicationIcon>Images\wallet_money.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Caliburn.Micro">
@@ -93,6 +93,7 @@
     </Compile>
     <Compile Include="Converters\CompareConverter.cs" />
     <Compile Include="Converters\DebugConverter.cs" />
+    <Compile Include="Converters\IsEmptyConverter.cs" />
     <Compile Include="Converters\IsNullConverter.cs" />
     <Compile Include="Converters\NotConverter.cs" />
     <Compile Include="Converters\NullToCollapsedConverter.cs" />
@@ -149,6 +150,7 @@
     </Compile>
     <Compile Include="ViewModels\BudgetViewModel.cs" />
     <Compile Include="ViewModels\CashFlowDeleteConfirmationViewModel.cs" />
+    <Compile Include="ViewModels\CashFlowGroupDeleteConfirmationViewModel.cs" />
     <Compile Include="ViewModels\CashFlowTypesViewModel.cs" />
     <Compile Include="ViewModels\ExpensesFilterCashFlowVM.cs" />
     <Compile Include="ViewModels\ExpensesFilterVM.cs" />
@@ -174,6 +176,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\BudgetPlanView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\CashFlowGroupDeleteConfirmationView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -274,13 +280,18 @@
     <Resource Include="Images\wallet_money-v2.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="wallet_money.ico" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Images\wallet_money.ico" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\button-checked.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\dialog-banned.png" />
+    <Resource Include="Images\dialog-error.png" />
+    <Resource Include="Images\dialog-icons.txt" />
+    <Resource Include="Images\dialog-information.png" />
+    <Resource Include="Images\dialog-question.png" />
+    <Resource Include="Images\dialog-warning.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

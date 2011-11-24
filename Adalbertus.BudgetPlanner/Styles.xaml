@@ -1,12 +1,36 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:extToolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit/extended"
-                    xmlns:ctrl="clr-namespace:Adalbertus.BudgetPlanner.Controls">
+                    xmlns:ctrl="clr-namespace:Adalbertus.BudgetPlanner.Controls"
+                    xmlns:theme="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Luna,Version=3.0.0.0,Culture=neutral,PublicKeyToken=31bf3856ad364e35">
+
     <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="AliceBlue"/>
     <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey }" Color="DodgerBlue"/>
-    <LinearGradientBrush x:Key="LightBlueGradient" StartPoint="0,1" EndPoint="0,0">
+    <LinearGradientBrush x:Key="LightBlueGradientVertical" StartPoint="0,1" EndPoint="0,0">
         <GradientStop Offset="1" Color="LightBlue"/>
         <GradientStop Offset="0" Color="White"/>
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="LightBlueGradientHorizontal" StartPoint="1,0" EndPoint="0,0">
+        <GradientStop Offset="1" Color="LightBlue"/>
+        <GradientStop Offset="0" Color="White"/>
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="BackgroundGradientBrush">
+        <GradientBrush.GradientStops>
+            <GradientStop Color="#FFD2D4D2" Offset="0" />
+            <GradientStop Color="#FFFFFFFF" Offset="1" />
+        </GradientBrush.GradientStops>
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="BorderGradientBrush">
+        <GradientBrush.GradientStops>
+            <GradientStop Color="#FF004C94" Offset="0" />
+            <GradientStop Color="#FF003C74" Offset="1" />
+        </GradientBrush.GradientStops>
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="TextBoxBorder" EndPoint="0,20" MappingMode="Absolute" StartPoint="0,0">
+        <GradientStop Color="#ABADB3" Offset="0.05"/>
+        <GradientStop Color="#E2E3EA" Offset="0.07"/>
+        <GradientStop Color="#E3E9EF" Offset="1"/>
     </LinearGradientBrush>
 
 
@@ -17,6 +41,9 @@
 
     <!-- TextBox -->
     <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource {x:Type TextBox}}">
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="BorderBrush" Value="{StaticResource TextBoxBorder}"/>
+        <Setter Property="Padding" Value="3"/>
         <Style.Triggers>
             <Trigger Property="IsFocused" Value="true">
                 <Setter Property="Background" Value="{StaticResource {x:Static SystemColors.HighlightBrushKey}}" />
@@ -43,6 +70,17 @@
         </Style.Triggers>
     </Style>
 
+    <Style TargetType="{x:Type DatePickerTextBox}">
+        <Setter Property="VerticalContentAlignment" Value="Center" />        
+    </Style>
+
+    <Style x:Key="OverlayRectangle" TargetType="{x:Type Rectangle}">
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="VerticalAlignment" Value="Stretch" />
+        <Setter Property="Fill" Value="Black" />
+        <Setter Property="Opacity" Value="0.7" />
+    </Style>
+    
     <!-- GroupBox -->
     <Style TargetType="{x:Type GroupBox}" BasedOn="{StaticResource {x:Type GroupBox}}">
         <Setter Property="Margin" Value="4" />
@@ -52,8 +90,33 @@
         <Setter Property="BorderBrush" Value="Transparent" />
     </Style>
 
+    <Style x:Key="Button80" TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Type Button}}">
+        <Setter Property="Width" Value="80" />
+    </Style>
+
     <Style x:Key="DeleteButton" TargetType="{x:Type ctrl:ImageButton}" BasedOn="{StaticResource {x:Type Button}}">
         <Setter Property="ImageUrl" Value="Images/delete.png" />
+    </Style>
+
+    <Style x:Key="DialogImage" TargetType="{x:Type Image}">
+        <Setter Property="Width" Value="128" />
+        <Setter Property="Height" Value="128" />
+    </Style>
+    
+    <Style x:Key="QuestionImage" TargetType="{x:Type Image}" BasedOn="{StaticResource DialogImage}">
+        <Setter Property="Source" Value="/Adalbertus.BudgetPlanner;component/Images/dialog-question.png" />
+    </Style>
+
+    <Style x:Key="WarningImage" TargetType="{x:Type Image}" BasedOn="{StaticResource DialogImage}">
+        <Setter Property="Source" Value="/Adalbertus.BudgetPlanner;component/Images/dialog-question.png" />
+    </Style>
+
+    <Style x:Key="DialogButtonsBorder" TargetType="{x:Type Border}">
+        <Setter Property="BorderBrush" Value="LightGray" />
+        <Setter Property="BorderThickness" Value="0,1,0,0" />
+        <Setter Property="Background" Value="{StaticResource LightBlueGradientVertical}" />
+        <Setter Property="Padding" Value="10" />
+        <Setter Property="CornerRadius" Value="0,0,10,10" />
     </Style>
 
     <Style x:Key="LinkButton" TargetType="{x:Type Button}">
@@ -113,7 +176,7 @@
     <!-- AnimatedExpanderButtonTemplate based on http://www.codeproject.com/KB/WPF/ExpanderTemplateArticle.aspx -->
     <ControlTemplate x:Key="AnimatedExpanderButtonTemplate" TargetType="{x:Type ToggleButton}">
         <Border x:Name="ExpanderButtonBorder" CornerRadius="4" BorderThickness="0" BorderBrush="LightGray"
-                Padding="{TemplateBinding Padding}" Background="{StaticResource LightBlueGradient}">
+                Padding="{TemplateBinding Padding}" Background="{StaticResource LightBlueGradientVertical}">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
@@ -301,5 +364,54 @@
     <Style x:Key="DecimalUpDownPropertyChanged" TargetType="{x:Type extToolkit:DecimalUpDown}" BasedOn="{StaticResource NumericUpDownPropertyChanged}">
         <Setter Property="TextAlignment" Value="Right" />
         <Setter Property="WatermarkTemplate" Value="{StaticResource DefaultWatermarkTemplate}" />
+    </Style>
+
+    <Style x:Key="RadioButtonControlTemplateStyle">
+        <Setter Property="Control.Template">
+            <Setter.Value>
+                <ControlTemplate>
+                    <Rectangle Margin="14,0,0,0" StrokeThickness="1" Stroke="#FF000000" StrokeDashArray="1 2" SnapsToDevicePixels="True" />
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+
+    <Style x:Key="DialogRadioButton" TargetType="{x:Type RadioButton}">
+        <Setter Property="Control.Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" />
+        <Setter Property="Control.Background" Value="{StaticResource BackgroundGradientBrush}" />
+        <Setter Property="Control.BorderBrush" Value="{StaticResource BorderGradientBrush}" />
+        <Setter Property="Control.BorderThickness" Value="1" />
+        <Setter Property="Control.Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type RadioButton}">
+                    <Grid Margin="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="20"/>
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Border Grid.Column="0" BorderBrush="LightGray" BorderThickness="1" CornerRadius="4,0,0,4" Background="{StaticResource LightBlueGradientHorizontal}">
+                            <BulletDecorator Background="#00FFFFFF" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                <BulletDecorator.Bullet>
+                                    <theme:BulletChrome IsRound="True" Background="{TemplateBinding Control.Background}" BorderBrush="{TemplateBinding Control.BorderBrush}" IsChecked="{TemplateBinding ToggleButton.IsChecked}" RenderMouseOver="{TemplateBinding UIElement.IsMouseOver}" RenderPressed="{TemplateBinding ButtonBase.IsPressed}" />
+                                </BulletDecorator.Bullet>
+                            </BulletDecorator>
+                        </Border>
+                        <Border Grid.Column="1" BorderBrush="LightGray" BorderThickness="0,1,1,1" Padding="4">
+                            <ContentPresenter Margin="{TemplateBinding Control.Padding}" VerticalAlignment="{TemplateBinding Control.VerticalContentAlignment}" HorizontalAlignment="{TemplateBinding Control.HorizontalContentAlignment}" RecognizesAccessKey="True" />
+                        </Border>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="ContentControl.HasContent" Value="True">
+                            <Setter Value="{StaticResource RadioButtonControlTemplateStyle}" Property="FrameworkElement.FocusVisualStyle" />
+                            <Setter Property="Control.Padding" Value="2,0,0,0" />
+                        </Trigger>
+                        <Trigger Property="UIElement.IsEnabled" Value="False">
+                            <Setter Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" Property="Control.Foreground" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
 </ResourceDictionary>

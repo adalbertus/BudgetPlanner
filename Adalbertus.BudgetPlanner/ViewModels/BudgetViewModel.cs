@@ -28,8 +28,6 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         public Budget Budget { get; private set; }
         public DateTime BudgetDate { get; set; }
 
-        #region Loading data
-
         public override void LoadData()
         {
             LoadOrCreateDefaultBudget();
@@ -87,8 +85,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             NotifyOfPropertyChange(() => DateTo);
             NotifyOfPropertyChange(() => TransferedValue);
             RefreshBudgetSummary();
-        }
-        #endregion
+        }        
 
         public DateTime DateFrom
         {
@@ -107,7 +104,18 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             {
                 Budget.TransferedValue = value;
                 NotifyOfPropertyChange(() => TransferedValue);
+                RefreshBudgetSummary();
             }
+        }
+
+        public decimal RealBudgetBilans
+        {
+            get { return Budget.RealBudgetBilans; }
+        }
+
+        public decimal TotalBudgetValue
+        {
+            get { return Budget.TotalBudgetValue; }
         }
 
         public decimal TotalSumOfRevenues
@@ -123,6 +131,11 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         public decimal SumOfRevenueSavings
         {
             get { return Budget.SumOfRevenueSavings; }
+        }
+
+        public decimal TotalBudgetBilans
+        {
+            get { return Budget.TotalBudgetBilans; }
         }
 
         public decimal TotalBudgetPlanValue
@@ -156,10 +169,13 @@ namespace Adalbertus.BudgetPlanner.ViewModels
 
         private void RefreshBudgetSummary()
         {
+            NotifyOfPropertyChange(() => RealBudgetBilans);
+            NotifyOfPropertyChange(() => TotalBudgetValue);
             NotifyOfPropertyChange(() => TotalSumOfRevenues);
             NotifyOfPropertyChange(() => SumOfRevenueIncomes);
             NotifyOfPropertyChange(() => SumOfRevenueSavings);
 
+            NotifyOfPropertyChange(() => TotalBudgetBilans); 
             NotifyOfPropertyChange(() => TotalBudgetPlanValue);
             NotifyOfPropertyChange(() => TotalExpenseValue);
             NotifyOfPropertyChange(() => TotalBalanceProcentValue);

@@ -11,6 +11,7 @@ namespace Adalbertus.BudgetPlanner.Database
         public struct Keys
         {
             public const string AllCashFlows = "{45C2830E-8256-4D20-A332-EFAC5BF34D6C}";
+            public const string AllCashFlowGroups = "{D5D25298-C18D-4AD5-859C-45EEC9BADC58}";
         }
 
         public Dictionary<string, object> Cache { get; private set; }
@@ -27,6 +28,7 @@ namespace Adalbertus.BudgetPlanner.Database
             if (string.IsNullOrWhiteSpace(key))
             {
                 Cache[Keys.AllCashFlows] = null;
+                Cache[Keys.AllCashFlowGroups] = null;
             }
             else if(Cache.ContainsKey(key))
             {
@@ -59,6 +61,17 @@ namespace Adalbertus.BudgetPlanner.Database
             Cache[Keys.AllCashFlows] = cashFlowList;
 
             return Cache[Keys.AllCashFlows] as IEnumerable<CashFlow>;
+        }
+
+        public IEnumerable<CashFlowGroup> GetAllCashFlowGroups()
+        {
+            if (Cache.ContainsKey(Keys.AllCashFlowGroups) && Cache[Keys.AllCashFlowGroups] != null)
+            {
+                return Cache[Keys.AllCashFlowGroups] as IEnumerable<CashFlowGroup>;
+            }
+            Cache[Keys.AllCashFlowGroups] = Database.Query<CashFlowGroup>("ORDER BY Position ASC").ToList();
+
+            return Cache[Keys.AllCashFlowGroups] as IEnumerable<CashFlowGroup>;
         }
     }
 }

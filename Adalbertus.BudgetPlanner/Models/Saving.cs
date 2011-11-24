@@ -29,6 +29,11 @@ namespace Adalbertus.BudgetPlanner.Models
             }
         }
 
+        public string NameWithBilance 
+        {
+            get { return string.Format("{0} [{1}]", Name, TotalValue.ToString("C2")); }
+        }
+
         private string _description;
         [PetaPoco.Column]
         public virtual string Description

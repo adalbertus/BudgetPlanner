@@ -34,6 +34,21 @@ namespace Adalbertus.BudgetPlanner.Models
         public virtual IList<BudgetPlan> BudgetPlanItems { get; private set; }
         public virtual BindableCollectionExt<Expense> Expenses { get; private set; }
 
+        public decimal TotalBudgetValue
+        {
+            get { return TransferedValue + TotalSumOfRevenues; }
+        }
+
+        public decimal RealBudgetBilans
+        {
+            get { return TotalBudgetValue - TotalExpenseValue; }
+        }
+
+        public decimal TotalBudgetBilans
+        {
+            get { return TotalBudgetValue - TotalBudgetPlanValue; }
+        }
+
         public decimal TotalSumOfRevenues
         {
             get { return SumOfRevenueIncomes + SumOfRevenueSavings; }

@@ -17,7 +17,7 @@ namespace Adalbertus.BudgetPlanner.Converters
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            throw new InvalidOperationException("IsNullConverter can only be used OneWay.");
+            throw new InvalidOperationException("IsNull can only be used OneWay.");
         }
     }
 }

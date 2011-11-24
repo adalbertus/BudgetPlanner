@@ -33,7 +33,7 @@
                                                     <ColumnDefinition Width="*" />
                                                 </Grid.ColumnDefinitions>
                                                 <Border Grid.Row="0" Grid.RowSpan="2" CornerRadius="4 4 0 0" 
-                                                        Background="{StaticResource LightBlueGradient}" 
+                                                        Background="{StaticResource LightBlueGradientVertical}" 
                                                         BorderBrush="LightGray" BorderThickness="1">
                                                     <Border.LayoutTransform>
                                                         <RotateTransform Angle="-90"/>

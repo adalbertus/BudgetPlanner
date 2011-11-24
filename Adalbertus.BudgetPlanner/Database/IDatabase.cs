@@ -31,6 +31,8 @@ namespace Adalbertus.BudgetPlanner.Database
         
         void Save(object poco);
         int Update(object poco);
+        int Update<T>(string sql, params object[] args);
+        int Update<T>(Sql sql);
 
         int Delete(object poco);
         int Delete<T>(object pocoOrPrimaryKey);

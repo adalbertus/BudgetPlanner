@@ -24,16 +24,16 @@
                                 <GroupBox.Header>
                                     <WrapPanel>
                                         <Label>Nazwa</Label>
-                                        <TextBox Text="{Binding Name}" Width="150" />
+                                        <TextBox Text="{Binding Name}" Width="150"/>
                                         <Label>Łącznie</Label>
                                         <Label Content="{Binding TotalValue, Converter={StaticResource CurrencyFormatter}}" />
                                         <!-- I don't know why setting ImageUrl in style doesn't work in DataTemplate -->
-                                        <ctrl:ImageButton ToolTip="Usuń oszczędności" ImageUrl="Images/delete.png"
+                                        <ctrl:ImageButton x:Name="RemoveSavingButton" ToolTip="Usuń oszczędności" ImageUrl="Images/delete.png"
                                                           cal:Message.Attach="[Event Click] = [Action RemoveSaving($dataContext)]"/>
                                         <ctrl:ImageButton ImageUrl="Images/save.png" ToolTip="Dodaj nowe oszczędności" cal:Message.Attach="[Event Click] = [Action AddSavingValue($dataContext)]"/>
                                     </WrapPanel>
                                 </GroupBox.Header>
-                                <DataGrid ItemsSource="{Binding Values}" CanUserAddRows="False" 
+                                <DataGrid x:Name="ValuesDataGrid" ItemsSource="{Binding Values}" CanUserAddRows="False" 
                                           CanUserDeleteRows="False" RowHeaderWidth="0"
                                           VerticalScrollBarVisibility="Auto"
                                           AutoGenerateColumns="False" MaxHeight="220">
@@ -42,7 +42,7 @@
                                             <DataGridTemplateColumn.CellTemplate>
                                                 <DataTemplate>
                                                     <ctrl:ImageButton ToolTip="Usuń" ImageUrl="Images/delete.png"
-                                                                      IsEnabled="{Binding IsReadOnly, Converter={StaticResource NotConverter}}"
+                                                                      IsEnabled="{Binding IsReadOnly, Converter={StaticResource Not}}"
                                                                       cal:Message.Attach="[Event Click] = [Action RemoveSavingValue($dataContext)]"/>
                                                 </DataTemplate>
                                             </DataGridTemplateColumn.CellTemplate>
@@ -91,6 +91,11 @@
                                     </DataGrid.Columns>
                                 </DataGrid>
                             </GroupBox>
+                            <DataTemplate.Triggers>
+                                <DataTrigger Binding="{Binding Values, Converter={StaticResource IsEmpty}}" Value="True">
+                                    <Setter TargetName="RemoveSavingButton" Property="IsEnabled" Value="False" />
+                                </DataTrigger>
+                            </DataTemplate.Triggers>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
@@ -125,13 +130,13 @@
                                           CanUserDeleteRows="False" RowHeaderWidth="0"
                                           AutoGenerateColumns="False" MaxHeight="220" IsReadOnly="True"
                                           VerticalScrollBarVisibility="Auto">
-                                    <DataGrid.Columns>                                        
+                                    <DataGrid.Columns>
                                         <DataGridTextColumn Header="Data" Binding="{Binding Date, Converter={StaticResource DateFormatter}}" Width="90"/>
                                         <DataGridTemplateColumn  Header="Kwota" Width="120">
                                             <DataGridTemplateColumn.CellTemplate>
                                                 <DataTemplate>
                                                     <ctrl:NumericTextBox Value="{Binding Value, UpdateSourceTrigger=LostFocus}"
-                                                                         BorderThickness="0" IsReadOnly="{Binding IsReadOnly}"/>
+                                                                         BorderThickness="0"/>
                                                 </DataTemplate>
                                             </DataGridTemplateColumn.CellTemplate>
                                         </DataGridTemplateColumn>

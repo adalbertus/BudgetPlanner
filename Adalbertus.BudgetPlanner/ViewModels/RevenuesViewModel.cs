@@ -154,6 +154,8 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             {
                 var incomeValue = Budget.AddIncomeValue(SelectedAvailableIncome, IncomeValueValue, IncomeValueDate, IncomeValueDescription);
                 SaveRevenue(incomeValue);
+                IncomeValueValue = 0;
+                IncomeValueDescription = string.Empty;
             }
         }
 
@@ -236,7 +238,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
 
         private void LoadSavings()
         {
-            var savingValues = Database.Query<SavingValue, Saving, Budget, Expense>(PetaPoco.Sql.Builder
+            var budgetSavingValues = Database.Query<SavingValue, Saving, Budget, Expense>(PetaPoco.Sql.Builder
                     .Select("*")
                     .From("SavingValue")
                     .InnerJoin("Saving")
@@ -245,14 +247,14 @@ namespace Adalbertus.BudgetPlanner.ViewModels
                     .On("Budget.Id = SavingValue.BudgetId")
                     .LeftJoin("Expense")
                     .On("Expense.Id = SavingValue.ExpenseId")
-                    .Where("SavingValue.BudgetId = @0", Budget.Id));
+                    .Where("SavingValue.BudgetId = @0", Budget.Id)).ToList();
             BudgetSavingValues.IsNotifying = false;
             BudgetSavingValues.Clear();
-            savingValues.Where(x => x.Expense.IsTransient()).ForEach(x => BudgetSavingValues.Add(x));
+            budgetSavingValues.Where(x => x.Expense.IsTransient()).ForEach(x => BudgetSavingValues.Add(x));
             BudgetSavingValues.IsNotifying = true;
 
             AvailableSavings.Clear();
-            var savings = Database.Query<Saving>("ORDER BY Name ASC");
+            var savings = Database.Query<Saving>("ORDER BY Name ASC").ToList();
             AvailableSavings.AddRange(savings);
 
             SavingValueDate = DateTime.Now;
@@ -268,6 +270,8 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             {
                 var savingValue = Budget.WithdrawSavingValue(SelectedAvailableSaving, SavingValueValue, SavingValueDate, SavingValueDescription);
                 SaveRevenue(savingValue);
+                SavingValueValue = 0;
+                SavingValueDescription = string.Empty;
             }
         }
 

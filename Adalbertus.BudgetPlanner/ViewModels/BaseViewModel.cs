@@ -70,7 +70,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             }
         }
 
-        protected void Save(Entity entity)
+        protected virtual void Save(Entity entity)
         {
             using (var tx = Database.GetTransaction())
             {
@@ -80,7 +80,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             PublishRefreshRequest(entity);
         }
 
-        protected void Delete(Entity entity)
+        protected virtual void Delete(Entity entity)
         {
             using (var tx = Database.GetTransaction())
             {

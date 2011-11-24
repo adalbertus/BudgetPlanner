@@ -10,5 +10,6 @@ namespace Adalbertus.BudgetPlanner.Database
     {
         void Clear(string key = null);
         IEnumerable<CashFlow> GetAllCashFlows();
+        IEnumerable<CashFlowGroup> GetAllCashFlowGroups();
     }
 }

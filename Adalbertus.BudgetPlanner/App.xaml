@@ -19,9 +19,10 @@
                     <conv:VisibilityConverter x:Key="Visibility" />
                     <conv:NumericToBoolConverter x:Key="NumericToBool" />
                     <conv:CompareConverter x:Key="LessThan" CompareType="LessThan" />
-                    <conv:IsNullConverter x:Key="IsNullConverter"/>
-                    <conv:NotConverter x:Key="NotConverter"/>
-                    <conv:NullToCollapsedConverter x:Key="NullToCollapsedConverter" />
+                    <conv:IsNullConverter x:Key="IsNull"/>
+                    <conv:NotConverter x:Key="Not"/>
+                    <conv:NullToCollapsedConverter x:Key="NullToCollapsed" />
+                    <conv:IsEmptyConverter x:Key="IsEmpty" />
 
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
