@@ -13,7 +13,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
 {
     public class BudgetViewModel : BaseViewModel
     {
-        public BudgetViewModel(IShellViewModel shell, IDatabase database, IConfiguration configuration, ICachedService cashedService, IEventAggregator eventAggregator)
+        public BudgetViewModel(IShellViewModel shell, IDatabase database, IConfigurationManager configuration, ICachedService cashedService, IEventAggregator eventAggregator)
             : base(shell, database, configuration, cashedService, eventAggregator)
         {
             ExpensesViewModel   = IoC.Get<ExpensesViewModel>();

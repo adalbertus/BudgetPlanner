@@ -13,7 +13,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
 {
     public class ExternalSourcesViewModel : BaseViewModel
     {
-        public ExternalSourcesViewModel(IShellViewModel shell, IDatabase database, IConfiguration configuration, ICachedService cashedService, IEventAggregator eventAggregator)
+        public ExternalSourcesViewModel(IShellViewModel shell, IDatabase database, IConfigurationManager configuration, ICachedService cashedService, IEventAggregator eventAggregator)
             : base(shell, database, configuration, cashedService, eventAggregator)
         {
             _savings = new BindableCollectionExt<Saving>();

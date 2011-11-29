@@ -14,12 +14,12 @@ namespace Adalbertus.BudgetPlanner.ViewModels
     public class BaseViewModel : Screen, IHandle<RefreshEvent>
     {
         public IDatabase Database { get; private set; }
-        public IConfiguration Configuration { get; private set; }
+        public IConfigurationManager Configuration { get; private set; }
         public IEventAggregator EventAggregator { get; private set; }
         public ICachedService CachedService { get; private set; }
         public IShellViewModel Shell { get; set; }
 
-        public BaseViewModel(IShellViewModel shell, IDatabase database, IConfiguration configuration, ICachedService cashedService, IEventAggregator eventAggregator)
+        public BaseViewModel(IShellViewModel shell, IDatabase database, IConfigurationManager configuration, ICachedService cashedService, IEventAggregator eventAggregator)
         {
             Initialize();
 

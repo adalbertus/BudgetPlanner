@@ -14,7 +14,7 @@
                 <GroupBox.Header>
                     <WrapPanel>
                         <Label>Wpływy z dochodów</Label>
-                        <Label Content="{Binding Path=SumOfRevenueIncomes, Converter={StaticResource CurrencyFormatter}}" Margin="5 0 0 0" />
+                        <Label Content="{Binding Path=SumOfRevenueIncomes, Converter={StaticResource CurrencyFormatter}}" Margin="5,0,0,0" />
                     </WrapPanel>
                 </GroupBox.Header>
 
@@ -107,7 +107,7 @@
                 <GroupBox.Header>
                     <WrapPanel>
                         <Label>Wpływy z oszczędności</Label>
-                        <Label Content="{Binding Path=SumOfRevenueSavings, Converter={StaticResource CurrencyFormatter}}" Margin="5 0 0 0" />
+                        <Label Content="{Binding Path=SumOfRevenueSavings, Converter={StaticResource CurrencyFormatter}}" Margin="5,0,0,0" />
                     </WrapPanel>
                 </GroupBox.Header>
 

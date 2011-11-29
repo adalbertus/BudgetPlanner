@@ -1,3 +1,13 @@
+DROP TABLE IF EXISTS [Configuration];
+CREATE TABLE [Configuration] (
+  [Key] VARCHAR(64) PRIMARY KEY, 
+  [IsActive] INTEGER(1) DEFAULT 1,
+  [Value] TEXT,
+  [Decription] TEXT
+);
+
+INSERT INTO [Configuration] ([Key], [IsActive], [Value], [Decription]) VALUES ('DatabaseVersion', 1, '1', 'Wersja bazy danych');
+
 DROP TABLE IF EXISTS [Budget];
 CREATE TABLE [Budget] (
   [Id] INTEGER PRIMARY KEY AUTOINCREMENT, 

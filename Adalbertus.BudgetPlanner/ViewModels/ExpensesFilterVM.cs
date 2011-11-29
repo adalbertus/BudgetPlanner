@@ -10,7 +10,8 @@ namespace Adalbertus.BudgetPlanner.ViewModels
 {
     public class ExpensesFilterVM : PropertyChangedBase
     {
-        public BindableCollectionExt<ExpensesFilterCashFlowVM> CashFlows { get; set; }
+        public BindableCollectionExt<ExpensesFilterEntityVM> CashFlows { get; set; }
+        public BindableCollectionExt<ExpensesFilterEntityVM> CashFlowGroups { get; set; }
 
         private DateTime _dateFrom;
         public DateTime DateFrom
@@ -35,7 +36,6 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         }
 
         private decimal? _valueFrom;
-
         public decimal? ValueFrom
         {
             get { return _valueFrom; }
@@ -47,7 +47,6 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         }
 
         private decimal? _valueTo;
-
         public decimal? ValueTo
         {
             get { return _valueTo; }
@@ -59,7 +58,6 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         }
 
         private string _description;
-
         public string Description
         {
             get { return _description; }
@@ -70,10 +68,18 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             }
         }
 
-        public ExpensesFilterVM()
+        public System.Action PropertyChangedCallback = delegate { };
+        
+        public ExpensesFilterVM(IEventAggregator eventAggregator)
         {
-            CashFlows = new BindableCollectionExt<ExpensesFilterCashFlowVM>();
+            CashFlows = new BindableCollectionExt<ExpensesFilterEntityVM>();
+            CashFlowGroups = new BindableCollectionExt<ExpensesFilterEntityVM>();
+            PropertyChanged += (s, e) => { eventAggregator.Publish(this); };
         }
 
+        private void ExpensesFilterVM_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            
+        }
     }
 }

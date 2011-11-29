@@ -27,106 +27,144 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             <GroupBox Grid.Row="0" Header="Podsumowanie budżetu">
-                <WrapPanel>
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
+                <GroupBox.Resources>
+                    <Style TargetType="TextBlock">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource Self},Converter={StaticResource LessThan}}" Value="True">
+                                <Setter Property="FontWeight" Value="Bold" />
+                                <Setter Property="Foreground" Value="Red" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </GroupBox.Resources>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Border Grid.Column="0" BorderBrush="LightGray" BorderThickness="0,0,1,0" Margin="0,0,4,0" Padding="0,0,4,0">
+                        <Grid ext:MarginSetterExtension.Margin="2">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="80"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+
+                            <!--Rzeczywisty bilans-->
+                            <TextBlock Grid.Row="0" Grid.Column="0"
+                                   ToolTip="Różnica łącznej wartości dostępnego budżetu do reczywistych wydatków"
+                                   Text="Rzeczywisty bilans" />
+                            <TextBlock Grid.Row="0" Grid.Column="1" TextAlignment="Right"
+                                   ToolTip="Różnica łącznej wartości dostępnego budżetu do reczywistych wydatków"
+                                   Text="{Binding RealBudgetBilans, Converter={StaticResource CurrencyFormatter}}"
+                                   FontWeight="Bold"
+                                   Tag="{Binding RealBudgetBilans}">
+                            </TextBlock>
+
+                            <!--Wartość budżetu do planu-->
+                            <TextBlock Grid.Row="1" Grid.Column="0"
+                                   ToolTip="Łączna wartość budżetu" 
+                                   Text="Wartość budżetu"/>
+                            <TextBlock Grid.Row="1" Grid.Column="1" TextAlignment="Right"
+                                   ToolTip="Łaczna wartość budżetu" 
+                                   Text="{Binding TotalBudgetValue, Converter={StaticResource CurrencyFormatter}}" />
+
+                            <!--Wartość budżetu do planu-->
+                            <TextBlock Grid.Row="2" Grid.Column="0"
+                                   ToolTip="Różnica łącznej wartości dostępnego budżetu do planowanych wydatków" 
+                                   Text="Różnica budżetu do planu"/>
+                            <TextBlock Grid.Row="2" Grid.Column="1" TextAlignment="Right"
+                                   ToolTip="Różnica łącznej wartości dostępnego budżetu do planowanych wydatków"
+                                   Text="{Binding TotalBudgetBilans, Converter={StaticResource CurrencyFormatter}}"
+                                   Tag="{Binding TotalBudgetBilans}" />
+
+                            <!--Z poprzedniego okresu-->
+                            <TextBlock Grid.Row="3" Grid.Column="0"
+                                   ToolTip="Kwota, która pozostała nie wydana w poprzednim okresie budżetowym"
+                                   Text="Z poprzedniego okresu" />
+                            <ctrl:NumericTextBox Grid.Row="3" Grid.Column="1"
+                                             ToolTip="Kwota, która pozostała nie wydana w poprzednim okresie budżetowym"
+                                             HorizontalAlignment="Stretch" 
+                                             Value="{Binding TransferedValue, UpdateSourceTrigger=PropertyChanged}"/>
+
+                        </Grid>
+                    </Border>
+
+                    <Border Grid.Column="1" BorderBrush="LightGray" BorderThickness="0,0,1,0" Margin="4,0,4,0" Padding="0,0,4,0">
+                        <Grid ext:MarginSetterExtension.Margin="2">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="80"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+
+                            <!--Wszystkie wpływy łącznie-->
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Wszystkie wpływy łącznie" />
+                            <TextBlock Grid.Row="0" Grid.Column="1" TextAlignment="Right" 
+                                   Text="{Binding TotalSumOfRevenues, Converter={StaticResource CurrencyFormatter}}"/>
+
+                            <!--Wpływy z dochodów-->
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Wpływy z dochodów" />
+                            <TextBlock Grid.Row="1" Grid.Column="1" TextAlignment="Right" 
+                                   Text="{Binding SumOfRevenueIncomes, Converter={StaticResource CurrencyFormatter}}"/>
+
+                            <!--Wpływy z oszczędności-->
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="Wpływy z oszczędności" />
+                            <TextBlock Grid.Row="2" Grid.Column="1" TextAlignment="Right" 
+                                   Text="{Binding SumOfRevenueSavings, Converter={StaticResource CurrencyFormatter}}"/>
+                        </Grid>
+                    </Border>
+
+                    <Grid Grid.Column="2" ext:MarginSetterExtension.Margin="2">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="150"/>
-                            <ColumnDefinition Width="75"/>
-                        </Grid.ColumnDefinitions>
-
-                        <TextBlock Grid.Column="0" Grid.Row="0" Padding="0,4,0,4" ToolTip="Wszystkie wpływy łącznie oraz przeniesienie z poprzedniego okresu">Wartość budżetu</TextBlock>
-                        <TextBlock Grid.Column="1" Grid.Row="0" Padding="0,4,0,4" TextAlignment="Right" Text="{Binding TotalBudgetValue, Converter={StaticResource CurrencyFormatter}}" ToolTip="Wszystkie wpływy łącznie oraz przeniesienie z poprzedniego okresu"/>
-
-                        <TextBlock Grid.Column="0" Grid.Row="1" Padding="0,4,0,4">Wszystkie wpływy łącznie</TextBlock>
-                        <TextBlock Grid.Column="1" Grid.Row="1" Padding="0,4,0,4" TextAlignment="Right" Text="{Binding TotalSumOfRevenues, Converter={StaticResource CurrencyFormatter}}"/>
-
-                        <TextBlock Grid.Column="0" Grid.Row="2" Padding="0,4,0,4" ToolTip="Kwota, która pozostała nie wydana w poprzednim okresie budżetowym">Z poprzedniego okresu</TextBlock>
-                        <ctrl:NumericTextBox Grid.Column="1" Grid.Row="2" Padding="0,4,0,4" ToolTip="Kwota, która pozostała nie wydana w poprzednim okresie budżetowym"
-                                             HorizontalAlignment="Stretch" Value="{Binding TransferedValue, UpdateSourceTrigger=PropertyChanged}"
-                                            />
-
-                        <TextBlock Grid.Column="0" Grid.Row="3" Padding="0,4,0,4">Wpływy z dochodów</TextBlock>
-                        <TextBlock Grid.Column="1" Grid.Row="3" Padding="0,4,0,4" TextAlignment="Right" Text="{Binding SumOfRevenueIncomes, Converter={StaticResource CurrencyFormatter}}"/>
-
-                        <TextBlock Grid.Column="0" Grid.Row="4" Padding="0,4,0,4">Wpływy z oszczędności</TextBlock>
-                        <TextBlock Grid.Column="1" Grid.Row="4" Padding="0,4,0,4" TextAlignment="Right" Text="{Binding SumOfRevenueSavings, Converter={StaticResource CurrencyFormatter}}"/>
-                    </Grid>
-
-                    <Grid Margin="20 0">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="140"/>
-                            <ColumnDefinition Width="70"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="80"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
 
-                        <TextBlock Grid.Column="0" Grid.Row="0" Padding="0,4,0,4" ToolTip="Różnica łącznej wartości dostępnego budżetu do reczywistych wydatków" FontWeight="Bold">Rzeczywisty bilans</TextBlock>
-                        <TextBlock Grid.Column="1" Grid.Row="0" Padding="0,4,0,4" TextAlignment="Right" ToolTip="Różnica łącznej wartości dostępnego budżetu do reczywistych wydatków" Text="{Binding RealBudgetBilans, Converter={StaticResource CurrencyFormatter}}" FontWeight="Bold">
-                            <TextBlock.Resources>
-                                <Style TargetType="TextBlock">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding RealBudgetBilans, Converter={StaticResource LessThan}}" Value="True">
-                                            <Setter Property="FontWeight" Value="Bold" />
-                                            <Setter Property="Foreground" Value="Red" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </TextBlock.Resources>
-                        </TextBlock>
-                        <TextBlock Grid.Column="0" Grid.Row="1" Padding="0,4,0,4" ToolTip="Różnica łącznej wartości dostępnego budżetu do planowanych wydatków">Wartość budżetu do planu</TextBlock>
-                        <TextBlock Grid.Column="1" Grid.Row="1" Padding="0,4,0,4" TextAlignment="Right" ToolTip="Różnica łącznej wartości dostępnego budżetu do planowanych wydatków" Text="{Binding TotalBudgetBilans, Converter={StaticResource CurrencyFormatter}}">
-                            <TextBlock.Resources>
-                                <Style TargetType="TextBlock">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding TotalBudgetBilans, Converter={StaticResource LessThan}}" Value="True">
-                                            <Setter Property="FontWeight" Value="Bold" />
-                                            <Setter Property="Foreground" Value="Red" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </TextBlock.Resources>
-                        </TextBlock>
-                        <TextBlock Grid.Column="0" Grid.Row="2" Padding="0,4,0,4">Suma planu budżetowego</TextBlock>
-                        <TextBlock Grid.Column="1" Grid.Row="2" Padding="0,4,0,4" TextAlignment="Right" Text="{Binding TotalBudgetPlanValue, Converter={StaticResource CurrencyFormatter}}"/>
+                        <!--Suma planu budżetowego-->
+                        <TextBlock Grid.Column="0" Grid.Row="0" Text="Suma planu budżetowego" />
+                        <TextBlock Grid.Column="1" Grid.Row="0" TextAlignment="Right" 
+                                   Text="{Binding TotalBudgetPlanValue, Converter={StaticResource CurrencyFormatter}}"/>
 
-                        <TextBlock Grid.Column="0" Grid.Row="3" Padding="0,4,0,4">Łącznie wydane</TextBlock>
-                        <TextBlock Grid.Column="1" Grid.Row="3" Padding="0,4,0,4" TextAlignment="Right" Text="{Binding TotalExpenseValue, Converter={StaticResource CurrencyFormatter}}"/>
-                        <WrapPanel Grid.Column="2" Grid.Row="3" Margin="4 0">
-                            <TextBlock Padding="0,4,0,4">[</TextBlock>
-                            <TextBlock Padding="0,4,0,4" TextAlignment="Right" Text="{Binding TotalBalanceProcentValue, Converter={StaticResource ProcentFormatter}}" />
-                            <TextBlock Padding="0,4,0,4" >]</TextBlock>
+                        <!--Łącznie wydane-->
+                        <TextBlock Grid.Column="0" Grid.Row="1" Text="Łącznie wydane" />
+                        <TextBlock Grid.Column="1" Grid.Row="1" TextAlignment="Right" 
+                                   Text="{Binding TotalExpenseValue, Converter={StaticResource CurrencyFormatter}}"/>
+                        <WrapPanel Grid.Column="2" Grid.Row="1">
+                            <TextBlock>[</TextBlock>
+                            <TextBlock TextAlignment="Right" Text="{Binding TotalBalanceProcentValue, Converter={StaticResource ProcentFormatter}}" />
+                            <TextBlock>]</TextBlock>
                         </WrapPanel>
 
-
-                        <TextBlock Grid.Column="0" Grid.Row="4" Padding="0,4,0,4" ToolTip="Łączna kwota pozostałą do wydania na podstawie planu budżetowego i zrealizowanych wydatków">Łącznie do wydania</TextBlock>
-                        <TextBlock Grid.Column="1" Grid.Row="4" Padding="0,4,0,4" TextAlignment="Right"  ToolTip="Łączna kwota pozostałą do wydania na podstawie planu budżetowego i zrealizowanych wydatków"
-                                   Text="{Binding TotalBalanceValue, Converter={StaticResource CurrencyFormatter}}">
-                            <TextBlock.Resources>
-                                <Style TargetType="TextBlock">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding TotalBalanceValue, Converter={StaticResource LessThan}}" Value="True">
-                                            <Setter Property="FontWeight" Value="Bold" />
-                                            <Setter Property="Foreground" Value="Red" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </TextBlock.Resources>
+                        <!--Łącznie do wydania-->
+                        <TextBlock Grid.Column="0" Grid.Row="2" 
+                                   ToolTip="Łączna kwota pozostała do wydania na podstawie planu budżetowego i zrealizowanych wydatków"
+                                   Text="Łącznie do wydania" />
+                        <TextBlock Grid.Column="1" Grid.Row="2" TextAlignment="Right"
+                                   ToolTip="Łączna kwota pozostała do wydania na podstawie planu budżetowego i zrealizowanych wydatków"
+                                   Text="{Binding TotalBalanceValue, Converter={StaticResource CurrencyFormatter}}"
+                                   Tag="{Binding TotalBalanceValue}">
                         </TextBlock>
                     </Grid>
-                </WrapPanel>
+                </Grid>
+
             </GroupBox>
             <ContentControl x:Name="RevenuesViewModel" Grid.Row="2" />
         </Grid>

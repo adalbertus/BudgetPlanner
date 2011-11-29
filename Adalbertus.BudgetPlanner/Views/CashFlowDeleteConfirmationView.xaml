@@ -41,7 +41,7 @@
                         </WrapPanel>
                         <WrapPanel>
                             <TextBlock TextWrapping="Wrap">a następnie usuń kategorię:</TextBlock>
-                            <TextBlock Text="{Binding CashFlowToDelete.Name}" FontWeight="Bold" Margin="4 0"/>
+                            <TextBlock Text="{Binding CashFlowToDelete.Name}" FontWeight="Bold" Margin="4,0"/>
                         </WrapPanel>
                     </WrapPanel>
                 </RadioButton>

@@ -41,7 +41,7 @@
 
     <!-- TextBox -->
     <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource {x:Type TextBox}}">
-        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="BorderBrush" Value="{StaticResource TextBoxBorder}"/>
         <Setter Property="Padding" Value="3"/>
         <Style.Triggers>
@@ -54,6 +54,8 @@
     <!-- ctrl:NumericTextBox -->
     <Style TargetType="{x:Type ctrl:NumericTextBox}">
         <Setter Property="FormatString" Value="C2" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="DefaultValue" Value="0" />
         <Style.Triggers>
             <Trigger Property="IsFocused" Value="true">
                 <Setter Property="Background" Value="{StaticResource {x:Static SystemColors.HighlightBrushKey}}" />
@@ -63,6 +65,7 @@
 
     <!-- extToolkit:WatermarkTextBox -->
     <Style TargetType="{x:Type extToolkit:WatermarkTextBox}" BasedOn="{StaticResource {x:Type extToolkit:WatermarkTextBox}}">
+        <Setter Property="VerticalContentAlignment" Value="Center" />
         <Style.Triggers>
             <Trigger Property="IsFocused" Value="true">
                 <Setter Property="Background" Value="{StaticResource {x:Static SystemColors.HighlightBrushKey}}" />
@@ -71,16 +74,16 @@
     </Style>
 
     <Style TargetType="{x:Type DatePickerTextBox}">
-        <Setter Property="VerticalContentAlignment" Value="Center" />        
+        <Setter Property="VerticalContentAlignment" Value="Center" />
     </Style>
 
     <Style x:Key="OverlayRectangle" TargetType="{x:Type Rectangle}">
         <Setter Property="HorizontalAlignment" Value="Stretch" />
         <Setter Property="VerticalAlignment" Value="Stretch" />
         <Setter Property="Fill" Value="Black" />
-        <Setter Property="Opacity" Value="0.7" />
+        <Setter Property="Opacity" Value="0.5" />
     </Style>
-    
+
     <!-- GroupBox -->
     <Style TargetType="{x:Type GroupBox}" BasedOn="{StaticResource {x:Type GroupBox}}">
         <Setter Property="Margin" Value="4" />
@@ -90,7 +93,7 @@
         <Setter Property="BorderBrush" Value="Transparent" />
     </Style>
 
-    <Style x:Key="Button80" TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Type Button}}">
+    <Style x:Key="Button80" TargetType="{x:Type ctrl:ImageButton}" BasedOn="{StaticResource {x:Type ctrl:ImageButton}}">
         <Setter Property="Width" Value="80" />
     </Style>
 
@@ -102,13 +105,32 @@
         <Setter Property="Width" Value="128" />
         <Setter Property="Height" Value="128" />
     </Style>
-    
+
     <Style x:Key="QuestionImage" TargetType="{x:Type Image}" BasedOn="{StaticResource DialogImage}">
         <Setter Property="Source" Value="/Adalbertus.BudgetPlanner;component/Images/dialog-question.png" />
     </Style>
 
+    <Style x:Key="InformationImage" TargetType="{x:Type Image}" BasedOn="{StaticResource DialogImage}">
+        <Setter Property="Source" Value="/Adalbertus.BudgetPlanner;component/Images/dialog-information.png" />
+    </Style>
+   
     <Style x:Key="WarningImage" TargetType="{x:Type Image}" BasedOn="{StaticResource DialogImage}">
-        <Setter Property="Source" Value="/Adalbertus.BudgetPlanner;component/Images/dialog-question.png" />
+        <Setter Property="Source" Value="/Adalbertus.BudgetPlanner;component/Images/dialog-warning.png" />
+    </Style>
+
+    <Style x:Key="ErrorImage" TargetType="{x:Type Image}" BasedOn="{StaticResource DialogImage}">
+        <Setter Property="Source" Value="/Adalbertus.BudgetPlanner;component/Images/dialog-error.png" />
+    </Style>
+
+    <Style x:Key="HoverBorder" TargetType="{x:Type Border}">
+        <Setter Property="BorderBrush" Value="LightGray" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="4" />
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="BorderBrush" Value="Black" />
+            </Trigger>
+        </Style.Triggers>
     </Style>
 
     <Style x:Key="DialogButtonsBorder" TargetType="{x:Type Border}">
@@ -235,7 +257,7 @@
 
     <!--NormalExpander: based on http://www.codeproject.com/KB/WPF/ExpanderTemplateArticle.aspx -->
     <ControlTemplate x:Key="NormalExpander" TargetType="{x:Type Expander}">
-        <Border BorderBrush="LightGray" BorderThickness="1" CornerRadius="4">
+        <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="4">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -292,6 +314,8 @@
     <!--Expander-->
     <Style TargetType="{x:Type Expander}" BasedOn="{StaticResource {x:Type Expander}}">
         <Setter Property="Template" Value="{StaticResource NormalExpander}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="BorderBrush" Value="LightGray" />
         <Setter Property="Margin" Value="4" />
     </Style>
 
@@ -376,7 +400,6 @@
         </Setter>
     </Style>
 
-
     <Style x:Key="DialogRadioButton" TargetType="{x:Type RadioButton}">
         <Setter Property="Control.Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" />
         <Setter Property="Control.Background" Value="{StaticResource BackgroundGradientBrush}" />
@@ -414,4 +437,190 @@
             </Setter.Value>
         </Setter>
     </Style>
+
+
+
+
+    <SolidColorBrush x:Key="InputBackgroundFocused" Color="Orange"></SolidColorBrush>
+
+    <Style x:Key="CheckBoxFocusVisualStyle">
+        <Setter Property="Control.Template">
+            <Setter.Value>
+                <ControlTemplate>
+                    <Border CornerRadius="2" Margin="0,0,4,3" BorderThickness="2" BorderBrush="{StaticResource InputBackgroundFocused}" Background="Transparent"/>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Fill Brushes -->
+
+    <LinearGradientBrush x:Key="NormalBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientBrush.GradientStops>
+            <GradientStopCollection>
+                <GradientStop Color="#FFF" Offset="0.0"/>
+                <GradientStop Color="#CCC" Offset="1.0"/>
+            </GradientStopCollection>
+        </GradientBrush.GradientStops>
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="HorizontalNormalBrush" StartPoint="0,0" EndPoint="1,0">
+        <GradientBrush.GradientStops>
+            <GradientStopCollection>
+                <GradientStop Color="#FFF" Offset="0.0"/>
+                <GradientStop Color="#CCC" Offset="1.0"/>
+            </GradientStopCollection>
+        </GradientBrush.GradientStops>
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="LightBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientBrush.GradientStops>
+            <GradientStopCollection>
+                <GradientStop Color="#FFF" Offset="0.0"/>
+                <GradientStop Color="#EEE" Offset="1.0"/>
+            </GradientStopCollection>
+        </GradientBrush.GradientStops>
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="HorizontalLightBrush" StartPoint="0,0" EndPoint="1,0">
+        <GradientBrush.GradientStops>
+            <GradientStopCollection>
+                <GradientStop Color="#FFF" Offset="0.0"/>
+                <GradientStop Color="#EEE" Offset="1.0"/>
+            </GradientStopCollection>
+        </GradientBrush.GradientStops>
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="DarkBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientBrush.GradientStops>
+            <GradientStopCollection>
+                <GradientStop Color="#FFF" Offset="0.0"/>
+                <GradientStop Color="#AAA" Offset="1.0"/>
+            </GradientStopCollection>
+        </GradientBrush.GradientStops>
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="PressedBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientBrush.GradientStops>
+            <GradientStopCollection>
+                <GradientStop Color="#BBB" Offset="0.0"/>
+                <GradientStop Color="#EEE" Offset="0.1"/>
+                <GradientStop Color="#EEE" Offset="0.9"/>
+                <GradientStop Color="#FFF" Offset="1.0"/>
+            </GradientStopCollection>
+        </GradientBrush.GradientStops>
+    </LinearGradientBrush>
+
+    <SolidColorBrush x:Key="DisabledForegroundBrush" Color="#888" />
+
+    <SolidColorBrush x:Key="DisabledBackgroundBrush" Color="#EEE" />
+
+    <SolidColorBrush x:Key="WindowBackgroundBrush" Color="#FFF" />
+
+    <SolidColorBrush x:Key="SelectedBackgroundBrush" Color="#DDD" />
+
+    <!-- Border Brushes -->
+
+    <LinearGradientBrush x:Key="NormalBorderBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientBrush.GradientStops>
+            <GradientStopCollection>
+                <GradientStop Color="#CCC" Offset="0.0"/>
+                <GradientStop Color="#444" Offset="1.0"/>
+            </GradientStopCollection>
+        </GradientBrush.GradientStops>
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="HorizontalNormalBorderBrush" StartPoint="0,0" EndPoint="1,0">
+        <GradientBrush.GradientStops>
+            <GradientStopCollection>
+                <GradientStop Color="#CCC" Offset="0.0"/>
+                <GradientStop Color="#444" Offset="1.0"/>
+            </GradientStopCollection>
+        </GradientBrush.GradientStops>
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="DefaultedBorderBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientBrush.GradientStops>
+            <GradientStopCollection>
+                <GradientStop Color="#777" Offset="0.0"/>
+                <GradientStop Color="#000" Offset="1.0"/>
+            </GradientStopCollection>
+        </GradientBrush.GradientStops>
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="PressedBorderBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientBrush.GradientStops>
+            <GradientStopCollection>
+                <GradientStop Color="#444" Offset="0.0"/>
+                <GradientStop Color="#888" Offset="1.0"/>
+            </GradientStopCollection>
+        </GradientBrush.GradientStops>
+    </LinearGradientBrush>
+
+    <SolidColorBrush x:Key="DisabledBorderBrush" Color="#AAA" />
+
+    <SolidColorBrush x:Key="SolidBorderBrush" Color="#888" />
+
+    <SolidColorBrush x:Key="LightBorderBrush" Color="#AAA" />
+
+    <!-- Miscellaneous Brushes -->
+    <SolidColorBrush x:Key="GlyphBrush" Color="#444" />
+
+    <SolidColorBrush x:Key="LightColorBrush" Color="#DDD" />
+    <Style TargetType="{x:Type CheckBox}">
+        <Setter Property="SnapsToDevicePixels" Value="true"/>
+        <Setter Property="OverridesDefaultStyle" Value="true"/>
+        <Setter Property="FocusVisualStyle" Value="{DynamicResource CheckBoxFocusVisualStyle}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="CheckBox">
+                    <BulletDecorator Background="Transparent">
+                        <BulletDecorator.Bullet>
+                            <Border x:Name="Border"  
+                              Width="17" 
+                              Height="17" 
+                              CornerRadius="2" 
+                              Background="{StaticResource NormalBrush}"
+                              BorderThickness="1"
+                              BorderBrush="{StaticResource NormalBorderBrush}">
+                                <Path 
+                                Width="11" Height="11" 
+                                x:Name="CheckMark"
+                                SnapsToDevicePixels="False" 
+                                Stroke="{StaticResource GlyphBrush}"
+                                StrokeThickness="2"
+                                Data="M 2,4 C 2,4 3,5 5,13 C 5,13 5,3 12,0" />
+                            </Border>
+                        </BulletDecorator.Bullet>
+                        <ContentPresenter Margin="4,0,0,0"
+                            VerticalAlignment="Center"
+                            HorizontalAlignment="Left"
+                            RecognizesAccessKey="True"/>
+                    </BulletDecorator>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked" Value="false">
+                            <Setter TargetName="CheckMark" Property="Visibility" Value="Collapsed"/>
+                        </Trigger>
+                        <Trigger Property="IsChecked" Value="{x:Null}">
+                            <Setter TargetName="CheckMark" Property="Data" Value="M 0 7 L 7 0" />
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="true">
+                            <Setter TargetName="Border" Property="Background" Value="{StaticResource DarkBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="true">
+                            <Setter TargetName="Border" Property="Background" Value="{StaticResource PressedBrush}" />
+                            <Setter TargetName="Border" Property="BorderBrush" Value="{StaticResource PressedBorderBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="false">
+                            <Setter TargetName="Border" Property="Background" Value="{StaticResource DisabledBackgroundBrush}" />
+                            <Setter TargetName="Border" Property="BorderBrush" Value="{StaticResource DisabledBorderBrush}" />
+                            <Setter Property="Foreground" Value="{StaticResource DisabledForegroundBrush}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+
+            </Setter.Value>
+        </Setter>
+    </Style>
+
 </ResourceDictionary>

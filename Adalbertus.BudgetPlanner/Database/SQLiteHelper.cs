@@ -31,7 +31,7 @@ namespace Adalbertus.BudgetPlanner.Database
         {
             if (File.Exists(DatabaseFile))
             {
-                CreateSampleData();
+                //CreateSampleData();
                 return;
             }
 
@@ -52,7 +52,7 @@ namespace Adalbertus.BudgetPlanner.Database
                 var defautGroup = db.SingleOrDefault<CashFlowGroup>("WHERE Name = 'Domyślna'");
                 if (defautGroup == null)
                 {
-                    defautGroup = new CashFlowGroup { Name = "Domyślna", Description = "Domyślna grupa", IsReadOnly = true };
+                    defautGroup = new CashFlowGroup { Name = "Domyślna", Description = "Domyślna grupa", IsReadOnly = false, Position = 0 };
                     db.Save(defautGroup);
                     db.Execute("UPDATE CashFlow SET CashFlowGroupId = @0", defautGroup.Id);
                 }
@@ -60,14 +60,14 @@ namespace Adalbertus.BudgetPlanner.Database
                 var savingsGroup = db.SingleOrDefault<CashFlowGroup>("WHERE Name = 'Oszczędności'");
                 if (savingsGroup == null)
                 {
-                    savingsGroup = new CashFlowGroup { Name = "Oszczędności", IsReadOnly = true };
+                    savingsGroup = new CashFlowGroup { Name = "Oszczędności", IsReadOnly = true, Position = 1 };
                     db.Save(savingsGroup);
                     db.Execute("UPDATE CashFlow SET CashFlowGroupId = @0 WHERE Id IN (SELECT CashFlowId FROM Saving)", savingsGroup.Id);
                 }
 
-                AddOrNothingCashFlowByName(db, defautGroup, "Jedzenie");
-                AddOrNothingCashFlowByName(db, defautGroup, "Dzieci", "Wydatki na dzieci");
-                AddOrNothingCashFlowByName(db, defautGroup, "Dom");
+                //AddOrNothingCashFlowByName(db, defautGroup, "Jedzenie");
+                //AddOrNothingCashFlowByName(db, defautGroup, "Dzieci", "Wydatki na dzieci");
+                //AddOrNothingCashFlowByName(db, defautGroup, "Dom");
 
                 tx.Complete();
             }

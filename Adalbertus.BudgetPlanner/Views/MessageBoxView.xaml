@@ -8,12 +8,19 @@
     <DockPanel LastChildFill="True" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         <Border DockPanel.Dock="Bottom" Style="{StaticResource DialogButtonsBorder}">
             <WrapPanel HorizontalAlignment="Right">
-                <ctrl:ImageButton Content="Anuluj" cal:Message.Attach="[Event Click] = [Action Cancel()]" Style="{StaticResource Button80}" />
-                <ctrl:ImageButton Content="OK" ImageUrl="Images/button-checked.png" cal:Message.Attach="[Event Click] = [Action Close()]" Style="{StaticResource Button80}" />
+                <ctrl:ImageButton Content="Anuluj" cal:Message.Attach="[Event Click] = [Action Cancel()]"
+                                  Visibility="{Binding IsCancelButtonVisible, Converter={StaticResource Visibility}}"
+                                  Style="{StaticResource Button80}" />
+                <ctrl:ImageButton Content="OK" ImageUrl="Images/button-checked.png" cal:Message.Attach="[Event Click] = [Action Close()]" 
+                                  Visibility="{Binding IsOKButtonVisible, Converter={StaticResource Visibility}}"
+                                  Style="{StaticResource Button80}" />
             </WrapPanel>
         </Border>
 
-        <Image DockPanel.Dock="Left" Style="{StaticResource QuestionImage}"/>
+        <Image DockPanel.Dock="Left" Style="{StaticResource QuestionImage}" Visibility="{Binding IsQuestionImageVisible, Converter={StaticResource Visibility}}"/>
+        <Image DockPanel.Dock="Left" Style="{StaticResource InformationImage}" Visibility="{Binding IsInformationImageVisible, Converter={StaticResource Visibility}}"/>
+        <Image DockPanel.Dock="Left" Style="{StaticResource WarningImage}" Visibility="{Binding IsWarningImageVisible, Converter={StaticResource Visibility}}"/>
+        <Image DockPanel.Dock="Left" Style="{StaticResource ErrorImage}" Visibility="{Binding IsErrorImageVisible, Converter={StaticResource Visibility}}"/>
 
         <TextBlock TextWrapping="Wrap" Text="{Binding Message}" MaxWidth="300" Margin="10"/>
         

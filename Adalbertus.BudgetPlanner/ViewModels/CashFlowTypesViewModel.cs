@@ -16,14 +16,14 @@ namespace Adalbertus.BudgetPlanner.ViewModels
 {
     public class CashFlowTypesViewModel : BaseViewModel
     {
-        public CashFlowTypesViewModel(IShellViewModel shell, IDatabase database, IConfiguration configuration, ICachedService cashedService, IEventAggregator eventAggregator)
+        public CashFlowTypesViewModel(IShellViewModel shell, IDatabase database, IConfigurationManager configuration, ICachedService cashedService, IEventAggregator eventAggregator)
             : base(shell, database, configuration, cashedService, eventAggregator)
         {
-            CashFlows = new BindableCollectionExt<CashFlow>();
-            CashFlows.PropertyChanged += (s, e) => { OnPropertyChanged(s, e); };
+            _cashFlows = new BindableCollectionExt<CashFlow>();
+            _cashFlows.PropertyChanged += (s, e) => { OnPropertyChanged(s, e); };
 
-            CashFlowGroups = new BindableCollectionExt<CashFlowGroup>();
-            CashFlowGroups.PropertyChanged += (s, e) => { OnPropertyChanged(s, e); };
+            _cashFlowGroups = new BindableCollectionExt<CashFlowGroup>();
+            _cashFlowGroups.PropertyChanged += (s, e) => { OnPropertyChanged(s, e); };
         }
 
         protected override void OnActivate()
@@ -47,13 +47,14 @@ namespace Adalbertus.BudgetPlanner.ViewModels
 
         public override void LoadData()
         {
-            CashFlowGroups.IsNotifying = false;
-            CashFlowGroups.Clear();
-            var cashFlowGroups = CachedService.GetAllCashFlowGroups();
-            cashFlowGroups.ForEach(x => CashFlowGroups.Add(x));
+            LoadCashFlowGroups();
+            LoadCashFlows();
+        }
 
-            CashFlows.IsNotifying = false;
-            CashFlows.Clear();
+        private void LoadCashFlows()
+        {
+            _cashFlows.IsNotifying = false;
+            _cashFlows.Clear();
             var sql = PetaPoco.Sql.Builder
                     .Select("*")
                     .From("CashFlow")
@@ -69,15 +70,23 @@ namespace Adalbertus.BudgetPlanner.ViewModels
                     x.Saving = null;
                 }
             });
-            cashFlowList.ForEach(x => CashFlows.Add(x));
+            cashFlowList.ForEach(x => _cashFlows.Add(x));
+            _cashFlows.IsNotifying = true;
+            NotifyOfPropertyChange(() => CashFlows);
+        }
 
-            CashFlowGroups.IsNotifying = true;
-            CashFlowGroups.Refresh();
+        private void LoadCashFlowGroups()
+        {
+            _cashFlowGroups.IsNotifying = false;
+            _cashFlowGroups.Clear();
+            var cashFlowGroups = CachedService.GetAllCashFlowGroups();
+            cashFlowGroups.ForEach(x => _cashFlowGroups.Add(x));
 
-            CashFlows.IsNotifying = true;
-            CashFlows.Refresh();
+
+            _cashFlowGroups.IsNotifying = true;
 
             NewCashFlowGroup = CashFlowGroups.First();
+            NotifyOfPropertyChange(() => CashFlowGroups);
         }
 
         #region View controls navigation
@@ -196,14 +205,16 @@ namespace Adalbertus.BudgetPlanner.ViewModels
 
                 Database.Save(cashFlow);
                 tx.Complete();
+                _cashFlows.Add(cashFlow);
             }
             CachedService.Clear();
             NewName = string.Empty;
             NewDescription = string.Empty;
             NewCashFlowGroup = CashFlowGroups.First();
-            LoadData();
+            //LoadData();
             IsNewNameFocused = false;
             IsNewNameFocused = true;
+            NotifyOfPropertyChange(() => CashFlows);
         }
 
         #endregion
@@ -244,28 +255,41 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         {
             using (var tx = Database.GetTransaction())
             {
+                var maxPosition = Database.ExecuteScalar<int>("SELECT MAX(Position) FROM CashFlowGroup");
                 var cashFlowGroup = new CashFlowGroup
                 {
                     Name = NewGroupName,
-                    Description = NewGroupDescription
+                    Description = NewGroupDescription,
+                    Position = maxPosition + 1,
                 };
 
                 Database.Save(cashFlowGroup);
                 tx.Complete();
+                _cashFlowGroups.Add(cashFlowGroup);
             }
             CachedService.Clear();
             NewGroupName = string.Empty;
             NewGroupDescription = string.Empty;
-            LoadData();
+            //LoadData();
             IsNewGroupNameFocused = false;
             IsNewGroupNameFocused = true;
+            NotifyOfPropertyChange(() => CashFlowGroups);
         }
 
         #endregion
 
         #region Cash flow type list
-        public BindableCollectionExt<CashFlow> CashFlows { get; private set; }
-        public BindableCollectionExt<CashFlowGroup> CashFlowGroups { get; private set; }
+        private BindableCollectionExt<CashFlow> _cashFlows;
+        public IEnumerable<CashFlow> CashFlows 
+        {
+            get { return _cashFlows.AsEnumerable().ToList(); }
+
+        }
+        private BindableCollectionExt<CashFlowGroup> _cashFlowGroups;
+        public IEnumerable<CashFlowGroup> CashFlowGroups 
+        {
+            get { return _cashFlowGroups.OrderBy(x => x.Position).ToList(); }
+        }
         
         public bool CanDeleteCashFlowType(CashFlow cashFlow)
         {
@@ -304,15 +328,17 @@ namespace Adalbertus.BudgetPlanner.ViewModels
                 Database.Delete<Expense>("WHERE CashFlowId = @0", cashFlow.Id);
                 Database.Delete<CashFlow>(cashFlow);
                 tx.Complete();
+                _cashFlows.Remove(cashFlow);
             }
             CachedService.Clear();
 
-            LoadData();
+            NotifyOfPropertyChange(() => CashFlows);
+            //LoadData();
         }
 
         public bool CanDeleteCashFlowGroup(CashFlowGroup cashFlowGroup)
         {
-            return CashFlowGroups.Count > 1;
+            return _cashFlowGroups.Count > 0;
         }
 
         public void DeleteCashFlowGroup(CashFlowGroup cashFlowGroup)
@@ -350,22 +376,62 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             {
                 Database.Delete(cashFlowGroup);
                 tx.Complete();
+                _cashFlowGroups.IsNotifying = false;
+                _cashFlowGroups.Remove(cashFlowGroup);
+                _cashFlowGroups.IsNotifying = true;
             }
+
+            NewCashFlowGroup = _cashFlowGroups.First();
             CachedService.Clear();
-            LoadData();
+            _cashFlows.IsNotifying = false;
+            NotifyOfPropertyChange(() => CashFlowGroups);            
+            LoadCashFlows();
         }
+
+
+        public void MoveCashFlowGroupUp(CashFlowGroup cashFlowGroup)
+        {
+            var previousCashFlowGroup = CashFlowGroups.LastOrDefault(x => x.Position < cashFlowGroup.Position);
+            if (previousCashFlowGroup == null)
+            {
+                return;
+            }
+
+            SwapPositions(cashFlowGroup, previousCashFlowGroup);
+        }
+
+        public void MoveCashFlowGroupDown(CashFlowGroup cashFlowGroup)
+        {
+            var nextCashFlowGroup = CashFlowGroups.FirstOrDefault(x => x.Position > cashFlowGroup.Position);
+            if (nextCashFlowGroup == null)
+            {
+                return;
+            }
+
+            SwapPositions(cashFlowGroup, nextCashFlowGroup);
+        }
+
+        private void SwapPositions(CashFlowGroup first, CashFlowGroup secound)
+        {
+            first.IsNotifying = false;
+            secound.IsNotifying = false;
+            var firstPosition = first.Position;
+            first.Position = secound.Position;
+            secound.Position = firstPosition;
+            first.IsNotifying = true;
+            secound.IsNotifying = true;
+
+            base.Save(first);
+            base.Save(secound);
+            CachedService.Clear();
+            NotifyOfPropertyChange(() => CashFlowGroups);
+        }
+
+
 
         protected override void Save(Entity entity)
         {
-            using (var tx = Database.GetTransaction())
-            {
-                Database.Update(entity);
-                tx.Complete();
-                if (entity is CashFlowGroup)
-                {
-                    LoadData();
-                }
-            }            
+            base.Save(entity);            
             CachedService.Clear();
         }
         #endregion

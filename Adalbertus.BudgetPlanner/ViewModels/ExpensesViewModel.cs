@@ -11,14 +11,15 @@ using Caliburn.Micro;
 
 namespace Adalbertus.BudgetPlanner.ViewModels
 {
-    public class ExpensesViewModel : BaseViewModel
+    public class ExpensesViewModel : BaseViewModel, IHandle<ExpensesFilterVM>
     {
-        public ExpensesViewModel(IShellViewModel shell, IDatabase database, IConfiguration configuration, ICachedService cashedService, IEventAggregator eventAggregator)
+        public ExpensesViewModel(IShellViewModel shell, IDatabase database, IConfigurationManager configuration, ICachedService cashedService, IEventAggregator eventAggregator)
             : base(shell ,database, configuration, cashedService, eventAggregator)
         {
             ExpensesGridCashFlows = new BindableCollectionExt<CashFlow>();
             CashFlows = new BindableCollectionExt<CashFlow>();
-            Filter = new ExpensesFilterVM();
+            Filter = new ExpensesFilterVM(EventAggregator);
+            IsFilteringEnabled = false;
         }
 
         protected override void Initialize()
@@ -51,17 +52,28 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             }
         }
 
-        private bool _isFilterEnabled;
-        public bool IsFilterEnabled
+        private bool _isExpensesFiltered;
+        public bool IsExpensesFiltered
         {
-            get { return _isFilterEnabled; }
+            get { return _isExpensesFiltered; }
             set
             {
-                _isFilterEnabled = value;
-                NotifyOfPropertyChange(() => IsFilterEnabled);
+                _isExpensesFiltered = value;
+                NotifyOfPropertyChange(() => IsExpensesFiltered);
             }
         }
 
+        private bool _isFilteringEnabled;
+        public bool IsFilteringEnabled
+        {
+            get { return _isFilteringEnabled; }
+            set
+            {
+                _isFilteringEnabled = value;
+                NotifyOfPropertyChange(() => IsFilteringEnabled);
+                NotifyOfPropertyChange(() => BudgetExpenses);
+            }
+        }
 
         private CashFlow _selectedExpenseCashFlow;
         public CashFlow SelectedExpenseCashFlow
@@ -194,26 +206,59 @@ namespace Adalbertus.BudgetPlanner.ViewModels
 
         private void FillFilterData()
         {
-            Filter.IsNotifying = false;
             var filterCashFlows = CachedService.GetAllCashFlows().Select(x =>
-                new ExpensesFilterCashFlowVM
+                new ExpensesFilterEntityVM
                 {
-                    CashFlowId = x.Id,
-                    Name = x.Name,
+                    EntityId = x.Id,
+                    Name = x.ToString(),
+                    Parent = x.Group,
                 }
             ).ToList();
-            
-            Filter.CashFlows.IsNotifying = false;
-            Filter.DateFrom              = Budget.DateFrom;
-            Filter.DateTo                = Budget.DateTo;
 
+            var filterCashFlowGroups = CachedService.GetAllCashFlowGroups().Select(x =>
+                new ExpensesFilterEntityVM
+                {
+                    EntityId = x.Id,
+                    Name = x.ToString(),
+                }
+            ).ToList();
+
+            Filter.IsNotifying = false;
+            Filter.DateFrom = Budget.DateFrom;
+            Filter.DateTo                = Budget.DateTo;
+            Filter.IsNotifying = true;
+
+            Filter.CashFlows.IsNotifying = false;
             Filter.CashFlows.Clear();
             Filter.CashFlows.AddRange(filterCashFlows);
-            //Filter.PropertyChanged           += (s, e) => { NotifyOfPropertyChange(() => BudgetExpenses); };
-            Filter.CashFlows.PropertyChanged += (s, e) => { NotifyOfPropertyChange(() => BudgetExpenses); };
-            Filter.IsNotifying                = true;
-            Filter.CashFlows.IsNotifying      = true;
+            Filter.CashFlows.PropertyChanged += (s, e) => { UpdateCashFlowGroupFilter(); };
+            Filter.CashFlows.IsNotifying = true;
             Filter.CashFlows.Refresh();
+
+            Filter.CashFlowGroups.IsNotifying = false;
+            Filter.CashFlowGroups.Clear();
+            Filter.CashFlowGroups.AddRange(filterCashFlowGroups);
+            Filter.CashFlowGroups.PropertyChanged += (s, e) => { UpdateCashFlowFilter(); };
+            Filter.CashFlowGroups.IsNotifying = true;
+            Filter.CashFlowGroups.Refresh();
+        }
+
+        private void UpdateCashFlowGroupFilter()
+        {
+            Filter.CashFlowGroups.IsNotifying = false;
+            Filter.CashFlowGroups.ForEach(x => x.IsSelected = Filter.CashFlows.Where(f => f.ParentId == x.EntityId).All(f => f.IsSelected));
+            Filter.CashFlowGroups.IsNotifying = true;
+            Filter.CashFlowGroups.Refresh();
+            NotifyOfPropertyChange(() => BudgetExpenses);
+        }
+
+        private void UpdateCashFlowFilter()
+        {
+            Filter.CashFlows.IsNotifying = false;
+            Filter.CashFlows.ForEach(x => x.IsSelected = Filter.CashFlowGroups.First(g => g.EntityId == x.ParentId).IsSelected);
+            Filter.CashFlows.IsNotifying = true;
+            Filter.CashFlows.Refresh();
+            NotifyOfPropertyChange(() => BudgetExpenses);
         }
 
         private void LoadCashFlows()
@@ -240,9 +285,11 @@ namespace Adalbertus.BudgetPlanner.ViewModels
                     .On("Budget.Id = Expense.BudgetId")
                     .InnerJoin("CashFlow")
                     .On("CashFlow.Id = Expense.CashFlowId")
+                    .InnerJoin("CashFlowGroup")
+                    .On("CashFlow.CashFlowGroupId = CashFlowGroup.Id")
                     .Where("Expense.BudgetId = @0", Budget.Id);
 
-            var expenses = Database.Query<Expense, Budget, CashFlow>(sql).ToList();
+            var expenses = Database.Query<Expense, Budget, CashFlow, CashFlowGroup>(sql).ToList();
             expenses.ForEach(x =>
             {
                 x.Flow.Saving = Database.SingleOrDefault<Saving>("WHERE CashFlowId = @0", x.CashFlowId);
@@ -371,31 +418,45 @@ namespace Adalbertus.BudgetPlanner.ViewModels
 
 
         #endregion
+
         public ExpensesFilterVM Filter { get; set; }
 
         private IEnumerable<Expense> FilteredBudgetExpenses()
         {
-            var selectedCashFlows = Filter.CashFlows.Where(x => x.IsSelected).ToList();
+            ICollection<Expense> expenses;
 
-            var predicate = PredicateBuilder.False<Expense>();
-            predicate = predicate.Or(p => selectedCashFlows.Any(x => p.CashFlowId == x.CashFlowId));
-            predicate = predicate.And(p => p.Date >= Filter.DateFrom && p.Date <= Filter.DateTo);
-            if (Filter.ValueFrom.HasValue)
+            if (IsFilteringEnabled)
             {
-                predicate = predicate.And(p => p.Value >= Filter.ValueFrom.Value);
-            }
-            if (Filter.ValueTo.HasValue)
-            {
-                predicate = predicate.And(p => p.Value <= Filter.ValueTo.Value);
-            }
+                var predicate = PredicateBuilder.False<Expense>();
 
-            if (!string.IsNullOrWhiteSpace(Filter.Description))
-            {
-                predicate = predicate.And(p => p.Description.IsEqual(Filter.Description, false));
-            }
+                var selectedCashFlows = Filter.CashFlows.Where(x => x.IsSelected).ToList();
+                var selectedCashFlowGroups = Filter.CashFlowGroups.Where(x => x.IsSelected).ToList();
 
-            var expenses = _budgetExpenses.AsQueryable().Where(predicate).ToList();
-            IsFilterEnabled = expenses.Count != _budgetExpenses.Count;
+                predicate = predicate.Or(p => selectedCashFlows.Any(x => p.CashFlowId == x.EntityId));
+                predicate = predicate.Or(p => selectedCashFlowGroups.Any(x => p.CashFlowGroupId == x.EntityId));
+                predicate = predicate.And(p => p.Date >= Filter.DateFrom && p.Date <= Filter.DateTo);
+                if (Filter.ValueFrom.HasValue)
+                {
+                    predicate = predicate.And(p => p.Value >= Filter.ValueFrom.Value);
+                }
+                if (Filter.ValueTo.HasValue)
+                {
+                    predicate = predicate.And(p => p.Value <= Filter.ValueTo.Value);
+                }
+
+                if (!string.IsNullOrWhiteSpace(Filter.Description))
+                {
+                    predicate = predicate.And(p => p.Description.IsEqual(Filter.Description, false));
+                }
+
+                expenses = _budgetExpenses.AsQueryable().Where(predicate).ToList();
+            }
+            else
+            {
+                expenses = _budgetExpenses.ToList();
+            }
+            
+            IsExpensesFiltered = expenses.Count != _budgetExpenses.Count;
             return expenses;
         }
 
@@ -405,7 +466,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             Filter.CashFlows.Where(x => !x.IsSelected).ForEach(x => x.IsSelected = true);
             Filter.CashFlows.IsNotifying = true;
             Filter.CashFlows.Refresh();
-            NotifyOfPropertyChange(() => BudgetExpenses);
+            UpdateCashFlowGroupFilter();
         }
 
         public void DeselectAllFilterCashFlows()
@@ -414,7 +475,34 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             Filter.CashFlows.Where(x => x.IsSelected).ForEach(x => x.IsSelected = false);
             Filter.CashFlows.IsNotifying = true;
             Filter.CashFlows.Refresh();
+            UpdateCashFlowGroupFilter();
+        }
+
+        public void SelectAllFilterCashFlowGroups()
+        {
+            Filter.CashFlowGroups.IsNotifying = false;
+            Filter.CashFlowGroups.Where(x => !x.IsSelected).ForEach(x => x.IsSelected = true);
+            Filter.CashFlowGroups.IsNotifying = true;
+            Filter.CashFlowGroups.Refresh();
+            UpdateCashFlowFilter();
+        }
+
+        public void DeselectAllFilterCashFlowGroups()
+        {
+            Filter.CashFlowGroups.IsNotifying = false;
+            Filter.CashFlowGroups.Where(x => x.IsSelected).ForEach(x => x.IsSelected = false);
+            Filter.CashFlowGroups.IsNotifying = true;
+            Filter.CashFlowGroups.Refresh();
+            UpdateCashFlowFilter();
+        }
+
+        #region IHandle<ExpensesFilterVM> Members
+
+        public void Handle(ExpensesFilterVM message)
+        {
             NotifyOfPropertyChange(() => BudgetExpenses);
         }
+
+        #endregion
     }
 }

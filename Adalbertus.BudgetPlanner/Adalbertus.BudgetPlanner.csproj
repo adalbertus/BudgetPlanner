@@ -88,9 +88,8 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>BudgetPlanner.resx</DependentUpon>
     </Compile>
-    <Compile Include="Controls\ImageButton.xaml.cs">
-      <DependentUpon>ImageButton.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="Controls\ImageButton.cs" />
+    <Compile Include="Controls\WatermarkTextBoxExt.cs" />
     <Compile Include="Converters\CompareConverter.cs" />
     <Compile Include="Converters\DebugConverter.cs" />
     <Compile Include="Converters\IsEmptyConverter.cs" />
@@ -109,17 +108,19 @@
     <Compile Include="Core\PredicateBuilder.cs" />
     <Compile Include="Core\RefreshEvent.cs" />
     <Compile Include="Database\CachedService.cs" />
+    <Compile Include="Database\DatabaseBackupHelper.cs" />
+    <Compile Include="Database\DatabaseUpdateHelper.cs" />
     <Compile Include="Database\ICachedService.cs">
       <DependentUpon>CachedService.cs</DependentUpon>
     </Compile>
     <Compile Include="Extensions\CultureBinding.cs" />
-    <Compile Include="Core\IConfiguration.cs">
-      <DependentUpon>Configuration.cs</DependentUpon>
+    <Compile Include="Core\IConfigurationManager.cs">
+      <DependentUpon>ConfigurationManager.cs</DependentUpon>
     </Compile>
     <Compile Include="Extensions\ImageExtension.cs" />
     <Compile Include="Extensions\KeyDownFocusAction.cs" />
     <Compile Include="Extensions\KeyTrigger.cs" />
-    <Compile Include="Core\Configuration.cs" />
+    <Compile Include="Core\ConfigurationManager.cs" />
     <Compile Include="Database\Database.cs" />
     <Compile Include="Database\IDatabase.cs">
       <DependentUpon>Database.cs</DependentUpon>
@@ -127,12 +128,13 @@
     <Compile Include="Database\SQLiteHelper.cs" />
     <Compile Include="Extensions\FocusExtension.cs" />
     <Compile Include="Converters\StringFormatConverter.cs" />
+    <Compile Include="Extensions\MarginSetterExtension.cs" />
     <Compile Include="Extensions\StringExtenstions.cs" />
     <Compile Include="Models\Budget.cs" />
     <Compile Include="Models\BudgetPlan.cs" />
     <Compile Include="Models\CashFlow.cs" />
     <Compile Include="Models\CashFlowGroup.cs" />
-    <Compile Include="Models\Dictionary.cs" />
+    <Compile Include="Models\Configuration.cs" />
     <Compile Include="Models\Entity.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -152,7 +154,7 @@
     <Compile Include="ViewModels\CashFlowDeleteConfirmationViewModel.cs" />
     <Compile Include="ViewModels\CashFlowGroupDeleteConfirmationViewModel.cs" />
     <Compile Include="ViewModels\CashFlowTypesViewModel.cs" />
-    <Compile Include="ViewModels\ExpensesFilterCashFlowVM.cs" />
+    <Compile Include="ViewModels\ExpensesFilterEntityVM.cs" />
     <Compile Include="ViewModels\ExpensesFilterVM.cs" />
     <Compile Include="ViewModels\ExpensesViewModel.cs" />
     <Compile Include="ViewModels\ExternalSourcesViewModel.cs" />
@@ -167,13 +169,13 @@
     <Compile Include="ViewModels\IShellViewModel.cs">
       <DependentUpon>ShellViewModel.cs</DependentUpon>
     </Compile>
-    <Page Include="Controls\ImageButton.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Styles.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\Generic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\BudgetPlanView.xaml">
       <SubType>Designer</SubType>
@@ -210,10 +212,6 @@
     <Page Include="Views\RevenuesView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\SampleDailogView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\ShellView.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -292,6 +290,29 @@
     <Resource Include="Images\dialog-information.png" />
     <Resource Include="Images\dialog-question.png" />
     <Resource Include="Images\dialog-warning.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\wallet_money.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\arrow-down.png" />
+    <Resource Include="Images\arrow-up.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\clear-text.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\spent.png" />
+    <Resource Include="Images\total_plan_cost.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\shopping-list.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\system-question.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\system-info.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

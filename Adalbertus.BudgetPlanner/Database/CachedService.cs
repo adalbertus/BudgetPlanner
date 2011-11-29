@@ -49,7 +49,7 @@ namespace Adalbertus.BudgetPlanner.Database
                 .On("CashFlow.CashFlowGroupId = CashFlowGroup.Id")
                 .LeftJoin("Saving")
                 .On("Saving.CashFlowId = CashFlow.Id")
-                .OrderBy("CashFlow.Name ASC")).ToList();
+                .OrderBy("CashFlowGroup.Position ASC")).ToList();
             cashFlowList.ForEach(x =>
             {
                 if (x.Saving.IsTransient())

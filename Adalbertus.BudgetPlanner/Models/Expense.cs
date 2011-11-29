@@ -14,7 +14,7 @@ namespace Adalbertus.BudgetPlanner.Models
         public virtual SavingValue SavingValue { get; set; }
 
         [PetaPoco.Column]
-        public int CashFlowId { get { return Flow.Id; } set { } }
+        public int CashFlowId { get { return Flow.Id; } set { } }        
         private CashFlow _flow;
         public virtual CashFlow Flow
         {
@@ -30,6 +30,27 @@ namespace Adalbertus.BudgetPlanner.Models
                 }
                 UpdateFow(value);
                 NotifyOfPropertyChange(() => Flow);
+            }
+        }
+        public int CashFlowGroupId {
+            get
+            {
+                if (Flow == null)
+                {
+                    return default(int);
+                }
+                return Flow.CashFlowGroupId;
+            }
+        }
+        public string GroupName
+        {
+            get
+            {
+                if (Flow == null)
+                {
+                    return string.Empty;
+                }
+                return Flow.GroupName;
             }
         }
 

@@ -13,7 +13,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
 {
     public partial class BudgetPlanViewModel : BaseViewModel
     {
-        public BudgetPlanViewModel(IShellViewModel shell, IDatabase database, IConfiguration configuration, ICachedService cashedService, IEventAggregator eventAggregator)
+        public BudgetPlanViewModel(IShellViewModel shell, IDatabase database, IConfigurationManager configuration, ICachedService cashedService, IEventAggregator eventAggregator)
             : base(shell, database, configuration, cashedService, eventAggregator)
         {
             BudgetPlanList = new BindableCollectionExt<BudgetPlanItemVM>();

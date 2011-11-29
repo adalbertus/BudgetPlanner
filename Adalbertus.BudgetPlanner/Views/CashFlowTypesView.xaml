@@ -5,6 +5,7 @@
              xmlns:ext="clr-namespace:Adalbertus.BudgetPlanner.Extensions"
              xmlns:cal="http://www.caliburnproject.org"
              xmlns:ctrl="clr-namespace:Adalbertus.BudgetPlanner.Controls"
+             xmlns:extToolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit/extended"
 >
     <UniformGrid Columns="2">
         <GroupBox Header="Kategorie wydatków">
@@ -13,39 +14,49 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition />
                 </Grid.RowDefinitions>
-                <WrapPanel Grid.Row="0">
-                    <Label>Nazwa</Label>
-                    <TextBox Text="{Binding NewName, UpdateSourceTrigger=PropertyChanged}" Width="100"
-                     ext:FocusExtension.IsFocused="{Binding IsNewNameFocused}">
+                <Grid Grid.Row="0" Margin="0,4">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="80" />
+                    </Grid.ColumnDefinitions>
+                    <extToolkit:WatermarkTextBox Grid.Column="0" Text="{Binding NewName, UpdateSourceTrigger=PropertyChanged}"
+                                                 ext:FocusExtension.IsFocused="{Binding IsNewNameFocused}"
+                                                 Watermark="Nazwa nowej kategorii"  Margin="0,0,4,0">
                         <i:Interaction.Triggers>
                             <ext:KeyTrigger Key="Enter">
                                 <cal:ActionMessage MethodName="MoveToNewDescription" />
                             </ext:KeyTrigger>
                         </i:Interaction.Triggers>
-                    </TextBox>
+                    </extToolkit:WatermarkTextBox>
 
-                    <Label>Opis</Label>
-                    <TextBox Text="{Binding NewDescription, UpdateSourceTrigger=PropertyChanged}" Width="100"
-                     ext:FocusExtension.IsFocused="{Binding IsNewDescriptionFocused}">
+                    <extToolkit:WatermarkTextBox Grid.Column="1" Text="{Binding NewDescription, UpdateSourceTrigger=PropertyChanged}" Width="130"
+                                                 ext:FocusExtension.IsFocused="{Binding IsNewDescriptionFocused}"
+                                                 Watermark="Opis kategorii" Margin="0,0,4,0">
                         <i:Interaction.Triggers>
                             <ext:KeyTrigger Key="Enter">
                                 <cal:ActionMessage MethodName="AddNewCashFlowType" />
                             </ext:KeyTrigger>
                         </i:Interaction.Triggers>
-                    </TextBox>
+                    </extToolkit:WatermarkTextBox>
 
-                    <ComboBox ItemsSource="{Binding CashFlowGroups}" 
-                              SelectedItem="{Binding NewCashFlowGroup, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"                              
-                              DisplayMemberPath="Name"/>
+                    <ComboBox Grid.Column="2" ItemsSource="{Binding CashFlowGroups}" 
+                              SelectedItem="{Binding NewCashFlowGroup, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                              DisplayMemberPath="Name" Margin="0,0,4,0"/>
 
-                    <ctrl:ImageButton ImageUrl="Images/save.png" Content="Wstaw" cal:Message.Attach="[Event Click] = [Action AddNewCashFlowType()]"/>
-                </WrapPanel>
+                    <ctrl:ImageButton Grid.Column="3" ImageUrl="Images/save.png" Content="Wstaw"
+                                      cal:Message.Attach="[Event Click] = [Action AddNewCashFlowType()]"/>
+
+                </Grid>
+
+                
                 <DataGrid Grid.Row="1" ItemsSource="{Binding CashFlows}"
                           VerticalScrollBarVisibility="Auto" RowHeaderWidth="0"
                           HorizontalScrollBarVisibility="Auto"
                           AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False">
                     <DataGrid.Columns>
-                        <DataGridTemplateColumn Width="28">
+                        <DataGridTemplateColumn Width="26">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <!-- I don't know why setting ImageUrl in style doesn't work in DataTemplate -->
@@ -59,7 +70,7 @@
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <StackPanel>
-                                        <TextBox x:Name="TextBox" Text="{Binding Name, UpdateSourceTrigger=LostFocus}"
+                                        <extToolkit:WatermarkTextBox x:Name="TextBox" Text="{Binding Name, UpdateSourceTrigger=LostFocus}"
                                                  HorizontalAlignment="Stretch" BorderThickness="0" />
                                         <TextBlock x:Name="TextBoxReadOnly" Text="{Binding Name}" 
                                                    Visibility="Collapsed" />
@@ -77,7 +88,7 @@
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <StackPanel>
-                                        <TextBox x:Name="TextBox" Text="{Binding Description, UpdateSourceTrigger=LostFocus}"
+                                        <extToolkit:WatermarkTextBox x:Name="TextBox" Text="{Binding Description, UpdateSourceTrigger=LostFocus}"
                                                  BorderThickness="0"/>
                                         <TextBlock x:Name="TextBoxReadOnly" Text="{Binding Description, UpdateSourceTrigger=LostFocus}" Visibility="Collapsed"/>
                                     </StackPanel>
@@ -91,7 +102,7 @@
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
-                        <DataGridTemplateColumn Header="Kategoria" Width="150">
+                        <DataGridTemplateColumn Header="Grupa" Width="150">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <StackPanel>
@@ -120,41 +131,47 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition />
                 </Grid.RowDefinitions>
-
-                <WrapPanel Grid.Row="0">
-                    <Label>Nazwa</Label>
-                    <TextBox Text="{Binding NewGroupName, UpdateSourceTrigger=PropertyChanged}" Width="100"
-                     ext:FocusExtension.IsFocused="{Binding IsNewGroupNameFocused}">
+                <Grid Grid.Row="0" Margin="0,4">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="80" />
+                    </Grid.ColumnDefinitions>
+                    <extToolkit:WatermarkTextBox Grid.Column="0" Text="{Binding NewGroupName, UpdateSourceTrigger=PropertyChanged}"
+                                                 ext:FocusExtension.IsFocused="{Binding IsNewGroupNameFocused}"
+                                                 Watermark="Nazwa nowej grupy" Margin="0,0,4,0">
                         <i:Interaction.Triggers>
                             <ext:KeyTrigger Key="Enter">
                                 <cal:ActionMessage MethodName="MoveToNewGroupDescription" />
                             </ext:KeyTrigger>
                         </i:Interaction.Triggers>
-                    </TextBox>
+                    </extToolkit:WatermarkTextBox>
 
-                    <Label>Opis</Label>
-                    <TextBox Text="{Binding NewGroupDescription, UpdateSourceTrigger=PropertyChanged}" Width="100"
-                     ext:FocusExtension.IsFocused="{Binding IsNewGroupDescriptionFocused}">
+                    <extToolkit:WatermarkTextBox Grid.Column="1" Text="{Binding NewGroupDescription, UpdateSourceTrigger=PropertyChanged}"
+                                                 ext:FocusExtension.IsFocused="{Binding IsNewGroupDescriptionFocused}"
+                                                 Watermark="Opis grupy" Margin="0,0,4,0">
                         <i:Interaction.Triggers>
                             <ext:KeyTrigger Key="Enter">
                                 <cal:ActionMessage MethodName="AddNewCashFlowGroup" />
                             </ext:KeyTrigger>
                         </i:Interaction.Triggers>
-                    </TextBox>
+                    </extToolkit:WatermarkTextBox>
 
-                    <ctrl:ImageButton ImageUrl="Images/save.png" Content="Wstaw" cal:Message.Attach="[Event Click] = [Action AddNewCashFlowGroup()]"/>
-                </WrapPanel>
+                    <ctrl:ImageButton Grid.Column="2" ImageUrl="Images/save.png" Content="Wstaw"
+                                      cal:Message.Attach="[Event Click] = [Action AddNewCashFlowGroup()]"/>
+
+                </Grid>
                 <DataGrid  Grid.Row="1" ItemsSource="{Binding CashFlowGroups}" AutoGenerateColumns="False"
                            CanUserAddRows="False" CanUserDeleteRows="False" RowHeaderWidth="0"
                            VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
                     <DataGrid.Columns>
-                        <DataGridTemplateColumn Width="28">
+                        <DataGridTemplateColumn Width="26">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <!-- I don't know why setting ImageUrl in style doesn't work in DataTemplate -->
                                     <ctrl:ImageButton x:Name="DeleteButton" ToolTip="Usuń" ImageUrl="Images/delete.png"
                                                       IsEnabled="{Binding IsReadOnly, Converter={StaticResource Not}}"
-                                                      cal:Message.Attach="[Event Click] = [Action DeleteCashFlowGroup($dataContext)]" />                                    
+                                                      cal:Message.Attach="[Event Click] = [Action DeleteCashFlowGroup($dataContext)]" />
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
@@ -162,7 +179,7 @@
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <StackPanel>
-                                        <TextBox x:Name="TextBox" Text="{Binding Name, UpdateSourceTrigger=LostFocus}"
+                                        <extToolkit:WatermarkTextBox x:Name="TextBox" Text="{Binding Name, UpdateSourceTrigger=LostFocus}"
                                                  HorizontalAlignment="Stretch" BorderThickness="0"/>
                                         <TextBlock x:Name="TextBoxReadOnly" Text="{Binding Name}" Visibility="Collapsed"/>
                                     </StackPanel>
@@ -179,7 +196,7 @@
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <StackPanel>
-                                        <TextBox x:Name="TextBox" Text="{Binding Description, UpdateSourceTrigger=LostFocus}"
+                                        <extToolkit:WatermarkTextBox x:Name="TextBox" Text="{Binding Description, UpdateSourceTrigger=LostFocus}"
                                                  BorderThickness="0"/>
                                         <TextBlock x:Name="TextBoxReadOnly" Text="{Binding Name}" Visibility="Collapsed"/>
                                     </StackPanel>
@@ -192,13 +209,15 @@
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
-                        <DataGridTemplateColumn Header="Pozycja" Width="30">
+                        <DataGridTemplateColumn Header="Pozycja" Width="Auto" CanUserReorder="False" CanUserResize="False">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <StackPanel>
-                                        <TextBox x:Name="TextBox" Text="{Binding Position, UpdateSourceTrigger=LostFocus}"
-                                                 BorderThickness="0"/>
-                                    </StackPanel>
+                                    <WrapPanel>
+                                        <ctrl:ImageButton ImageUrl="Images/arrow-up.png" ToolTip="Przesuń w górę"
+                                                          cal:Message.Attach="[Event Click] = [Action MoveCashFlowGroupUp($dataContext)]" />
+                                        <ctrl:ImageButton ImageUrl="Images/arrow-down.png" ToolTip="Przesuń w dół"
+                                                          cal:Message.Attach="[Event Click] = [Action MoveCashFlowGroupDown($dataContext)]" />
+                                    </WrapPanel>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>

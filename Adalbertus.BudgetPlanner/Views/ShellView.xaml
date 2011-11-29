@@ -13,7 +13,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid Grid.Row="0">
-            <Border Background="WhiteSmoke" BorderBrush="Black" BorderThickness="0 0 0 1">
+            <Border Background="WhiteSmoke" BorderBrush="Black" BorderThickness="0,0,0,1">
                 <Border.Style>
                     <Style TargetType="{x:Type Border}">
                         <Style.Triggers>
@@ -25,28 +25,43 @@
                 </Border.Style>
                 <Grid>
                     <StackPanel Orientation="Horizontal" Margin="4">
-                        <WrapPanel VerticalAlignment="Center" Margin="0 0 4 0">
-                            <TextBlock>Budżet za okres:</TextBlock>
-                            <Button Content="{Binding CurrentBudgetDate, Converter={StaticResource DateMonthFormatter}}"                            
-                            ToolTip="Pokaż budżet" cal:Message.Attach="[Event Click] = [Action ShowCurrentBudget()]"
-                            Style="{StaticResource LinkButton}"/>
-                        </WrapPanel>
-                        <ctrl:ImageButton ImageUrl="Images/arrow-left.png" ToolTip="Poprzedni budżet" cal:Message.Attach="[Event Click] = [Action ShowPreviousBudget()]"/>
-                        <ctrl:ImageButton ImageUrl="Images/arrow-right.png" ToolTip="Następny budżet" cal:Message.Attach="[Event Click] = [Action ShowNextBudget()]"/>
+                        <ctrl:ImageButton ImageUrl="Images/wallet_money.png" Margin="0,0,4,0"
+                                          ImageHeight="24" ImageWidth="24"
+                                          cal:Message.Attach="[Event Click] = [Action ShowCurrentBudget()]">
+                            <WrapPanel>                                
+                                <TextBlock Text="Szczegóły budżetu za okres" Margin="0,0,4,0"/>
+                                <ctrl:ImageButton ImageUrl="Images/arrow-left.png" ToolTip="Poprzedni budżet" cal:Message.Attach="[Event Click] = [Action ShowPreviousBudget()]"/>
+                                <TextBlock Text="{Binding CurrentBudgetDate, Converter={StaticResource DateMonthFormatter}}" FontWeight="Bold" />                                
+                                <ctrl:ImageButton ImageUrl="Images/arrow-right.png" ToolTip="Następny budżet" cal:Message.Attach="[Event Click] = [Action ShowNextBudget()]"/>
+                            </WrapPanel>
+                        </ctrl:ImageButton>
 
                         <ctrl:ImageButton Content="Kategorie wydatków" HorizontalAlignment="Right" Margin="50 0 4 0"
-                        cal:Message.Attach="[Event Click] = [Action ShowCashFlowTypes()]"/>
+                                          cal:Message.Attach="[Event Click] = [Action ShowCashFlowTypes()]"/>
                         <ctrl:ImageButton Content="Środki zewnętrzne" HorizontalAlignment="Right"
-                        cal:Message.Attach="[Event Click] = [Action ShowExternalSources()]"/>
+                                          cal:Message.Attach="[Event Click] = [Action ShowExternalSources()]"/>
 
                     </StackPanel>
+                    <WrapPanel Margin="0,2,4,0" Orientation="Vertical"
+                               HorizontalAlignment="Right" VerticalAlignment="Top">
+                        <WrapPanel>
+                        <ctrl:ImageButton ImageUrl="Images/system-question.png" ToolTip="Pomoc"
+                                          HorizontalAlignment="Right" FontSize="10"
+                                          cal:Message.Attach="[Event Click] = [Action ShowHelp()]" />
+
+                        <ctrl:ImageButton ImageUrl="Images/system-info.png" ToolTip="O programie"
+                                          HorizontalAlignment="Right" FontSize="10"
+                                          cal:Message.Attach="[Event Click] = [Action ShowAbout()]" />
+                        </WrapPanel>
+                        <TextBlock Text="{Binding Version}" FontSize="10" Foreground="LightGray" HorizontalAlignment="Right" />
+                    </WrapPanel>
                 </Grid>
             </Border>
             <Rectangle Style="{StaticResource OverlayRectangle}"
                            Visibility="{Binding DialogScreen, Converter={StaticResource NullToCollapsed}}" />
         </Grid>
 
-        <Border Grid.Row="1" BorderBrush="AliceBlue" BorderThickness="0 1 0 0">
+        <Border Grid.Row="1" BorderBrush="AliceBlue" BorderThickness="0,1,0,0">
             <Border.Style>
                 <Style TargetType="{x:Type Border}">
                     <Style.Triggers>
@@ -70,13 +85,13 @@
                 <ControlTemplate TargetType="ContentControl">
                     <Grid>
                         <Border BorderBrush="LightGray" CornerRadius="10" Background="White"
-                            Padding="0" BorderThickness="0 0 2 2">
+                            Padding="0" BorderThickness="0,0,2,2">
                             <Border.Effect>
                                 <DropShadowEffect />
                             </Border.Effect>
                         </Border>
                         <Border CornerRadius="10" Background="White" Padding="0" BorderBrush="LightGray"
-                                BorderThickness="2 2 0 0">
+                                BorderThickness="2,2,0,0">
                             <ContentPresenter Content="{TemplateBinding Content}"
                                           ContentTemplate="{TemplateBinding ContentTemplate}"
                                           Cursor="{TemplateBinding Cursor}"

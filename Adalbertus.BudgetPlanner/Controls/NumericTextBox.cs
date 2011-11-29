@@ -8,7 +8,7 @@ using System.Windows.Controls;
 
 namespace Adalbertus.BudgetPlanner.Controls
 {
-    public class NumericTextBox : WatermarkTextBox
+    public class NumericTextBox : WatermarkTextBoxExt
     {
         public static readonly DependencyProperty ValueProperty = DependencyProperty.Register("Value", typeof(decimal?), typeof(NumericTextBox), new FrameworkPropertyMetadata(default(decimal?), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnValueChanged));
         public decimal? Value
@@ -25,14 +25,14 @@ namespace Adalbertus.BudgetPlanner.Controls
             }
             numericControl.FormatValue();
         }
-        
+
         public static readonly DependencyProperty FormatStringProperty = DependencyProperty.Register("FormatString", typeof(string), typeof(NumericTextBox), new UIPropertyMetadata(String.Empty, OnFormatStringChanged));
         public string FormatString
         {
             get { return (string)GetValue(FormatStringProperty); }
             set { SetValue(FormatStringProperty, value); }
         }
-        
+
         private static void OnFormatStringChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
             var numericControl = o as NumericTextBox;
@@ -44,6 +44,17 @@ namespace Adalbertus.BudgetPlanner.Controls
         }
 
 
+
+        public decimal? DefaultValue
+        {
+            get { return (decimal?)GetValue(DefaultValueProperty); }
+            set { SetValue(DefaultValueProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for DefaultValue.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty DefaultValueProperty =
+            DependencyProperty.Register("DefaultValue", typeof(decimal?), typeof(NumericTextBox), new UIPropertyMetadata(default(decimal?)));
+
         public NumericTextBox()
         {
             TextAlignment = System.Windows.TextAlignment.Right;
@@ -53,7 +64,7 @@ namespace Adalbertus.BudgetPlanner.Controls
         protected override void OnLostFocus(RoutedEventArgs e)
         {
             base.OnLostFocus(e);
-            FormatValue();            
+            FormatValue();
         }
 
         protected override void OnGotFocus(RoutedEventArgs e)
@@ -69,7 +80,11 @@ namespace Adalbertus.BudgetPlanner.Controls
             if (IsFocused)
             {
                 decimal value;
-                if (decimal.TryParse(Text, out value))
+                if (string.IsNullOrWhiteSpace(Text))
+                {
+                    Value = DefaultValue;
+                }
+                else if (decimal.TryParse(Text, out value))
                 {
                     Value = value;
                 }

@@ -10,11 +10,21 @@ namespace Adalbertus.BudgetPlanner.ViewModels
 {
     public class MessageBoxViewModel : BaseDailogViewModel
     {
-        public MessageBoxViewModel(IShellViewModel shell, IDatabase database, IConfiguration configuration, ICachedService cashedService, IEventAggregator eventAggregator)
+        public MessageBoxViewModel(IShellViewModel shell, IDatabase database, IConfigurationManager configuration, ICachedService cashedService, IEventAggregator eventAggregator)
             : base(shell, database, configuration, cashedService, eventAggregator)
         {
         }
 
-        public string Message { get; set; }
+        private string _message;
+
+        public string Message
+        {
+            get { return _message; }
+            set
+            {
+                _message = value;
+                NotifyOfPropertyChange(() => Message);
+            }
+        }
     }
 }
