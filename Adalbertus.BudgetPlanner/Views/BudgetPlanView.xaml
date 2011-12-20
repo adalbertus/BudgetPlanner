@@ -7,226 +7,299 @@
              xmlns:ext="clr-namespace:Adalbertus.BudgetPlanner.Extensions"
              xmlns:extToolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit/extended"
              xmlns:ctrl="clr-namespace:Adalbertus.BudgetPlanner.Controls"
+             xmlns:vm="clr-namespace:Adalbertus.BudgetPlanner.ViewModels"
+             xmlns:conv="clr-namespace:Adalbertus.BudgetPlanner.Converters"
 >
     <UserControl.Resources>
-        <CollectionViewSource x:Key="GroupedBudgetPlanList" Source="{Binding BudgetPlanList}">
-            <CollectionViewSource.GroupDescriptions>
-                <PropertyGroupDescription PropertyName="GroupName" />
-            </CollectionViewSource.GroupDescriptions>
-        </CollectionViewSource>
-    </UserControl.Resources>
+        <ControlTemplate x:Key="GroupTreeViewItem" TargetType="{x:Type TreeViewItem}">
+            <Expander Style="{StaticResource DarkExpander}" IsExpanded="False" Width="315">
+                <Expander.Header>
+                    <ContentPresenter Name="PART_Header" Content="{Binding}" />
+                </Expander.Header>
+                <ItemsPresenter />
+            </Expander>
+        </ControlTemplate>
 
-    <GroupBox Grid.Column="0" Header="Plan budżetowy">
-        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-            <ItemsControl ItemsSource="{Binding Source={StaticResource GroupedBudgetPlanList}}" 
-                          HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch">
-                <ItemsControl.GroupStyle>
-                    <GroupStyle>
-                        <GroupStyle.ContainerStyle>
-                            <Style TargetType="{x:Type GroupItem}">
-                                <Setter Property="Template">
-                                    <Setter.Value>
-                                        <ControlTemplate TargetType="{x:Type GroupItem}">                                            
-                                            <Grid Margin="4">
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                    <ColumnDefinition Width="*" />
-                                                </Grid.ColumnDefinitions>
-                                                <Border Grid.Row="0" Grid.RowSpan="2" CornerRadius="4,4,0,0" 
-                                                        Background="{StaticResource LightBlueGradientVertical}" 
-                                                        BorderBrush="LightGray" BorderThickness="1">
-                                                    <Border.LayoutTransform>
-                                                        <RotateTransform Angle="-90"/>
-                                                    </Border.LayoutTransform>
-                                                    <Label Content="{Binding Name}" HorizontalContentAlignment="Center" HorizontalAlignment="Stretch"
-                                                           FontWeight="Bold"/>
-                                                </Border>
-                                                <Border Grid.Column="1" BorderBrush="LightGray" BorderThickness="0,1,1,1">
-                                                    <ItemsPresenter Grid.Row="0" Grid.Column="1" VerticalAlignment="Stretch"/>
-                                                </Border>
-                                            </Grid>
-                                        </ControlTemplate>
-                                    </Setter.Value>
-                                </Setter>
+        <ControlTemplate x:Key="DetailsTreeViewItem" TargetType="{x:Type TreeViewItem}">
+            <ContentPresenter Name="PART_Header" Content="{Binding}" />
+        </ControlTemplate>
+
+        <Style TargetType="{x:Type TreeViewItem}">
+            <Setter Property="Template" Value="{StaticResource GroupTreeViewItem}" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Converter={StaticResource DataType}}" Value="{x:Type vm:BudgetPlanItemVM}">
+                    <Setter Property="Template" Value="{StaticResource DetailsTreeViewItem}" />
+                    <Setter Property="ItemsPanel">
+                        <Setter.Value>
+                            <ItemsPanelTemplate>
+                                <Grid />
+                            </ItemsPanelTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style TargetType="ListViewItem">
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        </Style>
+
+        <!-- Template for grouped data -->
+        <HierarchicalDataTemplate DataType="{x:Type vm:BudgetPlanGroupItemVM}" ItemsSource="{Binding Items}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Grid.Resources>
+                    <Style TargetType="TextBlock">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource Self},Converter={StaticResource LessThan}}" Value="True">
+                                <Setter Property="FontWeight" Value="Bold" />
+                                <Setter Property="Foreground" Value="Red" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Resources>
+                <TextBlock Grid.Column="0" Text="{Binding GroupName}" HorizontalAlignment="Center" FontWeight="Bold"/>
+                <WrapPanel Grid.Column="1" Orientation="Vertical" ext:MarginSetterExtension.Margin="1">
+                    <WrapPanel.ToolTip>
+                        <GroupBox Header="Łączny plan budżetowy" Padding="4">
+                            <ListView ItemsSource="{Binding ToolTipValues}" FontSize="10">
+                                <ListView.Resources>
+                                    <Style TargetType="{x:Type ListViewItem}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding TotalBalanceValue, Converter={StaticResource LessThan}}" Value="True">
+                                                <Setter Property="Background" Value="Tomato" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ListView.Resources>
+                                <ListView.View>
+                                    <GridView>                                        
+                                        <GridViewColumn Header="Kategoria" DisplayMemberBinding="{Binding Name}" Width="Auto"/>
+                                        <GridViewColumn Header="Kwota" Width="Auto">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding TotalValue, Converter={StaticResource CurrencyFormatter}}" TextAlignment="Right" />
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                        <GridViewColumn Header="Kwota wydana" Width="Auto">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <WrapPanel>
+                                                        <TextBlock Width="55" Text="{Binding TotalExpenseValue, Converter={StaticResource CurrencyFormatter}}"
+                                                                   Tag="{Binding TotalBalanceValue}" TextAlignment="Right"/>
+                                                        <TextBlock Width="45" Text="{Binding TotalBalanceProcentValue, Converter={StaticResource ProcentFormatter}}"
+                                                                       TextAlignment="Right"/>
+                                                    </WrapPanel>
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                        <GridViewColumn Header="Kwota do wydania" Width="Auto">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Width="55" Text="{Binding TotalBalanceValue, Converter={StaticResource CurrencyFormatter}}"
+                                                               Tag="{Binding TotalBalanceValue}"
+                                                               TextAlignment="Right"/>
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                    </GridView>
+                                </ListView.View>
+                            </ListView>
+                        </GroupBox>
+                    </WrapPanel.ToolTip>
+
+                    <WrapPanel>
+                        <TextBlock FontSize="10" Width="55" TextAlignment="Right" Margin="0,0,2,0"                                   
+                                   Text="{Binding TotalValue, Converter={StaticResource CurrencyFormatter}}" />
+                        <Image Source="/Adalbertus.BudgetPlanner;component/Images/total_plan_cost.png" Width="10"
+                               ToolTip="Łączna kwota planu"/>
+                    </WrapPanel>
+                    <WrapPanel >
+                        <TextBlock FontSize="10" Width="55" TextAlignment="Right" Margin="0,0,2,0"
+                                   Tag="{Binding TotalBalanceValue}"
+                                   Text="{Binding TotalExpenseValue, Converter={StaticResource CurrencyFormatter}}"/>
+                        <Image Source="/Adalbertus.BudgetPlanner;component/Images/spent.png" Width="10"
+                               ToolTip="Łączna kwota wydana"/>
+                    </WrapPanel>
+                    <WrapPanel>
+                        <TextBlock FontSize="10" Width="55" TextAlignment="Right" Margin="0,0,2,0"
+                                   Tag="{Binding TotalBalanceValue}"
+                                   Text="{Binding TotalBalanceValue, Converter={StaticResource CurrencyFormatter}}" />
+                        <Image Source="/Adalbertus.BudgetPlanner;component/Images/shopping-list.png" Width="10" 
+                               ToolTip="Łączna kwota do wydania" />
+                    </WrapPanel>
+                </WrapPanel>
+            </Grid>
+        </HierarchicalDataTemplate>
+
+        <DataTemplate DataType="{x:Type vm:BudgetPlanItemVM}">
+            <Expander HorizontalContentAlignment="Stretch" Width="305">
+                <Expander.Header>
+                    <StackPanel>
+                        <StackPanel.Resources>
+                            <Style TargetType="TextBlock">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource Self},Converter={StaticResource LessThan}}" Value="True">
+                                        <Setter Property="FontWeight" Value="Bold" />
+                                        <Setter Property="Foreground" Value="Red" />
+                                    </DataTrigger>
+                                </Style.Triggers>
                             </Style>
-                        </GroupStyle.ContainerStyle>
-                    </GroupStyle>
-                </ItemsControl.GroupStyle>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Expander HorizontalContentAlignment="Stretch">
-                            <Expander.Header>
-                                <StackPanel>                                   
-                                    <TextBlock Padding="0,4,0,4" FontWeight="Bold" Text="{Binding Name}" FontSize="10"/>
-                                    <Grid Margin="0,0,0,4">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition />
-                                            <ColumnDefinition Width="122"/>
-                                            <ColumnDefinition />
-                                        </Grid.ColumnDefinitions>
-                                        <Border Grid.Column="0" BorderBrush="LightGray" BorderThickness="1"
-                                                Padding="2" CornerRadius="4" HorizontalAlignment="Left"
-                                                ToolTip="Plan łączny" 
+                        </StackPanel.Resources>
+                        <TextBlock Padding="0,4,0,4" FontWeight="Bold" Text="{Binding Name}" FontSize="10"/>
+                        <Grid Margin="0,0,0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition Width="122"/>
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <Border Grid.Column="0" BorderBrush="LightGray" BorderThickness="1"
+                                                Padding="2" CornerRadius="4" HorizontalAlignment="Left"                                                
                                                 Style="{StaticResource HoverBorder}">
-                                            <WrapPanel>
-                                            <Image Source="/Adalbertus.BudgetPlanner;component/Images/total_plan_cost.png"
+                                <WrapPanel>
+                                    <Image Source="/Adalbertus.BudgetPlanner;component/Images/total_plan_cost.png"
                                                Width="12" />
-                                            <TextBlock FontSize="10" Width="55"
+                                    <TextBlock FontSize="10" Width="55"
                                                    Text="{Binding TotalValue, Converter={StaticResource CurrencyFormatter}}" 
                                                    TextAlignment="Right"/>
-                                                </WrapPanel>
-                                        </Border>
+                                </WrapPanel>
+                                <Border.ToolTip>
+                                    <GroupBox Header="Łączny plan wydatków" Padding="4">
+                                        <ListView ItemsSource="{Binding ToolTipValues, Mode=OneWay}">
+                                            <ListView.View>
+                                                <GridView>
+                                                    <GridViewColumn Header="Kwota" Width="Auto">
+                                                        <GridViewColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <TextBlock Text="{Binding Value, Converter={StaticResource CurrencyFormatter}}" TextAlignment="Right" />
+                                                            </DataTemplate>
+                                                        </GridViewColumn.CellTemplate>
+                                                    </GridViewColumn>
+                                                    <GridViewColumn Header="Opis" DisplayMemberBinding="{Binding Description}" Width="Auto" />
+                                                </GridView>
+                                            </ListView.View>
+                                        </ListView>
+                                    </GroupBox>
+                                </Border.ToolTip>
+                            </Border>
 
-                                        <Border Grid.Column="1"  BorderBrush="LightGray" BorderThickness="1"
+                            <Border Grid.Column="1"  BorderBrush="LightGray" BorderThickness="1"
                                                 Padding="2" CornerRadius="4" HorizontalAlignment="Center"
                                                 ToolTip="Kwota wydana"
                                                 Style="{StaticResource HoverBorder}">
-                                            <WrapPanel>
-                                                <Image Source="/Adalbertus.BudgetPlanner;component/Images/spent.png"
+                                <WrapPanel>
+                                    <Image Source="/Adalbertus.BudgetPlanner;component/Images/spent.png"
                                                Width="12" />
-                                                <TextBlock FontSize="10" Width="55"
+                                    <TextBlock FontSize="10" Width="55" Tag="{Binding TotalBalanceValue}"
                                                            Text="{Binding TotalExpenseValue, Converter={StaticResource CurrencyFormatter}}"
                                                            TextAlignment="Right"/>
-                                                <Border BorderBrush="LightGray" BorderThickness="1,0,0,0" Margin="2,0,0,0">
-                                                    <TextBlock FontSize="10" Width="45"
+                                    <Border BorderBrush="LightGray" BorderThickness="1,0,0,0" Margin="2,0,0,0">
+                                        <TextBlock FontSize="10" Width="45"
                                                            Text="{Binding TotalBalanceProcentValue, Converter={StaticResource ProcentFormatter}}"
                                                            TextAlignment="Right"/>
-                                                </Border>
-                                            </WrapPanel>
-                                        </Border>
+                                    </Border>
+                                </WrapPanel>
+                            </Border>
 
-                                        <Border Grid.Column="2" BorderBrush="LightGray" BorderThickness="1" 
+                            <Border Grid.Column="2" BorderBrush="LightGray" BorderThickness="1" 
                                                 Padding="2" CornerRadius="4" HorizontalAlignment="Right"
                                                 ToolTip="Kwota do wydania" 
                                                 Style="{StaticResource HoverBorder}">
-                                            <WrapPanel>
-                                                <Image Source="/Adalbertus.BudgetPlanner;component/Images/shopping-list.png"
+                                <WrapPanel>
+                                    <Image Source="/Adalbertus.BudgetPlanner;component/Images/shopping-list.png"
                                                        Width="12" />
-                                                <TextBlock FontSize="10" Width="55"
-                                                           Text="{Binding TotalBalanceValue, Converter={StaticResource CurrencyFormatter}}"
-                                                           TextAlignment="Right"/>
-                                            </WrapPanel>
-                                        </Border>
+                                    <TextBlock FontSize="10" Width="55" Tag="{Binding TotalBalanceValue}"
+                                               Text="{Binding TotalBalanceValue, Converter={StaticResource CurrencyFormatter}}"
+                                               TextAlignment="Right"/>
+                                </WrapPanel>
+                            </Border>
 
-                                    </Grid>
-                                    <Grid Visibility="Collapsed">
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                        </Grid.RowDefinitions>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="75"/>
-                                            <ColumnDefinition Width="75"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                        </Grid.ColumnDefinitions>
-                                        <TextBlock Grid.Row="0" Grid.Column="0" Padding="0" FontSize="10">Łącznie</TextBlock>
-                                        <TextBlock Grid.Row="0" Grid.Column="1" Padding="0" FontSize="10"
-                                                   Text="{Binding TotalValue, Converter={StaticResource CurrencyFormatter}}" TextAlignment="Right"/>
-
-                                        <TextBlock Grid.Row="1" Grid.Column="0" Padding="0" FontSize="10">Wydane</TextBlock>
-                                        <TextBlock Grid.Row="1" Grid.Column="1" Padding="0" FontSize="10"
-                                                   Text="{Binding TotalExpenseValue, Converter={StaticResource CurrencyFormatter}}" TextAlignment="Right"/>
-                                        <WrapPanel Grid.Row="1" Grid.Column="2">
-                                            <TextBlock Padding="4,0,0,0" FontSize="10">[</TextBlock>
-                                            <TextBlock Padding="0" FontSize="10"
-                                                       Text="{Binding TotalBalanceProcentValue, Converter={StaticResource ProcentFormatter}}" TextAlignment="Right"/>
-                                            <TextBlock Padding="0" FontSize="10">]</TextBlock>
-                                        </WrapPanel>
-
-                                        <TextBlock Grid.Row="2" Grid.Column="0" Padding="0" FontSize="10">Do wydania</TextBlock>
-                                        <TextBlock Grid.Row="2" Grid.Column="1" Padding="0" FontSize="10"
-                                                   Text="{Binding TotalBalanceValue, Converter={StaticResource CurrencyFormatter}}"
-                                                   TextAlignment="Right">
-                                            <TextBlock.Resources>
-                                                <Style TargetType="TextBlock">
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding TotalBalanceValue, Converter={StaticResource LessThan}}" Value="True">
-                                                            <Setter Property="FontWeight" Value="Bold" />
-                                                            <Setter Property="Foreground" Value="Red" />
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </TextBlock.Resources>
-                                        </TextBlock>
-
-
-                                    </Grid>
-                                </StackPanel>
-                            </Expander.Header>
-                            <Grid Margin="4">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition />
-                                </Grid.RowDefinitions>
-                                <Grid Grid.Row="0" Margin="0,0,0,4">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="Auto"/>
-                                    </Grid.ColumnDefinitions>
-                                    <ctrl:NumericTextBox x:Name="NewValueControl" Grid.Column="0" FontSize="10" Value="{Binding NewValue}"
+                        </Grid>
+                    </StackPanel>
+                </Expander.Header>
+                <Grid Margin="4" KeyboardNavigation.TabNavigation="Local">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Row="0" Margin="0,0,0,4">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <ctrl:CalculatorTextBox x:Name="NewValueControl" Grid.Column="0" FontSize="10" Value="{Binding NewValue}"
                                                          ext:FocusExtension.IsFocused="{Binding IsNewValueFocused}"
-                                                         ToolTip="Ctrl+Enter wstawia od razu wartość do tabeli"
-                                                         Watermark="Wstaw wartość" Width="80">
-                                        <i:Interaction.Triggers>
-                                            <ext:KeyTrigger Key="Enter" Modifiers="Control">
-                                                <cal:ActionMessage MethodName="AddNewValueToBudgetPlan">
-                                                    <cal:Parameter Value="$dataContext"/>
-                                                </cal:ActionMessage>
-                                            </ext:KeyTrigger>
-                                            <ext:KeyTrigger Key="Enter" FocusTarget="{Binding ElementName=NewDescription}">
-                                            </ext:KeyTrigger>
-                                        </i:Interaction.Triggers>
-                                    </ctrl:NumericTextBox>
-                                    <extToolkit:WatermarkTextBox x:Name="NewDescription" Grid.Column="1"
+                                                         ToolTip="Dopuszczalne są też wyrażenia matematyczne, np.: (250-3*3,56)+10"
+                                                         Watermark="Wstaw wartość" Width="80"
+                                             KeyboardNavigation.TabIndex="1">
+                            <i:Interaction.Triggers>
+                                <ext:KeyTrigger Key="Enter" Modifiers="Control">
+                                    <cal:ActionMessage MethodName="AddNewValueToBudgetPlan">
+                                        <cal:Parameter Value="$dataContext"/>
+                                    </cal:ActionMessage>
+                                </ext:KeyTrigger>
+                                <ext:KeyTrigger Key="Enter" FocusTarget="{x:Reference NewDescription}">
+                                </ext:KeyTrigger>
+                            </i:Interaction.Triggers>
+                        </ctrl:CalculatorTextBox>
+                        <extToolkit:WatermarkTextBox x:Name="NewDescription" Grid.Column="1"
                                                                  Text="{Binding NewDescription}" Watermark="Opis"
-                                                                 Margin="4,0,4,0" FontSize="10">
-                                        <i:Interaction.Triggers>
-                                            <ext:KeyTrigger Key="Enter" FocusTarget="{Binding ElementName=NewValueControl}">
-                                                <cal:ActionMessage MethodName="AddNewValueToBudgetPlan">
-                                                    <cal:Parameter Value="$dataContext"/>
-                                                </cal:ActionMessage>
-                                            </ext:KeyTrigger>
-                                        </i:Interaction.Triggers>
-                                    </extToolkit:WatermarkTextBox>
-                                    <ctrl:ImageButton Grid.Column="2" ImageUrl="Images/save.png"  Content="Wstaw" IsEnabled="{Binding NewValue, Converter={StaticResource NumericToBool}}"
-                                            cal:Message.Attach="[Event Click] = [Action AddNewValueToBudgetPlan($dataContext)]"
-                                            FontSize="10"/>
-                                </Grid>
-                                <DataGrid Grid.Row="1" ItemsSource="{Binding Values, UpdateSourceTrigger=PropertyChanged}"
+                                                                 Margin="4,0,4,0" FontSize="10"
+                                                     KeyboardNavigation.TabIndex="2">
+                            <i:Interaction.Triggers>
+                                <ext:KeyTrigger Key="Enter" FocusTarget="{x:Reference NewValueControl}">
+                                    <cal:ActionMessage MethodName="AddNewValueToBudgetPlan">
+                                        <cal:Parameter Value="$dataContext"/>
+                                    </cal:ActionMessage>
+                                </ext:KeyTrigger>
+                            </i:Interaction.Triggers>
+                        </extToolkit:WatermarkTextBox>
+                        <ctrl:ImageButton Grid.Column="2" ImageUrl="Images/save.png" Content="Wstaw" IsEnabled="{Binding NewValue, Converter={StaticResource NumericToBool}}"
+                                          cal:Message.Attach="[Event Click] = [Action AddNewValueToBudgetPlan($dataContext)]"
+                                          FontSize="10"
+                                          KeyboardNavigation.TabIndex="3"/>
+                    </Grid>
+                    <DataGrid Grid.Row="1" ItemsSource="{Binding Values, UpdateSourceTrigger=PropertyChanged}"
                                           AutoGenerateColumns="False" CanUserAddRows="False"
                                           CanUserReorderColumns="False" CanUserResizeColumns="False"
                                           CanUserDeleteRows="True" VerticalScrollBarVisibility="Auto"
                                           MaxHeight="140" FontSize="10"
-                                          RowHeaderWidth="0">
-                                    <DataGrid.Columns>
-                                        <DataGridTemplateColumn Width="26">
-                                            <DataGridTemplateColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <!-- I don't know why setting ImageUrl in style doesn't work in DataTemplate -->
-                                                    <ctrl:ImageButton ToolTip="Usuń" ImageUrl="Images/delete.png"
+                                          RowHeaderWidth="0"
+                              KeyboardNavigation.TabIndex="1">
+                        <DataGrid.Columns>
+                            <DataGridTemplateColumn Width="26">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <!-- I don't know why setting ImageUrl in style doesn't work in DataTemplate -->
+                                        <ctrl:ImageButton ToolTip="Usuń" ImageUrl="Images/delete.png"
                                                                       cal:Message.Attach="[Event Click] = [Action DeleteBudgetPlanItem($dataContext)]" />
-                                                </DataTemplate>
-                                            </DataGridTemplateColumn.CellTemplate>
-                                        </DataGridTemplateColumn>
-                                        <DataGridTemplateColumn Header="Wartość" Width="80">
-                                            <DataGridTemplateColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <ctrl:NumericTextBox Value="{Binding Value, UpdateSourceTrigger=LostFocus}"
-                                                                         BorderThickness="0"/>
-                                                </DataTemplate>
-                                            </DataGridTemplateColumn.CellTemplate>
-                                        </DataGridTemplateColumn>
-                                        <DataGridTextColumn Header="Opis" Binding="{Binding Description}" Width="*"/>
-                                    </DataGrid.Columns>
-                                </DataGrid>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn Header="Wartość" Width="80">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <ctrl:CalculatorTextBox Value="{Binding Value, UpdateSourceTrigger=LostFocus}"
+                                                                ToolTip="Dopuszczalne są też wyrażenia matematyczne, np.: (250-3*3,56)+10"
+                                                                BorderThickness="0"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTextColumn Header="Opis" Binding="{Binding Description}" Width="*"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
 
-                            </Grid>
-                        </Expander>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-        </ScrollViewer>
+                </Grid>
+            </Expander>
+        </DataTemplate>
+    </UserControl.Resources>
+
+    <GroupBox Header="Plan budżetowy">
+        <TreeView ItemsSource="{Binding BudgetPlanListGrouped}" BorderThickness="0" />
     </GroupBox>
 </UserControl>

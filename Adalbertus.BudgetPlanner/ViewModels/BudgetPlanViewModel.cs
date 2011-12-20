@@ -5,9 +5,11 @@ using System.Text;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using Adalbertus.BudgetPlanner.Core;
+using Adalbertus.BudgetPlanner.Extensions;
 using Adalbertus.BudgetPlanner.Models;
 using Adalbertus.BudgetPlanner.Database;
 using Caliburn.Micro;
+using System.Diagnostics;
 
 namespace Adalbertus.BudgetPlanner.ViewModels
 {
@@ -16,9 +18,13 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         public BudgetPlanViewModel(IShellViewModel shell, IDatabase database, IConfigurationManager configuration, ICachedService cashedService, IEventAggregator eventAggregator)
             : base(shell, database, configuration, cashedService, eventAggregator)
         {
-            BudgetPlanList = new BindableCollectionExt<BudgetPlanItemVM>();
+            AllBudgetPlanList = new BindableCollectionExt<BudgetPlanItemVM>();
+            BudgetPlanListGrouped = new BindableCollectionExt<BudgetPlanGroupItemVM>();
         }
-        public BindableCollectionExt<BudgetPlanItemVM> BudgetPlanList { get; set; }
+
+        public BindableCollectionExt<BudgetPlanItemVM> AllBudgetPlanList { get; private set; }
+
+        public BindableCollectionExt<BudgetPlanGroupItemVM> BudgetPlanListGrouped { get; private set; }
 
         public Budget Budget { get; private set; }
 
@@ -34,7 +40,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         {
             if (refreshEvent.Sender == typeof(ExpensesViewModel).Name)
             {
-                BudgetPlanList.ForEach(x => x.RefreshUI());
+                AllBudgetPlanList.ForEach(x => x.RefreshUI());
             }            
         }
         #endregion
@@ -58,35 +64,36 @@ namespace Adalbertus.BudgetPlanner.ViewModels
                 .InnerJoin("CashFlowGroup")
                 .On("CashFlow.CashFlowGroupId = CashFlowGroup.Id")
                 .Where("BudgetPlan.BudgetId = @0", Budget.Id);
-            var budgetPlans = Database.Query<BudgetPlan, Budget, CashFlow, CashFlowGroup>(sql);
-
-            var sumOfExpenses = Database.Query<dynamic>(PetaPoco.Sql.Builder
-                .Select("CashFlow.Id, SUM(ifnull(Value, 0) Sum)")
-                .From("CashFlow")
-                .LeftJoin("Expense")
-                .On("Expense.CashFlowId = CashFlow.Id AND BudgetId = @0", Budget.Id));
-
+            var budgetPlans = Database.Query<BudgetPlan, Budget, CashFlow, CashFlowGroup>(sql).ToList();
+            
             Budget.BudgetPlanItems.Clear();
             ((BindableCollectionExt<BudgetPlan>)Budget.BudgetPlanItems).AddRange(budgetPlans);
-            BudgetPlanList.IsNotifying = false;
-            DetachFromBudgetPlanItems();
-            BudgetPlanList.Clear();
 
+            DetachFromBudgetPlanItems();
+            AllBudgetPlanList.Clear();            
             foreach (var cashFlow in cashFlows)
             {
-                var planItems = budgetPlans.Where(x => x.CashFlow.Id == cashFlow.Id);
-                BudgetPlanList.Add(new BudgetPlanItemVM(Budget, cashFlow, planItems));
+                var planItems = budgetPlans.Where(x => x.CashFlow.Id == cashFlow.Id).ToList();
+                AllBudgetPlanList.Add(new BudgetPlanItemVM(Budget, cashFlow, planItems));
             }
-            BudgetPlanList.IsNotifying = true;
 
-            NotifyOfPropertyChange(() => BudgetPlanList);
-            BudgetPlanList.Refresh();
+            BudgetPlanListGrouped.Clear();
+            cashFlows.GroupBy(x => x.GroupName).ForEach(cf =>
+            {
+                var groupBudgetPlanItems = AllBudgetPlanList.Where(x => x.GroupName == cf.Key).ToList();
+                var groupedItem = new BudgetPlanGroupItemVM(groupBudgetPlanItems)
+                {
+                    GroupName = cf.Key,
+                };
+                BudgetPlanListGrouped.Add(groupedItem);
+            });
+                      
             AttachToBudgetPlanItems();
         }
 
         private void AttachToBudgetPlanItems()
         {
-            BudgetPlanList.ForEach(x =>
+            AllBudgetPlanList.ForEach(x =>
             {
                 x.Values.CollectionChanged += BudgetPlanListCollectionChanged;
                 x.Values.PropertyChanged += (s, e) => { SaveBudgetPlan(s as BudgetPlan); };
@@ -95,7 +102,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
 
         private void DetachFromBudgetPlanItems()
         {
-            BudgetPlanList.ForEach(x =>
+            AllBudgetPlanList.ForEach(x =>
             {
                 x.Values.CollectionChanged -= BudgetPlanListCollectionChanged;
             });
@@ -104,19 +111,11 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         private void SaveBudgetPlan(BudgetPlan budgetPlan)
         {
             Save(budgetPlan);
-            var budgetPlanItemVM        = FindBudgetPlanItemVMFor(budgetPlan);
-            var budgetPlanItem          = budgetPlanItemVM.Budget.BudgetPlanItems.FirstOrDefault(x => x.Id == budgetPlan.Id);
-            budgetPlanItem.IsNotifying = false;
-            budgetPlanItem.Value        = budgetPlan.Value;
-            budgetPlanItem.Description  = budgetPlan.Description;
-            budgetPlanItem.IsNotifying = true; 
-            budgetPlanItemVM.RefreshUI();
-            PublishRefreshRequest(budgetPlanItem);
         }
 
         private BudgetPlanItemVM FindBudgetPlanItemVMFor(BudgetPlan budgetPlan)
         {
-            var budgetPlanItem = BudgetPlanList
+            var budgetPlanItem = AllBudgetPlanList
                     .Where(x => x.CashFlow.Id == budgetPlan.CashFlowId && x.Budget.Id == budgetPlan.BudgetId)
                     .First();
             return budgetPlanItem;
@@ -150,7 +149,6 @@ namespace Adalbertus.BudgetPlanner.ViewModels
                 tx.Complete();
                 var budgetPlanItem = FindBudgetPlanItemVMFor(planItem);
                 budgetPlanItem.Values.Remove(planItem);
-                budgetPlanItem.RefreshUI();
                 PublishRefreshRequest(planItem);
             }
         }

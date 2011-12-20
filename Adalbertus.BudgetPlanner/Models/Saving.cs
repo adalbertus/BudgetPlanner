@@ -76,6 +76,7 @@ namespace Adalbertus.BudgetPlanner.Models
                 Value       = -value,
                 Description = description,
                 Budget      = withdrawToBudget,
+                Expense     = new Expense(),
             };
             newSavingValue.UpdateDescription();
             Values.Add(newSavingValue);

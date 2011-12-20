@@ -1,5 +1,6 @@
 ﻿using System.Data.Common;
 using System;
+using Adalbertus.BudgetPlanner.Properties;
 
 namespace Adalbertus.BudgetPlanner.Database
 {
@@ -29,9 +30,11 @@ namespace Adalbertus.BudgetPlanner.Database
         }
 
         private static void UpdateToVersion2(IDatabase database)
-        {
+        {            
             using (var tx = database.GetTransaction())
             {
+                database.Execute(Resources.db_update_v002);
+                tx.Complete();
             }
         }
     }

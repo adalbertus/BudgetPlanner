@@ -1,0 +1,469 @@
+12/13/2011 14:46:24 - Binding Adalbertus.BudgetPlanner.Views.ShellView and Adalbertus.BudgetPlanner.ViewModels.ShellViewModel.
+12/13/2011 14:46:24 - Setting DC of Adalbertus.BudgetPlanner.Views.ShellView to Adalbertus.BudgetPlanner.ViewModels.ShellViewModel.
+12/13/2011 14:46:24 - Attaching message handler Adalbertus.BudgetPlanner.ViewModels.ShellViewModel to Adalbertus.BudgetPlanner.Views.ShellView.
+12/13/2011 14:46:24 - Attaching Adalbertus.BudgetPlanner.Views.ShellView to Adalbertus.BudgetPlanner.ViewModels.ShellViewModel.
+12/13/2011 14:46:24 - Action Convention Not Applied: No actionable element for get_DialogScreen.
+12/13/2011 14:46:24 - Action Convention Not Applied: No actionable element for set_DialogScreen.
+12/13/2011 14:46:24 - Action Convention Not Applied: No actionable element for get_Database.
+12/13/2011 14:46:24 - Action Convention Not Applied: No actionable element for get_EventAggregator.
+12/13/2011 14:46:24 - Action Convention Not Applied: No actionable element for get_ConfigurationManager.
+12/13/2011 14:46:24 - Action Convention Not Applied: No actionable element for get_CachedService.
+12/13/2011 14:46:24 - Action Convention Not Applied: No actionable element for get_CurrentBudget.
+12/13/2011 14:46:24 - Action Convention Not Applied: No actionable element for set_CurrentBudget.
+12/13/2011 14:46:24 - Action Convention Not Applied: No actionable element for get_Version.
+12/13/2011 14:46:24 - Action Convention Not Applied: No actionable element for get_CurrentBudgetDate.
+12/13/2011 14:46:24 - Action Convention Not Applied: No actionable element for set_CurrentBudgetDate.
+12/13/2011 14:46:24 - Action Convention Not Applied: No actionable element for ShowCurrentBudget.
+12/13/2011 14:46:24 - Action Convention Not Applied: No actionable element for ShowPreviousBudget.
+12/13/2011 14:46:24 - Action Convention Not Applied: No actionable element for ShowNextBudget.
+12/13/2011 14:46:24 - Action Convention Not Applied: No actionable element for ShowCashFlowTypes.
+12/13/2011 14:46:24 - Action Convention Not Applied: No actionable element for ShowExternalSources.
+12/13/2011 14:46:24 - Action Convention Not Applied: No actionable element for ShowHelp.
+12/13/2011 14:46:24 - Action Convention Not Applied: No actionable element for ShowAbout.
+12/13/2011 14:46:24 - Action Convention Not Applied: No actionable element for ShowMessage.
+12/13/2011 14:46:24 - Action Convention Not Applied: No actionable element for ShowDialog.
+12/13/2011 14:46:24 - Action Convention Not Applied: No actionable element for ActivateItem.
+12/13/2011 14:46:24 - Action Convention Not Applied: No actionable element for DeactivateItem.
+12/13/2011 14:46:24 - Action Convention Not Applied: No actionable element for CanClose.
+12/13/2011 14:46:24 - Action Convention Not Applied: No actionable element for GetChildren.
+12/13/2011 14:46:24 - Action Convention Not Applied: No actionable element for get_ActiveItem.
+12/13/2011 14:46:24 - Action Convention Not Applied: No actionable element for set_ActiveItem.
+12/13/2011 14:46:24 - Action Convention Not Applied: No actionable element for get_CloseStrategy.
+12/13/2011 14:46:24 - Action Convention Not Applied: No actionable element for set_CloseStrategy.
+12/13/2011 14:46:24 - Action Convention Not Applied: No actionable element for add_ActivationProcessed.
+12/13/2011 14:46:24 - Action Convention Not Applied: No actionable element for remove_ActivationProcessed.
+12/13/2011 14:46:24 - Action Convention Not Applied: No actionable element for get_Parent.
+12/13/2011 14:46:24 - Action Convention Not Applied: No actionable element for set_Parent.
+12/13/2011 14:46:24 - Action Convention Not Applied: No actionable element for get_DisplayName.
+12/13/2011 14:46:24 - Action Convention Not Applied: No actionable element for set_DisplayName.
+12/13/2011 14:46:24 - Action Convention Not Applied: No actionable element for get_IsActive.
+12/13/2011 14:46:24 - Action Convention Not Applied: No actionable element for get_IsInitialized.
+12/13/2011 14:46:24 - Action Convention Not Applied: No actionable element for add_Activated.
+12/13/2011 14:46:24 - Action Convention Not Applied: No actionable element for remove_Activated.
+12/13/2011 14:46:24 - Action Convention Not Applied: No actionable element for add_AttemptingDeactivation.
+12/13/2011 14:46:24 - Action Convention Not Applied: No actionable element for remove_AttemptingDeactivation.
+12/13/2011 14:46:24 - Action Convention Not Applied: No actionable element for add_Deactivated.
+12/13/2011 14:46:24 - Action Convention Not Applied: No actionable element for remove_Deactivated.
+12/13/2011 14:46:24 - Action Convention Not Applied: No actionable element for TryClose.
+12/13/2011 14:46:24 - Action Convention Not Applied: No actionable element for TryClose.
+12/13/2011 14:46:24 - Action Convention Not Applied: No actionable element for add_ViewAttached.
+12/13/2011 14:46:24 - Action Convention Not Applied: No actionable element for remove_ViewAttached.
+12/13/2011 14:46:24 - Action Convention Not Applied: No actionable element for GetView.
+12/13/2011 14:46:24 - Action Convention Not Applied: No actionable element for add_PropertyChanged.
+12/13/2011 14:46:24 - Action Convention Not Applied: No actionable element for remove_PropertyChanged.
+12/13/2011 14:46:24 - Action Convention Not Applied: No actionable element for get_IsNotifying.
+12/13/2011 14:46:24 - Action Convention Not Applied: No actionable element for set_IsNotifying.
+12/13/2011 14:46:24 - Action Convention Not Applied: No actionable element for Refresh.
+12/13/2011 14:46:24 - Action Convention Not Applied: No actionable element for NotifyOfPropertyChange.
+12/13/2011 14:46:24 - Action Convention Not Applied: No actionable element for NotifyOfPropertyChange.
+12/13/2011 14:46:24 - Action Convention Not Applied: No actionable element for RaisePropertyChangedEventImmediately.
+12/13/2011 14:46:24 - Action Convention Not Applied: No actionable element for ToString.
+12/13/2011 14:46:24 - Action Convention Not Applied: No actionable element for Equals.
+12/13/2011 14:46:24 - Action Convention Not Applied: No actionable element for GetHashCode.
+12/13/2011 14:46:24 - Action Convention Not Applied: No actionable element for GetType.
+12/13/2011 14:46:24 - ViewModel bound on DialogScreen.
+12/13/2011 14:46:24 - Binding Convention Applied: Element DialogScreen.
+12/13/2011 14:46:24 - ViewModel bound on ActiveItem.
+12/13/2011 14:46:24 - Binding Convention Applied: Element ActiveItem.
+12/13/2011 14:46:24 - Activating Adalbertus.BudgetPlanner.ViewModels.ShellViewModel.
+12/13/2011 14:46:24 - Activating Adalbertus.BudgetPlanner.ViewModels.BudgetViewModel.
+12/13/2011 14:46:25 - Binding Adalbertus.BudgetPlanner.Views.BudgetView and Adalbertus.BudgetPlanner.ViewModels.BudgetViewModel.
+12/13/2011 14:46:25 - Setting DC of Adalbertus.BudgetPlanner.Views.BudgetView to Adalbertus.BudgetPlanner.ViewModels.BudgetViewModel.
+12/13/2011 14:46:25 - Attaching message handler Adalbertus.BudgetPlanner.ViewModels.BudgetViewModel to Adalbertus.BudgetPlanner.Views.BudgetView.
+12/13/2011 14:46:25 - Attaching Adalbertus.BudgetPlanner.Views.BudgetView to Adalbertus.BudgetPlanner.ViewModels.BudgetViewModel.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_ExpensesViewModel.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_RevenuesViewModel.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_BudgetPlanViewModel.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_BudgetCalculatorViewModel.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_Budget.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_BudgetDate.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for set_BudgetDate.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for LoadData.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_DateFrom.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_DateTo.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_TransferedValue.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for set_TransferedValue.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_RealBudgetBilans.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_TotalBudgetValue.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_TotalSumOfRevenues.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_SumOfRevenueIncomes.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_SumOfRevenueSavings.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_TotalBudgetBilans.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_TotalBudgetPlanValue.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_TotalExpenseValue.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_TotalBalanceValue.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_TotalBalanceProcentValue.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_Database.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_Configuration.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_EventAggregator.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_CachedService.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_Shell.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for set_Shell.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for AttachEvents.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for DeatachEvents.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for Handle.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_Parent.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for set_Parent.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_DisplayName.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for set_DisplayName.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_IsActive.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_IsInitialized.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for add_Activated.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for remove_Activated.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for add_AttemptingDeactivation.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for remove_AttemptingDeactivation.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for add_Deactivated.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for remove_Deactivated.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for CanClose.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for TryClose.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for TryClose.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for add_ViewAttached.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for remove_ViewAttached.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for GetView.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for add_PropertyChanged.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for remove_PropertyChanged.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_IsNotifying.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for set_IsNotifying.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for Refresh.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for NotifyOfPropertyChange.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for NotifyOfPropertyChange.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for RaisePropertyChangedEventImmediately.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for ToString.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for Equals.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for GetHashCode.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for GetType.
+12/13/2011 14:46:25 - Binding Convention Not Applied: Element budgetView did not match a property.
+12/13/2011 14:46:25 - ViewModel bound on RevenuesViewModel.
+12/13/2011 14:46:25 - Binding Adalbertus.BudgetPlanner.Views.RevenuesView: Wp³ywy bud¿etowe and Adalbertus.BudgetPlanner.ViewModels.RevenuesViewModel.
+12/13/2011 14:46:25 - Setting DC of Adalbertus.BudgetPlanner.Views.RevenuesView: Wp³ywy bud¿etowe to Adalbertus.BudgetPlanner.ViewModels.RevenuesViewModel.
+12/13/2011 14:46:25 - Attaching message handler Adalbertus.BudgetPlanner.ViewModels.RevenuesViewModel to Adalbertus.BudgetPlanner.Views.RevenuesView: Wp³ywy bud¿etowe.
+12/13/2011 14:46:25 - Attaching Adalbertus.BudgetPlanner.Views.RevenuesView: Wp³ywy bud¿etowe to Adalbertus.BudgetPlanner.ViewModels.RevenuesViewModel.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_Budget.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for set_Budget.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_TotalSumOfRevenues.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_SumOfRevenueIncomes.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_SumOfRevenueSavings.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for LoadData.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_AvailableIncomes.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_SelectedAvailableIncome.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for set_SelectedAvailableIncome.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_IncomeValueDate.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for set_IncomeValueDate.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_IncomeValueValue.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for set_IncomeValueValue.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_IncomeValueDescription.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for set_IncomeValueDescription.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_BudgetIncomeValues.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for AddIncomeValue.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for RemoveIncomeValue.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_AvailableSavings.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for set_AvailableSavings.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_SelectedAvailableSaving.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for set_SelectedAvailableSaving.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_SavingValueDate.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for set_SavingValueDate.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_SavingValueValue.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for set_SavingValueValue.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_SavingValueDescription.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for set_SavingValueDescription.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_BudgetSavingValues.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for AddSavingValue.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for RemoveSavingValue.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_Database.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_Configuration.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_EventAggregator.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_CachedService.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_Shell.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for set_Shell.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for AttachEvents.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for DeatachEvents.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for LoadData.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for Handle.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_Parent.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for set_Parent.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_DisplayName.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for set_DisplayName.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_IsActive.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_IsInitialized.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for add_Activated.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for remove_Activated.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for add_AttemptingDeactivation.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for remove_AttemptingDeactivation.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for add_Deactivated.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for remove_Deactivated.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for CanClose.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for TryClose.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for TryClose.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for add_ViewAttached.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for remove_ViewAttached.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for GetView.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for add_PropertyChanged.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for remove_PropertyChanged.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_IsNotifying.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for set_IsNotifying.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for Refresh.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for NotifyOfPropertyChange.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for NotifyOfPropertyChange.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for RaisePropertyChangedEventImmediately.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for ToString.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for Equals.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for GetHashCode.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for GetType.
+12/13/2011 14:46:25 - Binding Convention Not Applied: Element avaiableIncome did not match a property.
+12/13/2011 14:46:25 - Binding Convention Not Applied: Element incomeValue did not match a property.
+12/13/2011 14:46:25 - Binding Convention Not Applied: Element incomeDescription did not match a property.
+12/13/2011 14:46:25 - Binding Convention Not Applied: Element availableSaving did not match a property.
+12/13/2011 14:46:25 - Binding Convention Not Applied: Element savingDate did not match a property.
+12/13/2011 14:46:25 - Binding Convention Not Applied: Element savingValue did not match a property.
+12/13/2011 14:46:25 - Binding Convention Not Applied: Element savingDescription did not match a property.
+12/13/2011 14:46:25 - Binding Convention Applied: Element RevenuesViewModel.
+12/13/2011 14:46:25 - ViewModel bound on BudgetPlanViewModel.
+12/13/2011 14:46:25 - Binding Adalbertus.BudgetPlanner.Views.BudgetPlanView: Plan bud¿etowy and Adalbertus.BudgetPlanner.ViewModels.BudgetPlanViewModel.
+12/13/2011 14:46:25 - Setting DC of Adalbertus.BudgetPlanner.Views.BudgetPlanView: Plan bud¿etowy to Adalbertus.BudgetPlanner.ViewModels.BudgetPlanViewModel.
+12/13/2011 14:46:25 - Attaching message handler Adalbertus.BudgetPlanner.ViewModels.BudgetPlanViewModel to Adalbertus.BudgetPlanner.Views.BudgetPlanView: Plan bud¿etowy.
+12/13/2011 14:46:25 - Attaching Adalbertus.BudgetPlanner.Views.BudgetPlanView: Plan bud¿etowy to Adalbertus.BudgetPlanner.ViewModels.BudgetPlanViewModel.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_AllBudgetPlanList.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_BudgetPlanListGrouped.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_Budget.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for LoadData.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for FocusNewValue.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for AddNewValueToBudgetPlan.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for DeleteBudgetPlanItem.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_Database.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_Configuration.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_EventAggregator.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_CachedService.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_Shell.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for set_Shell.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for AttachEvents.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for DeatachEvents.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for LoadData.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for Handle.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_Parent.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for set_Parent.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_DisplayName.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for set_DisplayName.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_IsActive.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_IsInitialized.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for add_Activated.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for remove_Activated.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for add_AttemptingDeactivation.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for remove_AttemptingDeactivation.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for add_Deactivated.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for remove_Deactivated.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for CanClose.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for TryClose.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for TryClose.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for add_ViewAttached.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for remove_ViewAttached.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for GetView.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for add_PropertyChanged.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for remove_PropertyChanged.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_IsNotifying.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for set_IsNotifying.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for Refresh.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for NotifyOfPropertyChange.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for NotifyOfPropertyChange.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for RaisePropertyChangedEventImmediately.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for ToString.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for Equals.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for GetHashCode.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for GetType.
+12/13/2011 14:46:25 - Binding Convention Not Applied: Element budgetPlanView did not match a property.
+12/13/2011 14:46:25 - Binding Convention Applied: Element BudgetPlanViewModel.
+12/13/2011 14:46:25 - ViewModel bound on ExpensesViewModel.
+12/13/2011 14:46:25 - Binding Adalbertus.BudgetPlanner.Views.ExpensesView and Adalbertus.BudgetPlanner.ViewModels.ExpensesViewModel.
+12/13/2011 14:46:25 - Setting DC of Adalbertus.BudgetPlanner.Views.ExpensesView to Adalbertus.BudgetPlanner.ViewModels.ExpensesViewModel.
+12/13/2011 14:46:25 - Attaching message handler Adalbertus.BudgetPlanner.ViewModels.ExpensesViewModel to Adalbertus.BudgetPlanner.Views.ExpensesView.
+12/13/2011 14:46:25 - Attaching Adalbertus.BudgetPlanner.Views.ExpensesView to Adalbertus.BudgetPlanner.ViewModels.ExpensesViewModel.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_ExpensesGridCashFlows.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_CashFlows.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_Budget.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for set_Budget.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_BudgetExpenses.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_TotalExpensesValue.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_IsExpensesFiltered.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for set_IsExpensesFiltered.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_IsFilteringEnabled.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for set_IsFilteringEnabled.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_SelectedExpenseCashFlow.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for set_SelectedExpenseCashFlow.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_SelectedExpenseDate.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for set_SelectedExpenseDate.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_ExpenseValue.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for set_ExpenseValue.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_ExpenseDescription.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for set_ExpenseDescription.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_IsExpenseDescriptionFocused.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for set_IsExpenseDescriptionFocused.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_IsExpenseValueFocused.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for set_IsExpenseValueFocused.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for RefreshUI.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for LoadData.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for RemoveExpense.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_CanAddExpense.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for AddExpense.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for MoveToExpenseValue.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for AddAndMoveToExpenseValue.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_Filter.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for set_Filter.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for SelectAllFilterCashFlows.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for DeselectAllFilterCashFlows.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for SelectAllFilterCashFlowGroups.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for DeselectAllFilterCashFlowGroups.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for Handle.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_Database.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_Configuration.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_EventAggregator.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_CachedService.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_Shell.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for set_Shell.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for AttachEvents.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for DeatachEvents.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for LoadData.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for Handle.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_Parent.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for set_Parent.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_DisplayName.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for set_DisplayName.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_IsActive.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_IsInitialized.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for add_Activated.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for remove_Activated.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for add_AttemptingDeactivation.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for remove_AttemptingDeactivation.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for add_Deactivated.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for remove_Deactivated.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for CanClose.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for TryClose.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for TryClose.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for add_ViewAttached.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for remove_ViewAttached.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for GetView.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for add_PropertyChanged.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for remove_PropertyChanged.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_IsNotifying.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for set_IsNotifying.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for Refresh.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for NotifyOfPropertyChange.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for NotifyOfPropertyChange.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for RaisePropertyChangedEventImmediately.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for ToString.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for Equals.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for GetHashCode.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for GetType.
+12/13/2011 14:46:25 - Binding Convention Not Applied: Element ExpenseDate did not match a property.
+12/13/2011 14:46:25 - Binding Convention Not Applied: Element ExpenseDescription has existing binding.
+12/13/2011 14:46:25 - Binding Convention Not Applied: Element ExpenseValueControl did not match a property.
+12/13/2011 14:46:25 - Binding Convention Applied: Element ExpensesViewModel.
+12/13/2011 14:46:25 - Binding Adalbertus.BudgetPlanner.Views.MessageBoxView and Adalbertus.BudgetPlanner.ViewModels.MessageBoxViewModel.
+12/13/2011 14:46:25 - Setting DC of Adalbertus.BudgetPlanner.Views.MessageBoxView to Adalbertus.BudgetPlanner.ViewModels.MessageBoxViewModel.
+12/13/2011 14:46:25 - Attaching message handler Adalbertus.BudgetPlanner.ViewModels.MessageBoxViewModel to Adalbertus.BudgetPlanner.Views.MessageBoxView.
+12/13/2011 14:46:25 - Attaching Adalbertus.BudgetPlanner.Views.MessageBoxView to Adalbertus.BudgetPlanner.ViewModels.MessageBoxViewModel.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_Message.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for set_Message.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_IsQuestionImageVisible.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_IsInformationImageVisible.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_IsWarningImageVisible.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_IsErrorImageVisible.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_IsCancelButtonVisible.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_IsOKButtonVisible.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_Button.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for set_Button.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_Image.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for set_Image.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_State.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_Result.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_OKCallback.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for set_OKCallback.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_CancelCallback.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for set_CancelCallback.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_AfterCloseCallback.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for set_AfterCloseCallback.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for Initialize.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for Close.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for Cancel.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_Database.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_Configuration.
+12/13/2011 14:46:25 - Action Convention Not Applied: No actionable element for get_EventAggregator.
+12/13/2011 14:46:26 - Action Convention Not Applied: No actionable element for get_CachedService.
+12/13/2011 14:46:26 - Action Convention Not Applied: No actionable element for get_Shell.
+12/13/2011 14:46:26 - Action Convention Not Applied: No actionable element for set_Shell.
+12/13/2011 14:46:26 - Action Convention Not Applied: No actionable element for AttachEvents.
+12/13/2011 14:46:26 - Action Convention Not Applied: No actionable element for DeatachEvents.
+12/13/2011 14:46:26 - Action Convention Not Applied: No actionable element for LoadData.
+12/13/2011 14:46:26 - Action Convention Not Applied: No actionable element for Handle.
+12/13/2011 14:46:26 - Action Convention Not Applied: No actionable element for get_Parent.
+12/13/2011 14:46:26 - Action Convention Not Applied: No actionable element for set_Parent.
+12/13/2011 14:46:26 - Action Convention Not Applied: No actionable element for get_DisplayName.
+12/13/2011 14:46:26 - Action Convention Not Applied: No actionable element for set_DisplayName.
+12/13/2011 14:46:26 - Action Convention Not Applied: No actionable element for get_IsActive.
+12/13/2011 14:46:26 - Action Convention Not Applied: No actionable element for get_IsInitialized.
+12/13/2011 14:46:26 - Action Convention Not Applied: No actionable element for add_Activated.
+12/13/2011 14:46:26 - Action Convention Not Applied: No actionable element for remove_Activated.
+12/13/2011 14:46:26 - Action Convention Not Applied: No actionable element for add_AttemptingDeactivation.
+12/13/2011 14:46:26 - Action Convention Not Applied: No actionable element for remove_AttemptingDeactivation.
+12/13/2011 14:46:26 - Action Convention Not Applied: No actionable element for add_Deactivated.
+12/13/2011 14:46:26 - Action Convention Not Applied: No actionable element for remove_Deactivated.
+12/13/2011 14:46:26 - Action Convention Not Applied: No actionable element for CanClose.
+12/13/2011 14:46:26 - Action Convention Not Applied: No actionable element for TryClose.
+12/13/2011 14:46:26 - Action Convention Not Applied: No actionable element for TryClose.
+12/13/2011 14:46:26 - Action Convention Not Applied: No actionable element for add_ViewAttached.
+12/13/2011 14:46:26 - Action Convention Not Applied: No actionable element for remove_ViewAttached.
+12/13/2011 14:46:26 - Action Convention Not Applied: No actionable element for GetView.
+12/13/2011 14:46:26 - Action Convention Not Applied: No actionable element for add_PropertyChanged.
+12/13/2011 14:46:26 - Action Convention Not Applied: No actionable element for remove_PropertyChanged.
+12/13/2011 14:46:26 - Action Convention Not Applied: No actionable element for get_IsNotifying.
+12/13/2011 14:46:26 - Action Convention Not Applied: No actionable element for set_IsNotifying.
+12/13/2011 14:46:26 - Action Convention Not Applied: No actionable element for Refresh.
+12/13/2011 14:46:26 - Action Convention Not Applied: No actionable element for NotifyOfPropertyChange.
+12/13/2011 14:46:26 - Action Convention Not Applied: No actionable element for NotifyOfPropertyChange.
+12/13/2011 14:46:26 - Action Convention Not Applied: No actionable element for RaisePropertyChangedEventImmediately.
+12/13/2011 14:46:26 - Action Convention Not Applied: No actionable element for ToString.
+12/13/2011 14:46:26 - Action Convention Not Applied: No actionable element for Equals.
+12/13/2011 14:46:26 - Action Convention Not Applied: No actionable element for GetHashCode.
+12/13/2011 14:46:26 - Action Convention Not Applied: No actionable element for GetType.
+12/13/2011 14:46:26 - Action: ShowCurrentBudget availability update.
+12/13/2011 14:46:26 - Action: ShowCurrentBudget availability update.
+12/13/2011 14:46:26 - Action: ShowPreviousBudget availability update.
+12/13/2011 14:46:26 - Action: ShowPreviousBudget availability update.
+12/13/2011 14:46:26 - Action: ShowNextBudget availability update.
+12/13/2011 14:46:26 - Action: ShowNextBudget availability update.
+12/13/2011 14:46:26 - Action: ShowCashFlowTypes availability update.
+12/13/2011 14:46:26 - Action: ShowCashFlowTypes availability update.
+12/13/2011 14:46:26 - Action: ShowExternalSources availability update.
+12/13/2011 14:46:26 - Action: ShowExternalSources availability update.
+12/13/2011 14:46:26 - Action: ShowHelp availability update.
+12/13/2011 14:46:26 - Action: ShowHelp availability update.
+12/13/2011 14:46:26 - Action: ShowAbout availability update.
+12/13/2011 14:46:26 - Action: ShowAbout availability update.
+12/13/2011 14:46:26 - Action: AddIncomeValue availability update.
+12/13/2011 14:46:26 - Action: AddIncomeValue availability update.
+12/13/2011 14:46:26 - Action: AddIncomeValue availability update.
+12/13/2011 14:46:26 - Action: AddSavingValue availability update.
+12/13/2011 14:46:26 - Action: AddSavingValue availability update.
+12/13/2011 14:46:26 - Action: AddSavingValue availability update.
+12/13/2011 14:46:26 - Action: SelectAllFilterCashFlows availability update.
+12/13/2011 14:46:26 - Action: DeselectAllFilterCashFlows availability update.
+12/13/2011 14:46:26 - Action: SelectAllFilterCashFlowGroups availability update.
+12/13/2011 14:46:26 - Action: DeselectAllFilterCashFlowGroups availability update.
+12/13/2011 14:46:26 - Action: AddAndMoveToExpenseValue availability update.
+12/13/2011 14:46:26 - Action: AddAndMoveToExpenseValue availability update.
+12/13/2011 14:46:26 - Action: AddAndMoveToExpenseValue availability update.
+12/13/2011 14:46:26 - Action: AddAndMoveToExpenseValue availability update.
+12/13/2011 14:46:26 - Action: AddExpense availability update.
+12/13/2011 14:46:26 - Action: AddExpense availability update.
+12/13/2011 14:46:26 - Action: Cancel availability update.
+12/13/2011 14:46:26 - Action: Cancel availability update.
+12/13/2011 14:46:26 - Action: Close availability update.
+12/13/2011 14:46:26 - Action: Close availability update.
+12/13/2011 14:46:29 - Invoking Action: Close.
+12/13/2011 14:46:31 - Invoking Action: ShowHelp.
+12/13/2011 14:46:31 - Using cached view for Adalbertus.BudgetPlanner.ViewModels.MessageBoxViewModel.
+12/13/2011 14:46:31 - Binding Adalbertus.BudgetPlanner.Views.MessageBoxView and Adalbertus.BudgetPlanner.ViewModels.MessageBoxViewModel.
+12/13/2011 14:46:31 - Attaching Adalbertus.BudgetPlanner.Views.MessageBoxView to Adalbertus.BudgetPlanner.ViewModels.MessageBoxViewModel.
+12/13/2011 14:46:34 - Invoking Action: Close.
+12/13/2011 14:46:37 - Deactivating Adalbertus.BudgetPlanner.ViewModels.ShellViewModel.
+12/13/2011 14:46:37 - Deactivating Adalbertus.BudgetPlanner.ViewModels.BudgetViewModel.
+12/13/2011 14:46:37 - Closed Adalbertus.BudgetPlanner.ViewModels.BudgetViewModel.
+12/13/2011 14:46:37 - Closed Adalbertus.BudgetPlanner.ViewModels.ShellViewModel.

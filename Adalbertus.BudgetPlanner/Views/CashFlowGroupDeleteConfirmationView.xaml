@@ -35,8 +35,8 @@
                 <TextBlock VerticalAlignment="Center" Margin="0,0,4,0">
                     Nowa grupa:
                 </TextBlock>
-                <ComboBox ItemsSource="{Binding CashFlowGroups}" SelectedItem="{Binding SelectedCashFlowGroup}"
-                                      IsSynchronizedWithCurrentItem="False" Width="230" />
+                <ctrl:AutoCompleteBox ItemsSource="{Binding CashFlowGroups}" SelectedItem="{Binding SelectedCashFlowGroup}"
+                                      Width="230" />
             </WrapPanel>
         </Grid>
     </DockPanel>

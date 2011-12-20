@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Adalbertus.BudgetPlanner.Database;
 using Adalbertus.BudgetPlanner.Core;
+using Adalbertus.BudgetPlanner.Extensions;
 using Caliburn.Micro;
 using Adalbertus.BudgetPlanner.Models;
 

@@ -8,6 +8,7 @@ using Caliburn.Micro;
 using Adalbertus.BudgetPlanner.Models;
 using System.ComponentModel;
 using System.Collections.Specialized;
+using System.Diagnostics;
 
 namespace Adalbertus.BudgetPlanner.ViewModels
 {
@@ -19,11 +20,13 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             ExpensesViewModel   = IoC.Get<ExpensesViewModel>();
             RevenuesViewModel   = IoC.Get<RevenuesViewModel>();
             BudgetPlanViewModel = IoC.Get<BudgetPlanViewModel>();
+            BudgetCalculatorViewModel = IoC.Get<BudgetCalculationsViewModel>();
         }
 
         public ExpensesViewModel ExpensesViewModel { get; private set; }
         public RevenuesViewModel RevenuesViewModel { get; private set; }
         public BudgetPlanViewModel BudgetPlanViewModel { get; private set; }
+        public BudgetCalculationsViewModel BudgetCalculatorViewModel { get; private set; }
 
         public Budget Budget { get; private set; }
         public DateTime BudgetDate { get; set; }
@@ -31,11 +34,10 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         public override void LoadData()
         {
             LoadOrCreateDefaultBudget();
-
-            //LoadBudgetPlanItems();
             BudgetPlanViewModel.LoadData(Budget);
             RevenuesViewModel.LoadData(Budget);
             ExpensesViewModel.LoadData(Budget);
+            BudgetCalculatorViewModel.LoadData(Budget);
 
             RefreshUI();
         }
@@ -50,7 +52,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
                                 .Select("*")
                                 .From("Budget")
                                 .Where("@0 BETWEEN DateFrom AND DateTo", BudgetDate.Date);
-                Budget = Database.SingleOrDefault<Budget>(sql);
+                Budget = Database.FirstOrDefault<Budget>(sql);
                 if (Budget == null)
                 {
                     Budget = Budget.CreateEmptyForDate(BudgetDate, cashFlowList);

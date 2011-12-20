@@ -22,7 +22,7 @@ namespace Adalbertus.BudgetPlanner.Converters
             var collection = value as IEnumerable<object>;
             if (collection != null)
             {
-                return collection.Any();
+                return !collection.Any();
             }
 
             throw new NotImplementedException("Only IEnumerable<> is implemented");

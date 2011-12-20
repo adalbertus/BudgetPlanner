@@ -22,7 +22,8 @@
         <Image DockPanel.Dock="Left" Style="{StaticResource WarningImage}" Visibility="{Binding IsWarningImageVisible, Converter={StaticResource Visibility}}"/>
         <Image DockPanel.Dock="Left" Style="{StaticResource ErrorImage}" Visibility="{Binding IsErrorImageVisible, Converter={StaticResource Visibility}}"/>
 
-        <TextBlock TextWrapping="Wrap" Text="{Binding Message}" MaxWidth="300" Margin="10"/>
+        <TextBlock TextWrapping="Wrap" Text="{Binding Message}" MaxWidth="500" Margin="10" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto"
+                   MaxHeight="600"/>
         
     </DockPanel>
 </UserControl>

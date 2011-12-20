@@ -1,0 +1,24 @@
+﻿<UserControl x:Class="Adalbertus.BudgetPlanner.Views.BudgetEquationWizardShellView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:cal="http://www.caliburnproject.org"
+>
+    <DockPanel LastChildFill="True">
+        <Grid DockPanel.Dock="Left" Background="LightGray">
+            <StackPanel>
+                <TextBlock FontWeight="Bold">Kreator tworzenia równania</TextBlock>
+                <TextBlock Text="{Binding CurrentPageTitle}" />
+            </StackPanel>
+        </Grid>
+        <Grid DockPanel.Dock="Bottom" Background="AntiqueWhite">
+            <WrapPanel>
+                <Button Content="Previous" cal:Message.Attach="[Event Click] = [Action MoveBack]" />
+                <Button Content="Next"  cal:Message.Attach="[Event Click] = [Action MoveNext]" />
+                <Button Content="Cancel"  cal:Message.Attach="[Event Click] = [Action Cancel]" />
+                <Button Content="Finish"  cal:Message.Attach="[Event Click] = [Action Finish]"/>
+            </WrapPanel>
+        </Grid>
+
+        <ContentControl x:Name="ActiveItem" />
+    </DockPanel>
+</UserControl>

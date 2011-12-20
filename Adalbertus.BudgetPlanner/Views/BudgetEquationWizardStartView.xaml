@@ -1,0 +1,11 @@
+﻿<UserControl x:Class="Adalbertus.BudgetPlanner.Views.BudgetEquationWizardStartView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:cal="http://www.caliburnproject.org"
+             xmlns:ctrl="clr-namespace:Adalbertus.BudgetPlanner.Controls"
+             >
+    <UniformGrid Columns="2">
+        <TextBlock>Nazwa równania</TextBlock>
+        <ctrl:WatermarkTextBoxExt Text="{Binding EquationName, UpdateSourceTrigger=PropertyChanged}" />
+    </UniformGrid>
+</UserControl>

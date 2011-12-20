@@ -5,17 +5,29 @@ using System.Text;
 using Microsoft.Windows.Controls;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace Adalbertus.BudgetPlanner.Controls
 {
     public class NumericTextBox : WatermarkTextBoxExt
     {
+        public string FormattedValue
+        {
+            get { return (string)GetValue(FormattedValueProperty); }
+            set { SetValue(FormattedValueProperty, value); }
+        }
+
+        public static readonly DependencyProperty FormattedValueProperty =
+            DependencyProperty.Register("FormattedValue", typeof(string), typeof(NumericTextBox), new UIPropertyMetadata(default(string)));
+
+
         public static readonly DependencyProperty ValueProperty = DependencyProperty.Register("Value", typeof(decimal?), typeof(NumericTextBox), new FrameworkPropertyMetadata(default(decimal?), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnValueChanged));
         public decimal? Value
         {
             get { return (decimal?)GetValue(ValueProperty); }
             set { SetValue(ValueProperty, value); }
         }
+
         private static void OnValueChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
             var numericControl = o as NumericTextBox;
@@ -23,6 +35,7 @@ namespace Adalbertus.BudgetPlanner.Controls
             {
                 return;
             }
+            numericControl.UpdateFormattedValue();
             numericControl.FormatValue();
         }
 
@@ -43,8 +56,6 @@ namespace Adalbertus.BudgetPlanner.Controls
             numericControl.FormatValue();
         }
 
-
-
         public decimal? DefaultValue
         {
             get { return (decimal?)GetValue(DefaultValueProperty); }
@@ -61,6 +72,36 @@ namespace Adalbertus.BudgetPlanner.Controls
             SelectAllOnGotFocus = true;
         }
 
+        protected override void OnPreviewKeyDown(System.Windows.Input.KeyEventArgs e)
+        {
+            if (e.Key == Key.Up)
+            {
+                e.Handled = true;
+                if (Value.HasValue)
+                {
+                    Value++;
+                }
+                else
+                {
+                    Value = 0;
+                }
+            }
+            else if (e.Key == Key.Down)
+            {
+                e.Handled = true;
+                if (Value.HasValue)
+                {
+                    Value--;
+                }
+                else
+                {
+                    Value = 0;
+                }
+
+            }
+            base.OnPreviewKeyDown(e);
+        }
+
         protected override void OnLostFocus(RoutedEventArgs e)
         {
             base.OnLostFocus(e);
@@ -69,6 +110,7 @@ namespace Adalbertus.BudgetPlanner.Controls
 
         protected override void OnGotFocus(RoutedEventArgs e)
         {
+            base.OnGotFocus(e);
             if (!IsReadOnly)
             {
                 Text = Value.ToString();
@@ -79,31 +121,43 @@ namespace Adalbertus.BudgetPlanner.Controls
         {
             if (IsFocused)
             {
-                decimal value;
-                if (string.IsNullOrWhiteSpace(Text))
-                {
-                    Value = DefaultValue;
-                }
-                else if (decimal.TryParse(Text, out value))
-                {
-                    Value = value;
-                }
+                ParseText();
             }
+
             base.OnTextChanged(e);
         }
 
-        private void FormatValue()
+        protected virtual void ParseText()
+        {
+            decimal value;
+            if (string.IsNullOrWhiteSpace(Text))
+            {
+                Value = DefaultValue;
+            }
+            else if (decimal.TryParse(Text, out value))
+            {
+                Value = value;
+            }
+        }
+
+        private void UpdateFormattedValue()
+        {
+            if (Value.HasValue)
+            {
+                FormattedValue = Value.Value.ToString(FormatString);
+            }
+            else
+            {
+                FormattedValue = string.Empty;
+            }
+        }
+
+
+        protected virtual void FormatValue()
         {
             if (!IsFocused)
             {
-                if (Value.HasValue)
-                {
-                    Text = Value.Value.ToString(FormatString);
-                }
-                else
-                {
-                    Text = string.Empty;
-                }
+                Text = FormattedValue;
             }
             else
             {

@@ -18,7 +18,7 @@ namespace Adalbertus.BudgetPlanner
     {
         public App()
         {
-            InitializeComponent();
+            InitializeComponent();            
         }
 
         protected override void OnStartup(StartupEventArgs e)
@@ -55,6 +55,6 @@ namespace Adalbertus.BudgetPlanner
                 e.Handled = true;
                 dp.SetValue(DatePicker.SelectedDateProperty, date.AddDays(-1));
             }
-        }
+        }       
     }
 }

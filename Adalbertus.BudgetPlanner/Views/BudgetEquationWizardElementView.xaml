@@ -1,0 +1,48 @@
+﻿<UserControl x:Class="Adalbertus.BudgetPlanner.Views.BudgetEquationWizardElementView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ctrl="clr-namespace:Adalbertus.BudgetPlanner.Controls"
+             xmlns:m="clr-namespace:Adalbertus.BudgetPlanner.Models"
+>
+    <UserControl.Resources>
+        <DataTemplate x:Key="NormalElementTemplate">
+            <UniformGrid Columns="2">
+                <TextBlock>Użyj</TextBlock>
+                <ctrl:AutoCompleteBox x:Name="valueTypes" ItemsSource="{Binding ValueTypes}" FilterBy="Name" DisplayMemberPath="Name" 
+                              SelectedItem="{Binding SelectedValueType}" CanBeEmpty="False" />
+
+                <TextBlock x:Name="userValueLabel" Visibility="Collapsed">Wartość</TextBlock>
+                <ctrl:CalculatorTextBox x:Name="userValue" Value="{Binding UserValue}" FormatString="{x:Null}" Visibility="Collapsed"/>
+
+                <TextBlock>Równanie</TextBlock>
+                <ctrl:AutoCompleteBox ItemsSource="{Binding Equations}" FilterBy="Name" DisplayMemberPath="Name" 
+                              SelectedItem="{Binding SelectedEquation}" CanBeEmpty="False" />
+
+            </UniformGrid>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding IsOperatorElementVisible}" Value="True">
+                    <Setter Property="UniformGrid.Visibility" Value="Collapsed" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding SelectedItem.Value, ElementName=valueTypes}" Value="CalculatorValueType.UserValue">
+                    <Setter TargetName="userValueLabel" Property="Visibility" Value="Visible" />
+                    <Setter TargetName="userValue" Property="Visibility" Value="Visible" />
+                </DataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
+    </UserControl.Resources>
+    <Grid>
+        <ContentPresenter ContentTemplate="{StaticResource NormalElementTemplate}" Content="{Binding}" />
+        <StackPanel Visibility="{Binding IsOperatorElementVisible, Converter={StaticResource Visibility}}">
+            <CheckBox x:Name="checkBox" Content="Wstawić następny element" IsChecked="{Binding IsNextElement}" />
+            <TextBlock Visibility="{Binding IsChecked, ElementName=checkBox, Converter={StaticResource Visibility}}">
+                Następny element
+            </TextBlock>
+            <UniformGrid Columns="1" Visibility="{Binding IsChecked, ElementName=checkBox, Converter={StaticResource Visibility}}">
+                <RadioButton Content="Dodaj" IsChecked="{Binding IsAddOperatorSelected}" />
+                <RadioButton Content="Odejmij" IsChecked="{Binding IsSubstractOperatorSelected}" />
+                <RadioButton Content="Pomnóż" IsChecked="{Binding IsMultiplyOperatorSelected}" />
+                <RadioButton Content="Podziel" IsChecked="{Binding IsDivideOperatorSelected}" />
+            </UniformGrid>
+        </StackPanel>
+    </Grid>
+</UserControl>

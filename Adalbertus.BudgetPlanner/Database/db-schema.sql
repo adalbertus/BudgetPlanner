@@ -6,7 +6,7 @@ CREATE TABLE [Configuration] (
   [Decription] TEXT
 );
 
-INSERT INTO [Configuration] ([Key], [IsActive], [Value], [Decription]) VALUES ('DatabaseVersion', 1, '1', 'Wersja bazy danych');
+INSERT INTO [Configuration] ([Key], [IsActive], [Value], [Decription]) VALUES ('DatabaseVersion', 1, '2', 'Wersja bazy danych');
 
 DROP TABLE IF EXISTS [Budget];
 CREATE TABLE [Budget] (
@@ -79,4 +79,24 @@ CREATE TABLE [SavingValue] (
   [Value] NUMERIC,  -- can be negative (if BudgetId IS NOT NULL)
   [Date] DATETIME,
   [Description] VARCHAR(250)
+);
+
+DROP TABLE IF EXISTS [BudgetCalculatorItem];
+CREATE TABLE [BudgetCalculatorItem] (
+  [Id]  INTEGER PRIMARY KEY AUTOINCREMENT,
+  [BudgetCalculatorEquationId] INTEGER NOT NULL,
+  [Name] VARCHAR(250),  
+  [ValueTypeName] VARCHAR(500),
+  [OperatorTypeName] VARCHAR(500),
+  [ForeignId] INTEGER,
+  [Value] NUMERIC,
+  [Position] INTEGER DEFAULT 0
+);
+
+DROP TABLE IF EXISTS [BudgetCalculatorEquation];
+CREATE TABLE [BudgetCalculatorEquation] (
+  [Id]  INTEGER PRIMARY KEY AUTOINCREMENT,
+  [Name] VARCHAR(250),
+  [IsVisible] INTEGER(1) DEFAULT 1,
+  [Position] INTEGER DEFAULT 0
 );

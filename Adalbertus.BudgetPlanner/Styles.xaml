@@ -14,6 +14,22 @@
         <GradientStop Offset="1" Color="LightBlue"/>
         <GradientStop Offset="0" Color="White"/>
     </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="LightGrayGradientHorizontal" StartPoint="1,0" EndPoint="0,0">
+        <GradientStop Offset="1" Color="LightGray"/>
+        <GradientStop Offset="0" Color="White"/>
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="LightGrayGradientVertical" StartPoint="0,1" EndPoint="0,0">
+        <GradientStop Offset="0" Color="Gainsboro"/>
+        <GradientStop Offset="1" Color="White"/>
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="DarkGradientVertical" StartPoint="0,1" EndPoint="0,0">
+        <GradientStop Offset="1" Color="DarkKhaki"/>
+        <GradientStop Offset="0" Color="White"/>
+    </LinearGradientBrush>
+
     <LinearGradientBrush x:Key="BackgroundGradientBrush">
         <GradientBrush.GradientStops>
             <GradientStop Color="#FFD2D4D2" Offset="0" />
@@ -33,6 +49,24 @@
         <GradientStop Color="#E3E9EF" Offset="1"/>
     </LinearGradientBrush>
 
+    <Style TargetType="ToolTip">
+        <Setter Property="Foreground" Value="Gray" />
+        <Setter Property="FontSize" Value="10" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ToolTip">
+                    <!--Margin must be the same size as the BlurRadius to see the whole shadow-->
+                    <Border Background="{StaticResource LightGrayGradientVertical}" BorderBrush="LightGray" BorderThickness="1"
+                            Margin="0,0,11,11" Padding="4,2,4,4" CornerRadius="4">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="11" ShadowDepth="4" Color="Black" Opacity="0.6"/>
+                        </Border.Effect>
+                        <ContentPresenter/>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
 
     <!-- TextBlock -->
     <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource {x:Type TextBlock}}">
@@ -55,7 +89,31 @@
     <Style TargetType="{x:Type ctrl:NumericTextBox}">
         <Setter Property="FormatString" Value="C2" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="HorizontalContentAlignment" Value="Right" />
         <Setter Property="DefaultValue" Value="0" />
+        <Style.Triggers>
+            <Trigger Property="IsFocused" Value="true">
+                <Setter Property="Background" Value="{StaticResource {x:Static SystemColors.HighlightBrushKey}}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- ctrl:NumericTextBox -->
+    <Style TargetType="{x:Type ctrl:CalculatorTextBox}">
+        <Setter Property="FormatString" Value="C2" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="HorizontalContentAlignment" Value="Right" />
+        <Setter Property="DefaultValue" Value="0" />
+        <Style.Triggers>
+            <Trigger Property="IsFocused" Value="true">
+                <Setter Property="Background" Value="{StaticResource {x:Static SystemColors.HighlightBrushKey}}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!--ctrl:AutoCompleteBox-->
+    <Style TargetType="{x:Type ctrl:AutoCompleteBox}">
+        <Setter Property="VerticalContentAlignment" Value="Center" />
         <Style.Triggers>
             <Trigger Property="IsFocused" Value="true">
                 <Setter Property="Background" Value="{StaticResource {x:Static SystemColors.HighlightBrushKey}}" />
@@ -113,7 +171,7 @@
     <Style x:Key="InformationImage" TargetType="{x:Type Image}" BasedOn="{StaticResource DialogImage}">
         <Setter Property="Source" Value="/Adalbertus.BudgetPlanner;component/Images/dialog-information.png" />
     </Style>
-   
+
     <Style x:Key="WarningImage" TargetType="{x:Type Image}" BasedOn="{StaticResource DialogImage}">
         <Setter Property="Source" Value="/Adalbertus.BudgetPlanner;component/Images/dialog-warning.png" />
     </Style>
@@ -198,7 +256,7 @@
     <!-- AnimatedExpanderButtonTemplate based on http://www.codeproject.com/KB/WPF/ExpanderTemplateArticle.aspx -->
     <ControlTemplate x:Key="AnimatedExpanderButtonTemplate" TargetType="{x:Type ToggleButton}">
         <Border x:Name="ExpanderButtonBorder" CornerRadius="4" BorderThickness="0" BorderBrush="LightGray"
-                Padding="{TemplateBinding Padding}" Background="{StaticResource LightBlueGradientVertical}">
+                Padding="{TemplateBinding Padding}" Background="{TemplateBinding Background}">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
@@ -257,15 +315,43 @@
 
     <!--NormalExpander: based on http://www.codeproject.com/KB/WPF/ExpanderTemplateArticle.aspx -->
     <ControlTemplate x:Key="NormalExpander" TargetType="{x:Type Expander}">
-        <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="4">
+        <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" 
+                CornerRadius="4">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
-                <ToggleButton x:Name="ExpanderButton" Grid.Row="0" Template="{StaticResource AnimatedExpanderButtonTemplate}"
-                                  Content="{TemplateBinding Header}" IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}}"
-                                  OverridesDefaultStyle="True" />
+                <ToggleButton x:Name="ExpanderButton" Grid.Row="0" 
+                              Background="{StaticResource LightBlueGradientVertical}"
+                              Template="{StaticResource AnimatedExpanderButtonTemplate}"
+                              Content="{TemplateBinding Header}" IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}}"
+                              OverridesDefaultStyle="True" />
+
+                <ContentPresenter x:Name="ExpanderContent" Grid.Row="1" Visibility="Collapsed"/>
+            </Grid>
+        </Border>
+        <ControlTemplate.Triggers>
+            <Trigger Property="IsExpanded" Value="True">
+                <Setter TargetName="ExpanderContent" Property="Visibility" Value="Visible"/>
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+    <!--NormalDarkExpander: based on http://www.codeproject.com/KB/WPF/ExpanderTemplateArticle.aspx -->
+    <ControlTemplate x:Key="NormalDarkExpander" TargetType="{x:Type Expander}">
+        <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" 
+                CornerRadius="4">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <ToggleButton x:Name="ExpanderButton" Grid.Row="0" 
+                              Background="{StaticResource DarkGradientVertical}"
+                              Template="{StaticResource AnimatedExpanderButtonTemplate}"
+                              Content="{TemplateBinding Header}" IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}}"
+                              OverridesDefaultStyle="True" />
 
                 <ContentPresenter x:Name="ExpanderContent" Grid.Row="1" Visibility="Collapsed"/>
             </Grid>
@@ -319,6 +405,13 @@
         <Setter Property="Margin" Value="4" />
     </Style>
 
+    <Style x:Key="DarkExpander" TargetType="{x:Type Expander}" BasedOn="{StaticResource {x:Type Expander}}">
+        <Setter Property="Template" Value="{StaticResource NormalDarkExpander}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="BorderBrush" Value="LightGray" />
+        <Setter Property="Margin" Value="4" />
+    </Style>
+
     <!--DataGrid-->
     <Style TargetType="{x:Type DataGrid}" BasedOn="{StaticResource {x:Type DataGrid}}">
         <Setter Property="SelectionMode" Value="Single" />
@@ -338,56 +431,6 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
-    </Style>
-    <!--NumericUpDownPropertyChanged-->
-    <Style x:Key="NumericUpDownPropertyChanged" TargetType="Control">
-        <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"/>
-        <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}"/>
-        <Setter Property="HorizontalContentAlignment" Value="Right" />
-        <Setter Property="IsTabStop" Value="False" />
-        <Setter Property="VerticalContentAlignment" Value="Center" />
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="Control">
-                    <extToolkit:ButtonSpinner x:Name="Spinner" IsTabStop="False" Background="{TemplateBinding Background}" BorderThickness="{TemplateBinding BorderThickness}"
-                                         AllowSpin="{Binding AllowSpin, RelativeSource={RelativeSource TemplatedParent}}" ShowButtonSpinner="{Binding ShowButtonSpinner, RelativeSource={RelativeSource TemplatedParent}}">
-                        <extToolkit:WatermarkTextBox x:Name="TextBox" BorderThickness="0"
-                                                Background="Transparent"
-                                                ContextMenu="{TemplateBinding ContextMenu}"
-                                                FontFamily="{TemplateBinding FontFamily}" 
-                                                FontSize="{TemplateBinding FontSize}" 
-                                                FontStretch="{TemplateBinding FontStretch}"
-                                                FontStyle="{TemplateBinding FontStyle}" 
-                                                FontWeight="{TemplateBinding FontWeight}" 
-                                                Foreground="{TemplateBinding Foreground}" 
-                                                HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                                IsReadOnly="{Binding IsReadOnly, RelativeSource={RelativeSource TemplatedParent}}"
-                                                MinWidth="20" AcceptsReturn="False"
-                                                Padding="0"
-                                                SelectAllOnGotFocus="{Binding SelectAllOnGotFocus, RelativeSource={RelativeSource TemplatedParent}}"
-                                                TextAlignment="{Binding TextAlignment, RelativeSource={RelativeSource TemplatedParent}}"
-                                                TextWrapping="NoWrap" 
-                                                TabIndex="{TemplateBinding TabIndex}"
-                                                Text="{Binding Text, UpdateSourceTrigger=PropertyChanged, RelativeSource={RelativeSource TemplatedParent}}"
-                                                VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
-                                                Watermark="{Binding Watermark, RelativeSource={RelativeSource TemplatedParent}}"
-                                                WatermarkTemplate="{Binding WatermarkTemplate, RelativeSource={RelativeSource TemplatedParent}}"/>
-                    </extToolkit:ButtonSpinner>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsEnabled" Value="False">
-                            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
-    <!--DecimalUpDownPropertyChanged-->
-    <Style x:Key="DecimalUpDownPropertyChanged" TargetType="{x:Type extToolkit:DecimalUpDown}" BasedOn="{StaticResource NumericUpDownPropertyChanged}">
-        <Setter Property="TextAlignment" Value="Right" />
-        <Setter Property="WatermarkTemplate" Value="{StaticResource DefaultWatermarkTemplate}" />
     </Style>
 
     <Style x:Key="RadioButtonControlTemplateStyle">
@@ -437,9 +480,6 @@
             </Setter.Value>
         </Setter>
     </Style>
-
-
-
 
     <SolidColorBrush x:Key="InputBackgroundFocused" Color="Orange"></SolidColorBrush>
 

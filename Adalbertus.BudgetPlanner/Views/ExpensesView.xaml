@@ -1,12 +1,64 @@
 ﻿<UserControl x:Class="Adalbertus.BudgetPlanner.Views.ExpensesView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:cal="http://www.caliburnproject.org"
              xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
              xmlns:ext="clr-namespace:Adalbertus.BudgetPlanner.Extensions"
              xmlns:extToolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit/extended"
              xmlns:ctrl="clr-namespace:Adalbertus.BudgetPlanner.Controls"
+             xmlns:vm="clr-namespace:Adalbertus.BudgetPlanner.ViewModels"
+             xmlns:m="clr-namespace:Adalbertus.BudgetPlanner.Models"
+             KeyboardNavigation.TabNavigation="Local"
 >
+    <UserControl.Resources>
+        <Style TargetType="{x:Type Expander}" BasedOn="{StaticResource {x:Type Expander}}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsExpensesFiltered}" Value="True">
+                    <Setter Property="BorderBrush" Value="OrangeRed" />
+                    <Setter Property="BorderThickness" Value="1" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <DataTemplate DataType="{x:Type vm:ExpensesFilterEntityVM}">
+            <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}" Content="{Binding Name}"/>
+        </DataTemplate>
+
+        <DataTemplate x:Key="ExpensesCalculatorTemplate">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="{Binding Value, Converter={StaticResource CurrencyFormatter}}" 
+                           TextAlignment="Right" Margin="2,2,20,2"/>
+                <ctrl:ImageButton x:Name="AddSubstractButton" Grid.Column="1" ToolTip="Odejmij" ImageUrl="Images/substract.png" 
+                                  cal:Message.Attach="[Event Click] = [Action InverseExpenseValueInCalculator($dataContext)]"
+                                  Margin="2"/>
+                <ctrl:ImageButton Grid.Column="2" ToolTip="Usuń" ImageUrl="Images/delete.png" Margin="2"
+                                  cal:Message.Attach="[Event Click] = [Action RemoveExpenseValueFromCalculator($dataContext)]" />
+            </Grid>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding Value, Converter={StaticResource LessThan}}" Value="True">
+                    <Setter TargetName="AddSubstractButton" Property="ImageUrl" Value="Images/add.png" />
+                    <Setter TargetName="AddSubstractButton" Property="ToolTip" Value="Dodaj" />
+                </DataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type m:CashFlow}">
+            <WrapPanel>
+                <TextBlock Text="{Binding FullName}" Grid.Column="1" FontSize="10" Margin="2"/>
+                <Border BorderBrush="LightGray" BorderThickness="1" CornerRadius="4" Grid.Column="0" Margin="2,1,1,1" Padding="2">
+                    <TextBlock Text="{Binding GroupName}" FontSize="10"/>
+                </Border>
+
+            </WrapPanel>
+        </DataTemplate>
+
+    </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -16,17 +68,7 @@
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="200" />
         </Grid.ColumnDefinitions>
-        <Expander Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,4,0,4">
-            <Expander.Resources>
-                <Style TargetType="{x:Type Expander}" BasedOn="{StaticResource {x:Type Expander}}">
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding IsExpensesFiltered}" Value="True">
-                            <Setter Property="BorderBrush" Value="OrangeRed" />
-                            <Setter Property="BorderThickness" Value="1" />
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </Expander.Resources>
+        <Expander Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,4,0,4" KeyboardNavigation.TabNavigation="Local">
             <Expander.Header>
                 <WrapPanel ext:MarginSetterExtension.Margin="2">
                     <TextBlock>Filtrowanie</TextBlock>
@@ -51,13 +93,7 @@
                         </WrapPanel>
                     </GroupBox.Header>
                     <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0,4,0,0">
-                        <ItemsControl ItemsSource="{Binding Filter.CashFlows}">
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}" Content="{Binding Name}"/>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
+                        <ItemsControl ItemsSource="{Binding Filter.CashFlows}" />
                     </ScrollViewer>
                 </GroupBox>
 
@@ -72,13 +108,7 @@
                         </WrapPanel>
                     </GroupBox.Header>
                     <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0,4,0,0">
-                        <ItemsControl ItemsSource="{Binding Filter.CashFlowGroups}">
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}" Content="{Binding Name}"/>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
+                        <ItemsControl ItemsSource="{Binding Filter.CashFlowGroups}" />
                     </ScrollViewer>
                 </GroupBox>
 
@@ -109,10 +139,10 @@
                         <RowDefinition/>
                     </Grid.RowDefinitions>
                     <ctrl:NumericTextBox Grid.Row="0" Grid.Column="0" Value="{Binding Filter.ValueFrom}"                                         
-                                         Width="70" Margin="0,2,2,2" Watermark="Kwota od"
+                                         Width="90" Margin="0,2,2,2" Watermark="Kwota od"
                                          IsClearButtonVisible="True" DefaultValue="{x:Null}"/>
                     <ctrl:NumericTextBox Grid.Row="0" Grid.Column="1" Value="{Binding Filter.ValueTo}"
-                                         Width="70" Margin="2,2,0,2" Watermark="Kwota do" DefaultValue="{x:Null}"
+                                         Width="90" Margin="2,2,0,2" Watermark="Kwota do" DefaultValue="{x:Null}"
                                          IsClearButtonVisible="True" />
                     <ctrl:WatermarkTextBoxExt Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,2" 
                                               IsClearButtonVisible="True" HorizontalAlignment="Stretch" 
@@ -123,7 +153,7 @@
         </Expander>
         <DataGrid Grid.Row="1" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                   ItemsSource="{Binding BudgetExpenses}" CanUserAddRows="False" CanUserDeleteRows="True"
-                  AutoGenerateColumns="False" RowHeaderWidth="0" >            
+                  AutoGenerateColumns="False" RowHeaderWidth="0" >
             <DataGrid.Columns>
                 <DataGridTemplateColumn CanUserReorder="False" CanUserResize="False">
                     <DataGridTemplateColumn.CellTemplate>
@@ -140,10 +170,9 @@
                 <DataGridTemplateColumn Header="Kategoria" SortMemberPath="Flow.Name">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <ComboBox ItemsSource="{Binding DataContext.ExpensesGridCashFlows, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}" 
-                                      SelectedItem="{Binding Flow, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                      IsSynchronizedWithCurrentItem="False" BorderThickness="0"
-                                      />
+                            <ctrl:AutoCompleteBox ItemsSource="{Binding DataContext.ExpensesGridCashFlows, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}" 
+                                                  SelectedItem="{Binding Flow, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                  BorderThickness="0" CanBeEmpty="False" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
@@ -155,11 +184,22 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTemplateColumn  Header="Kwota" SortMemberPath="Value">
+                <DataGridTemplateColumn SortMemberPath="Value" >
+                    <DataGridTemplateColumn.Header>
+                        <WrapPanel Orientation="Vertical">
+                            <TextBlock>Kwota</TextBlock>
+                            <WrapPanel ToolTip="Kwota łączna">
+                                <TextBlock Text="(" />
+                                <TextBlock Text="{Binding DataContext.TotalExpensesValue, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}, Converter={StaticResource CurrencyFormatter}}" />
+                                <TextBlock Text=")" />
+                            </WrapPanel>
+                        </WrapPanel>
+                    </DataGridTemplateColumn.Header>
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <ctrl:NumericTextBox Value="{Binding Value, UpdateSourceTrigger=LostFocus}"
-                                                 BorderThickness="0"/>
+                            <ctrl:CalculatorTextBox Value="{Binding Value, UpdateSourceTrigger=LostFocus}"
+                                                    BorderThickness="0"
+                                                    ToolTip="Dopuszczalne są też wyrażenia matematyczne, np.: (250-3*3,56)+10"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn >
@@ -170,14 +210,15 @@
         <Border Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <StackPanel Margin="4">
                 <Label>Kategoria</Label>
-                <ComboBox ItemsSource="{Binding CashFlows}"
-                          SelectedItem="{Binding SelectedExpenseCashFlow}"                          
-                          VerticalAlignment="Stretch">
+                <ctrl:AutoCompleteBox ItemsSource="{Binding CashFlows}" Watermark="Wpisz nazwę kategorii"
+                                      SelectedItem="{Binding SelectedExpenseCashFlow}" Focusable="True"
+                                      CanBeEmpty="False">
+
                     <i:Interaction.Triggers>
                         <ext:KeyTrigger Key="Enter" FocusTarget="{Binding ElementName=ExpenseValueControl}">
                         </ext:KeyTrigger>
                     </i:Interaction.Triggers>
-                </ComboBox>
+                </ctrl:AutoCompleteBox>
 
                 <Label>Data</Label>
                 <DatePicker x:Name="ExpenseDate" SelectedDate="{Binding SelectedExpenseDate}" 
@@ -189,48 +230,29 @@
                 </DatePicker>
 
                 <Label>Kwota</Label>
-                <ctrl:NumericTextBox x:Name="ExpenseValueControl" Value="{Binding ExpenseValue}"
-                                     VerticalAlignment="Stretch"
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <ctrl:CalculatorTextBox x:Name="ExpenseValueControl" Value="{Binding ExpenseValue}"
+                                     VerticalAlignment="Stretch" Grid.Column="0"
                                      ext:FocusExtension.IsFocused="{Binding IsExpenseValueFocused}"
-                                     ToolTip="Shift+Enter wstawi kwotę do kalkulatora, Ctrl+Enter wstawia kwotę do tabeli"
-                                     >
+                                     ToolTip="Dopuszczalne są też wyrażenia matematyczne, np.: (250-3*3,56)+10">
 
-                    <i:Interaction.Triggers>
-                        <ext:KeyTrigger Key="Enter" Modifiers="Control">
-                            <cal:ActionMessage MethodName="AddAndMoveToExpenseValue" />
-                        </ext:KeyTrigger>
-                        <ext:KeyTrigger Key="Enter" Modifiers="Shift">
-                            <cal:ActionMessage MethodName="AddExpenseValueToCalculator" />
-                        </ext:KeyTrigger>
-                        <ext:KeyTrigger Key="Enter" FocusTarget="{Binding ElementName=ExpenseDescription}">
-                        </ext:KeyTrigger>
-                    </i:Interaction.Triggers>
-                </ctrl:NumericTextBox>
-                <GroupBox Visibility="{Binding IsCalculatorListBoxVisible, Converter={StaticResource Visibility}}">
-                    <GroupBox.Header>
-                        <WrapPanel>
-                            <Label>Łączna wartość:</Label>
-                            <Label Content="{Binding ExpenseTotalValue, Converter={StaticResource CurrencyFormatter}}"/>
-                        </WrapPanel>
-                    </GroupBox.Header>
-                    <ScrollViewer VerticalScrollBarVisibility="Auto">
-                        <ItemsControl x:Name="CalculatorListBox" ItemsSource="{Binding ExpenseValues}" 
-                                          MaxHeight="150" FontSize="10">
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <WrapPanel>
-                                        <ctrl:ImageButton ToolTip="Usuń" ImageUrl="Images/delete.png" cal:Message.Attach="[Event Click] = [Action RemoveExpenseValueFromCalculator($dataContext)]" />
-                                        <Label Content="{Binding Converter={StaticResource CurrencyFormatter}}" Width="80" />
-                                    </WrapPanel>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                    </ScrollViewer>
-                </GroupBox>
+                        <i:Interaction.Triggers>
+                            <ext:KeyTrigger Key="Enter" Modifiers="Control">
+                                <cal:ActionMessage MethodName="AddAndMoveToExpenseValue" />
+                            </ext:KeyTrigger>
+                            <ext:KeyTrigger Key="Enter" FocusTarget="{Binding ElementName=ExpenseDescription}">
+                            </ext:KeyTrigger>
+                        </i:Interaction.Triggers>
+                    </ctrl:CalculatorTextBox>
+                </Grid>
 
                 <Label>Opis</Label>
                 <extToolkit:WatermarkTextBox Name="ExpenseDescription" Text="{Binding ExpenseDescription, UpdateSourceTrigger=PropertyChanged}"
-                                             VerticalAlignment="Stretch"                                             
+                                             VerticalAlignment="Stretch"
                                              Watermark="Opis dodawanego wydatku">
                     <i:Interaction.Triggers>
                         <ext:KeyTrigger Key="Enter">

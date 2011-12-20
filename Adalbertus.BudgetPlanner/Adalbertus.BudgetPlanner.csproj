@@ -48,6 +48,12 @@
     <Reference Include="Castle.Windsor">
       <HintPath>..\packages\Castle.Windsor.2.5.4\lib\net40-client\Castle.Windsor.dll</HintPath>
     </Reference>
+    <Reference Include="ILCalc">
+      <HintPath>..\Libs\ILCalc (.NET 2.0)\ILCalc.dll</HintPath>
+    </Reference>
+    <Reference Include="NLog">
+      <HintPath>..\packages\NLog.2.0.0.2000\lib\net40\NLog.dll</HintPath>
+    </Reference>
     <Reference Include="PresentationFramework.Luna" />
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
@@ -88,9 +94,13 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>BudgetPlanner.resx</DependentUpon>
     </Compile>
+    <Compile Include="Controls\AutoCompleteBox.cs" />
+    <Compile Include="Controls\AutoCompleteBoxPopup.cs" />
+    <Compile Include="Controls\CalculatorTextBox.cs" />
     <Compile Include="Controls\ImageButton.cs" />
     <Compile Include="Controls\WatermarkTextBoxExt.cs" />
     <Compile Include="Converters\CompareConverter.cs" />
+    <Compile Include="Converters\DataTypeConverter.cs" />
     <Compile Include="Converters\DebugConverter.cs" />
     <Compile Include="Converters\IsEmptyConverter.cs" />
     <Compile Include="Converters\IsNullConverter.cs" />
@@ -100,11 +110,13 @@
     <Compile Include="Converters\VisibilityConverter.cs" />
     <Compile Include="Core\BindableCollectionExt.cs" />
     <Compile Include="CastleBootstrapper.cs" />
-    <Compile Include="Core\CollectionExtensions.cs" />
+    <Compile Include="Extensions\CollectionExtensions.cs" />
     <Compile Include="Core\ConfigurationHelper.cs" />
+    <Compile Include="Core\Diagnostics.cs" />
     <Compile Include="Core\FilterEvent.cs" />
     <Compile Include="Controls\NumericTextBox.cs" />
     <Compile Include="Core\IDialog.cs" />
+    <Compile Include="Core\NLogLogger.cs" />
     <Compile Include="Core\PredicateBuilder.cs" />
     <Compile Include="Core\RefreshEvent.cs" />
     <Compile Include="Database\CachedService.cs" />
@@ -129,8 +141,11 @@
     <Compile Include="Extensions\FocusExtension.cs" />
     <Compile Include="Converters\StringFormatConverter.cs" />
     <Compile Include="Extensions\MarginSetterExtension.cs" />
+    <Compile Include="Extensions\MousePressExtension.cs" />
     <Compile Include="Extensions\StringExtenstions.cs" />
     <Compile Include="Models\Budget.cs" />
+    <Compile Include="Models\BudgetCalculatorEquation.cs" />
+    <Compile Include="Models\BudgetCalculatorItem.cs" />
     <Compile Include="Models\BudgetPlan.cs" />
     <Compile Include="Models\CashFlow.cs" />
     <Compile Include="Models\CashFlowGroup.cs" />
@@ -144,6 +159,13 @@
     <Compile Include="Models\Saving.cs" />
     <Compile Include="Models\SavingValue.cs" />
     <Compile Include="ViewModels\BaseViewModel.cs" />
+    <Compile Include="ViewModels\BudgetCalculationsViewModel.cs" />
+    <Compile Include="ViewModels\BudgetEquationWizardElementViewModel.cs" />
+    <Compile Include="ViewModels\BudgetEquationWizardFinishViewModel.cs" />
+    <Compile Include="ViewModels\BudgetEquationWizardShellViewModel.cs" />
+    <Compile Include="ViewModels\BudgetEquationWizardStartViewModel.cs" />
+    <Compile Include="ViewModels\BudgetEquationWizardVM.cs" />
+    <Compile Include="ViewModels\BudgetPlanGroupItemVM.cs" />
     <Compile Include="ViewModels\BudgetPlanItemVM.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -151,6 +173,8 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="ViewModels\BudgetViewModel.cs" />
+    <Compile Include="ViewModels\CalculatorItemVM.cs" />
+    <Compile Include="ViewModels\CalculatorViewModel.cs" />
     <Compile Include="ViewModels\CashFlowDeleteConfirmationViewModel.cs" />
     <Compile Include="ViewModels\CashFlowGroupDeleteConfirmationViewModel.cs" />
     <Compile Include="ViewModels\CashFlowTypesViewModel.cs" />
@@ -169,6 +193,8 @@
     <Compile Include="ViewModels\IShellViewModel.cs">
       <DependentUpon>ShellViewModel.cs</DependentUpon>
     </Compile>
+    <Compile Include="ViewModels\WizardPageViewModel.cs" />
+    <Compile Include="ViewModels\WizardShellViewModel.cs" />
     <Page Include="Styles.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -177,7 +203,39 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\BudgetCalculationsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\BudgetEquationWizardElementView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\BudgetEquationWizardFinishView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\BudgetEquationWizardShellView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\BudgetEquationWizardStartView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\BudgetPlanView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\BudgetView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\CalculatorView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\CashFlowDeleteConfirmationView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -186,36 +244,28 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\CashFlowTypesView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\BudgetView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\CashFlowDeleteConfirmationView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\ExpensesView.xaml">
-      <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\ExternalSourcesView.xaml">
-      <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\MessageBoxView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\RevenuesView.xaml">
-      <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\ShellView.xaml">
-      <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
@@ -244,6 +294,9 @@
     </EmbeddedResource>
     <None Include="App.config" />
     <None Include="Database\BudgetPlanner.db3" />
+    <None Include="Help\Domowy budżet.wnk" />
+    <None Include="Help\Zdefiniowane wpływy z dochodów.pdn" />
+    <None Include="Help\Zdefiniowane wpływy ze środków zewnętrznych.pdn" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -313,6 +366,35 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\system-info.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\system-delete.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\open-list.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\add.png" />
+    <Resource Include="Images\substract.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Database\db-update-v002.sql" />
+    <Content Include="Help\Domowy budżet.htm">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Help\Domowy budżet.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Help\Domowy budżet.swf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Resource Include="Help\Ikonka listy rozwijanej.png" />
+    <Resource Include="Help\Zdefiniowane wpływy z dochodów.png" />
+    <Resource Include="Help\Zdefiniowane wpływy ze środków zewnętrznych.png" />
+    <Resource Include="Images\calculator-add.png" />
+    <Content Include="Licence.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -3,12 +3,15 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:cal="http://www.caliburnproject.org"
              xmlns:ctrl="clr-namespace:Adalbertus.BudgetPlanner.Controls"
+             xmlns:extToolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit/extended"
+             xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+             xmlns:ext="clr-namespace:Adalbertus.BudgetPlanner.Extensions"
 >
     <Expander IsExpanded="False" ExpandDirection="Down" Header="Wpływy budżetowe">
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition />
-                <ColumnDefinition />
+                <ColumnDefinition Width=".5*"/>
+                <ColumnDefinition Width=".5*"/>
             </Grid.ColumnDefinitions>
             <GroupBox Grid.Column="0">
                 <GroupBox.Header>
@@ -19,47 +22,47 @@
                 </GroupBox.Header>
 
                 <StackPanel>
-                    <Grid Margin="4">
+                    <Grid Margin="0,0,0,4">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="140"/>
+                            <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <Grid Grid.Column="0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <Label Grid.Column="0" FontSize="10">Nazwa</Label>
-                            <ComboBox Grid.Column="1" ItemsSource="{Binding AvailableIncomes}" 
-                                  SelectedItem="{Binding SelectedAvailableIncome}"
-                                  IsSynchronizedWithCurrentItem="True" FontSize="10"
-                                  DisplayMemberPath="Name" HorizontalAlignment="Stretch"
-                                  ToolTip="Proszę wybrać dochód z listy poniżej.">
-                            </ComboBox>
-                        </Grid>
+                        <ctrl:AutoCompleteBox x:Name="avaiableIncome" Grid.Column="0" ItemsSource="{Binding AvailableIncomes}" 
+                                              MinWidth="100" SelectedItem="{Binding SelectedAvailableIncome}" 
+                                              FontSize="10" Watermark="Wybierz dochód" 
+                                              DisplayMemberPath="Name" FilterBy="Name" Margin="0,0,4,0">
+                            <i:Interaction.Triggers>
+                                <ext:KeyTrigger Key="Enter" FocusTarget="{x:Reference incomeValue}" />
+                            </i:Interaction.Triggers>
+                        </ctrl:AutoCompleteBox>
+                        
+                        <DatePicker Grid.Column="1" FontSize="10" SelectedDate="{Binding IncomeValueDate}" 
+                                    Width="100" SelectedDateFormat="Long" Margin="0,0,4,0"/>
 
-                        <WrapPanel Grid.Column="1">
-                            <Label FontSize="10">Data</Label>
-                            <DatePicker FontSize="10" SelectedDate="{Binding IncomeValueDate}" SelectedDateFormat="Long"/>
-                        </WrapPanel>
+                        <ctrl:CalculatorTextBox x:Name="incomeValue" Grid.Column="2" Value="{Binding IncomeValueValue, UpdateSourceTrigger=PropertyChanged}"
+                                                Watermark="Kwota" Width="60" FontSize="10" Margin="0,0,4,0" 
+                                                ToolTip="Dopuszczalne są też wyrażenia matematyczne, np.: (250-3*3,56)+10">
+                            <i:Interaction.Triggers>
+                                <ext:KeyTrigger Key="Enter" Modifiers="Control" FocusTarget="{x:Reference avaiableIncome}">
+                                    <cal:ActionMessage MethodName="AddIncomeValue" />                                                                            
+                                </ext:KeyTrigger>
+                                
+                                <ext:KeyTrigger Key="Enter" FocusTarget="{x:Reference incomeDescription}">
+                                </ext:KeyTrigger>
+                            </i:Interaction.Triggers>
+                        </ctrl:CalculatorTextBox>
 
-                        <WrapPanel Grid.Column="2">
-                            <Label FontSize="10">Kwota</Label>
-                            <ctrl:NumericTextBox Value="{Binding IncomeValueValue, UpdateSourceTrigger=PropertyChanged}"
-                                             Width="60" FontSize="10"/>
-                        </WrapPanel>
-
-                        <Grid Grid.Column="3">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <Label Grid.Column="0" FontSize="10">Opis</Label>
-                            <TextBox Grid.Column="1" FontSize="10" Text="{Binding IncomeValueDescription}" HorizontalAlignment="Stretch" />
-                        </Grid>
+                        <extToolkit:WatermarkTextBox x:Name="incomeDescription" Grid.Column="3" FontSize="10" Text="{Binding IncomeValueDescription}" 
+                                                     Watermark="Opis" MinWidth="30" Margin="0,0,4,0">
+                            <i:Interaction.Triggers>
+                                <ext:KeyTrigger Key="Enter" FocusTarget="{x:Reference avaiableIncome}">
+                                    <cal:ActionMessage MethodName="AddIncomeValue" />
+                                </ext:KeyTrigger>
+                            </i:Interaction.Triggers>
+                        </extToolkit:WatermarkTextBox>
 
                         <ctrl:ImageButton Grid.Column="4" ImageUrl="Images/save.png" ToolTip="Dodaj wpływy z dochodów" cal:Message.Attach="[Event Click] = [Action AddIncomeValue()]" />
                     </Grid>
@@ -92,8 +95,8 @@
                             <DataGridTemplateColumn  Header="Kwota">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <ctrl:NumericTextBox Value="{Binding Value, UpdateSourceTrigger=LostFocus}"
-                                                             BorderThickness="0"/>
+                                        <ctrl:CalculatorTextBox Value="{Binding Value, UpdateSourceTrigger=LostFocus}"
+                                                             BorderThickness="0" ToolTip="Dopuszczalne są też wyrażenia matematyczne, np.: (250-3*3,56)+10"/>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn >
@@ -106,54 +109,55 @@
             <GroupBox Grid.Column="1">
                 <GroupBox.Header>
                     <WrapPanel>
-                        <Label>Wpływy z oszczędności</Label>
-                        <Label Content="{Binding Path=SumOfRevenueSavings, Converter={StaticResource CurrencyFormatter}}" Margin="5,0,0,0" />
+                        <Label>Wpływy z zewnętrznych środków</Label>
+                        <Label Content="{Binding SumOfRevenueSavings, Converter={StaticResource CurrencyFormatter}}" Margin="5,0,0,0" />
                     </WrapPanel>
                 </GroupBox.Header>
 
                 <StackPanel>
-                    <Grid Margin="4">
+                    <Grid Margin="0,0,0,4">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="140"/>
+                            <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <Grid Grid.Column="0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
+                        <ctrl:AutoCompleteBox x:Name="availableSaving" Grid.Column="0" ItemsSource="{Binding AvailableSavings}" 
+                                                  SelectedItem="{Binding SelectedAvailableSaving}"
+                                                  FontSize="10" FilterBy="Name" DisplayMemberPath="Name"
+                                                  HorizontalAlignment="Stretch"                                                  
+                                                  Watermark="Zew. środki" MinWidth="100" Margin="0,0,4,0">
+                            <i:Interaction.Triggers>
+                                <ext:KeyTrigger Key="Enter" FocusTarget="{x:Reference savingValue}" />                                
+                            </i:Interaction.Triggers>
+                        </ctrl:AutoCompleteBox>
+                        <DatePicker x:Name="savingDate" Grid.Column="1" FontSize="10" SelectedDate="{Binding SavingValueDate}"
+                                    SelectedDateFormat="Long" Width="100" Margin="0,0,4,0" />
 
-                            <Label Grid.Column="0" FontSize="10">Nazwa</Label>
-                            <ComboBox Grid.Column="1" ItemsSource="{Binding AvailableSavings}" 
-                                  SelectedItem="{Binding SelectedAvailableSaving}"
-                                  IsSynchronizedWithCurrentItem="False" FontSize="10"
-                                  DisplayMemberPath="Name" HorizontalAlignment="Stretch"
-                                  ToolTip="Proszę wybrać oszczędności z listy poniżej." />
-                        </Grid>
-                        <WrapPanel Grid.Column="1">
-                            <Label FontSize="10">Data</Label>
-                            <DatePicker FontSize="10" SelectedDate="{Binding SavingValueDate}" SelectedDateFormat="Long" />
-                        </WrapPanel>
+                        <ctrl:CalculatorTextBox x:Name="savingValue" Grid.Column="2" Value="{Binding SavingValueValue, UpdateSourceTrigger=PropertyChanged}"
+                                             Width="60" FontSize="10" Watermark="Kwota" Margin="0,0,4,0" 
+                                             ToolTip="Dopuszczalne są też wyrażenia matematyczne, np.: (250-3*3,56)+10">
+                            <i:Interaction.Triggers>
+                                <ext:KeyTrigger Key="Enter" Modifiers="Control" FocusTarget="{x:Reference availableSaving}">
+                                    <cal:ActionMessage MethodName="AddSavingValue" />
+                                </ext:KeyTrigger>
 
-                        <WrapPanel Grid.Column="2">
-                            <Label FontSize="10">Kwota</Label>
-                            <ctrl:NumericTextBox Value="{Binding SavingValueValue, UpdateSourceTrigger=PropertyChanged}"
-                                             Width="60" FontSize="10"/>
-                        </WrapPanel>
+                                <ext:KeyTrigger Key="Enter" FocusTarget="{x:Reference savingDescription}">
+                                </ext:KeyTrigger>
+                            </i:Interaction.Triggers>
+                        </ctrl:CalculatorTextBox>
 
-                        <Grid Grid.Column="3">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <Label Grid.Column="0" FontSize="10">Opis</Label>
-                            <TextBox Grid.Column="1" FontSize="10" Text="{Binding SavingValueDescription}" HorizontalAlignment="Stretch"/>
-                        </Grid>
-
-                        <ctrl:ImageButton Grid.Column="4" ImageUrl="Images/save.png" ToolTip="Dodaj wpływy z oszczędności" cal:Message.Attach="[Event Click] = [Action AddSavingValue()]" />
+                        <extToolkit:WatermarkTextBox x:Name="savingDescription" Grid.Column="3" FontSize="10" Text="{Binding SavingValueDescription}"
+                                                     Watermark="Opis" MinWidth="30" Margin="0,0,4,0">
+                            <i:Interaction.Triggers>
+                                <ext:KeyTrigger Key="Enter" FocusTarget="{x:Reference availableSaving}">
+                                    <cal:ActionMessage MethodName="AddSavingValue" />
+                                </ext:KeyTrigger>
+                            </i:Interaction.Triggers>
+                        </extToolkit:WatermarkTextBox>
+                        
+                        <ctrl:ImageButton Grid.Column="4" ImageUrl="Images/save.png" ToolTip="Dodaj wpływy z zewnętrznych środków" cal:Message.Attach="[Event Click] = [Action AddSavingValue()]" />
                     </Grid>
 
                     <DataGrid ItemsSource="{Binding BudgetSavingValues}" AutoGenerateColumns="False"
@@ -185,8 +189,8 @@
                             <DataGridTemplateColumn  Header="Kwota">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <ctrl:NumericTextBox Value="{Binding BudgetValue, UpdateSourceTrigger=LostFocus}"
-                                                             BorderThickness="0"/>
+                                        <ctrl:CalculatorTextBox Value="{Binding BudgetValue, UpdateSourceTrigger=LostFocus}"
+                                                             BorderThickness="0" ToolTip="Dopuszczalne są też wyrażenia matematyczne, np.: (250-3*3,56)+10"/>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn >

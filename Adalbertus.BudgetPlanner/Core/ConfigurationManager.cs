@@ -10,31 +10,60 @@ namespace Adalbertus.BudgetPlanner.Core
     public struct ConfigurationKeys
     {
         public const string DatabaseVersion = "DatabaseVersion";
+        public const string IsFirstRun = "IsFirstRun";
     }
 
-    public class ConfigurationManager : Dictionary<string, string>, IConfigurationManager
+    public class ConfigurationManager : Dictionary<string, Configuration>, IConfigurationManager
     {
         public IDatabase Database { get; private set; }
 
         public ConfigurationManager(IDatabase database)
         {
-            Database = database;            
+            Database = database;
         }
 
-        public T GetGetValueOrDefault<T>(string key, T defaultValue = default(T))
+        public T GetValueOrDefault<T>(string key, T defaultValue = default(T))
         {
             if (!ContainsKey(key))
             {
                 LoadAllConfigurationFromDatabase();
             }
 
-            return (T)Convert.ChangeType(this[key], typeof(T));
+            if (!ContainsKey(key))
+            {
+                SaveValue(key, defaultValue);
+                return defaultValue;
+            }
+
+            return (T)Convert.ChangeType(this[key].Value, typeof(T));
+        }
+
+        public void SaveValue(string key, object value)
+        {
+            using (var tx = Database.GetTransaction())
+            {
+                if (ContainsKey(key))
+                {
+                    this[key].Value = value.ToString();
+                    Database.Save(this[key]);
+                }
+                else
+                {
+                    Add(key, new Configuration { Key = key, Value = value.ToString(), IsActive = true });
+                    //var sql = PetaPoco.Sql.Builder
+                    //    .Append("
+                    Database.Execute("INSERT INTO Configuration (Key, IsActive, Value, Decription) VALUES (@0, @1, @2, @3)",
+                        key, this[key].IsActive, this[key].Value, this[key].Decription);
+                }
+                tx.Complete();
+            }
         }
 
         private void LoadAllConfigurationFromDatabase()
         {
             var allConfigurationItems = Database.Query<Configuration>().ToList();
-            allConfigurationItems.ForEach(x => Add(x.Key, x.Value));
+            Clear();
+            allConfigurationItems.ForEach(x => Add(x.Key, x));
         }
     }
 

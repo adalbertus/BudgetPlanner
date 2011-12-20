@@ -17,7 +17,7 @@ namespace Adalbertus.BudgetPlanner.Database
         {
             get
             {
-                var connectionBuilder = new SQLiteConnectionStringBuilder(ConfigurationHelper.DefaultConnectionString);
+                var connectionBuilder = new SQLiteConnectionStringBuilder(AppConfigurationHelper.DefaultConnectionString);
                 return connectionBuilder.DataSource;
             }
         }

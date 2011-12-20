@@ -6,6 +6,7 @@ using Caliburn.Micro;
 using System.ComponentModel;
 using System.Diagnostics.Contracts;
 using System.Collections.Specialized;
+using Adalbertus.BudgetPlanner.Extensions;
 using Adalbertus.BudgetPlanner.Core;
 using Adalbertus.BudgetPlanner.Models;
 using Adalbertus.BudgetPlanner.Database;
@@ -20,10 +21,25 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             : base(shell, database, configuration, cashedService, eventAggregator)
         {
             _cashFlows = new BindableCollectionExt<CashFlow>();
-            _cashFlows.PropertyChanged += (s, e) => { OnPropertyChanged(s, e); };
+            _cashFlows.PropertyChanged += (s, e) => 
+            { 
+                OnPropertyChanged(s, e);
+                CachedService.Clear(CachedServiceKeys.AllCashFlows);
+            };
 
             _cashFlowGroups = new BindableCollectionExt<CashFlowGroup>();
-            _cashFlowGroups.PropertyChanged += (s, e) => { OnPropertyChanged(s, e); };
+            _cashFlowGroups.PropertyChanged += (s, e) =>
+            {
+                OnPropertyChanged(s, e);
+
+                CachedService.Clear(CachedServiceKeys.AllCashFlowGroups);
+                CachedService.Clear(CachedServiceKeys.AllCashFlows);
+                var cashFlowGroup = s as CashFlowGroup;
+                _cashFlows.Where(x => x.CashFlowGroupId == cashFlowGroup.Id)
+                    .ForEach(x => x.Group = cashFlowGroup);
+                NewCashFlowGroup = null;
+                NewCashFlowGroup = CashFlowGroups.First();
+            };
         }
 
         protected override void OnActivate()
@@ -40,7 +56,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
                 case "Description":
                 case "Group":
                 case "Position":
-                    Save(sender as Entity);                    
+                    Save(sender as Entity);
                     break;
             }
         }
@@ -280,17 +296,17 @@ namespace Adalbertus.BudgetPlanner.ViewModels
 
         #region Cash flow type list
         private BindableCollectionExt<CashFlow> _cashFlows;
-        public IEnumerable<CashFlow> CashFlows 
+        public IEnumerable<CashFlow> CashFlows
         {
             get { return _cashFlows.AsEnumerable().ToList(); }
 
         }
         private BindableCollectionExt<CashFlowGroup> _cashFlowGroups;
-        public IEnumerable<CashFlowGroup> CashFlowGroups 
+        public IEnumerable<CashFlowGroup> CashFlowGroups
         {
             get { return _cashFlowGroups.OrderBy(x => x.Position).ToList(); }
         }
-        
+
         public bool CanDeleteCashFlowType(CashFlow cashFlow)
         {
             return !cashFlow.IsReadOnly;
@@ -384,7 +400,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             NewCashFlowGroup = _cashFlowGroups.First();
             CachedService.Clear();
             _cashFlows.IsNotifying = false;
-            NotifyOfPropertyChange(() => CashFlowGroups);            
+            NotifyOfPropertyChange(() => CashFlowGroups);
             LoadCashFlows();
         }
 
@@ -431,7 +447,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
 
         protected override void Save(Entity entity)
         {
-            base.Save(entity);            
+            base.Save(entity);
             CachedService.Clear();
         }
         #endregion

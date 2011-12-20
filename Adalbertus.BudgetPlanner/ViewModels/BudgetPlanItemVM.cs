@@ -5,6 +5,7 @@ using System.Text;
 using System.Diagnostics.Contracts;
 using Adalbertus.BudgetPlanner.Models;
 using Adalbertus.BudgetPlanner.Core;
+using Adalbertus.BudgetPlanner.Extensions;
 using Caliburn.Micro;
 using System.Collections.Specialized;
 
@@ -21,6 +22,17 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             get
             {
                 return CashFlow.ToString();
+            }
+        }
+
+        public IEnumerable<BudgetPlan> ToolTipValues
+        {
+            get
+            {
+                // prevent from exception: 'DeferRefresh' is not allowed during an AddNew or EditItem transaction.
+                // when user is modifing values in DataGrid and hover on border (show ToolTip) above exception
+                // occures
+                return Values.ToList();
             }
         }
 
@@ -112,13 +124,26 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             }
         }
 
+        public string ValuesTextSummary
+        {
+            get { return ComposeValuesTextSummary(); }
+        }
+
         public BudgetPlanItemVM(Budget budget, CashFlow cashFlow, IEnumerable<BudgetPlan> planItems)
         {
             Budget = budget;
             CashFlow = cashFlow;
             Values = new BindableCollectionExt<BudgetPlan>(planItems);
-            Values.CollectionChanged += Values_CollectionChanged;
-            Values.PropertyChanged += (s, e) => { NotifyOfPropertyChange(() => Values); };
+            Values.CollectionChanged += (s, e) =>
+                {
+                    if (e.Action == NotifyCollectionChangedAction.Remove)
+                    {
+                        var item = e.OldItems[0] as BudgetPlan;
+                        Budget.BudgetPlanItems.Remove(item);
+                    }
+                    RefreshUI();
+                };
+            Values.PropertyChanged += (s, e) => { RefreshUI(); };
         }
 
         public void RefreshUI()
@@ -127,15 +152,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             NotifyOfPropertyChange(() => TotalExpenseValue);
             NotifyOfPropertyChange(() => TotalBalanceValue);
             NotifyOfPropertyChange(() => TotalBalanceProcentValue);
-        }
-
-        private void Values_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            if (e.Action == NotifyCollectionChangedAction.Remove)
-            {
-                var item = e.OldItems[0] as BudgetPlan;
-                Budget.BudgetPlanItems.Remove(item);
-            }
+            NotifyOfPropertyChange(() => ValuesTextSummary);
         }
 
         public BudgetPlan AddValue(decimal value, string description)
@@ -150,6 +167,13 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             Budget.BudgetPlanItems.Add(plan);
             Values.Add(plan);
             return plan;
+        }
+
+        private string ComposeValuesTextSummary()
+        {
+            StringBuilder sb = new StringBuilder();
+            Values.ForEach(x => sb.AppendLine(string.Format("{0} {1}", x.Value, x.Description)));
+            return sb.ToString();
         }
     }
 

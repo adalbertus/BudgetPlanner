@@ -41,6 +41,11 @@ namespace Adalbertus.BudgetPlanner.Models
                 NotifyOfPropertyChange(() => Description);
             }
         }
+
+        public string FullName
+        {
+            get { return ToString(); }
+        }
         
         public virtual Saving Saving { get; set; }
 

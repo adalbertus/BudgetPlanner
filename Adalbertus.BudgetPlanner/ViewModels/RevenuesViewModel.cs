@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Adalbertus.BudgetPlanner.Extensions;
 using Adalbertus.BudgetPlanner.Database;
 using Adalbertus.BudgetPlanner.Core;
 using Caliburn.Micro;
@@ -33,7 +34,10 @@ namespace Adalbertus.BudgetPlanner.ViewModels
 
         public decimal SumOfRevenueSavings
         {
-            get { return Budget.SumOfRevenueSavings; }
+            get
+            {
+                var s1 = Budget.SavingValues.Where(x => x.Expense != null).Sum(x => x.BudgetValue);
+                return Budget.SumOfRevenueSavings; }
         }
 
         public void LoadData(Budget budget)
@@ -49,7 +53,6 @@ namespace Adalbertus.BudgetPlanner.ViewModels
 
             LoadIncomes();
             LoadSavings();
-
             RefreshSummaryValues();
         }
 
@@ -82,7 +85,6 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             {
                 _incomeValueDate = value;
                 NotifyOfPropertyChange(() => IncomeValueDate);
-                NotifyOfPropertyChange(() => CanAddIncomeValue);
             }
         }
 
@@ -94,7 +96,6 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             {
                 _incomeValueValue = value;
                 NotifyOfPropertyChange(() => IncomeValueValue);
-                NotifyOfPropertyChange(() => CanAddIncomeValue);
             }
         }
 
@@ -109,17 +110,6 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             }
         }
 
-        public bool CanAddIncomeValue
-        {
-            get
-            {
-                bool isIncomeSelected = SelectedAvailableIncome != null;
-                bool isIncomeEntryValueNotZero = IncomeValueValue > 0;
-
-                return isIncomeSelected && isIncomeEntryValueNotZero;
-            }
-        }
-
         public BindableCollectionExt<IncomeValue> BudgetIncomeValues { get; private set; }
 
         private void LoadIncomes()
@@ -131,15 +121,14 @@ namespace Adalbertus.BudgetPlanner.ViewModels
                     .On("Income.Id = IncomeValue.IncomeId")
                     .InnerJoin("Budget")
                     .On("Budget.Id = IncomeValue.BudgetId")
-                    .Where("IncomeValue.BudgetId = @0", Budget.Id));
+                    .Where("IncomeValue.BudgetId = @0", Budget.Id)).ToList();
             BudgetIncomeValues.IsNotifying = false;
             BudgetIncomeValues.Clear();
             incomeValues.ForEach(x => BudgetIncomeValues.Add(x));
-
-            AvailableIncomes.Clear();
-            var incomes = Database.Query<Income>("ORDER BY Name ASC");
-            AvailableIncomes.AddRange(incomes);
-
+            
+            AvailableIncomes.Clear();            
+            AvailableIncomes.AddRange(CachedService.GetAllIncomes());
+            
             IncomeValueDate = DateTime.Now;
             IncomeValueValue = 0;
             SelectedAvailableIncome = null;
@@ -150,12 +139,13 @@ namespace Adalbertus.BudgetPlanner.ViewModels
 
         public void AddIncomeValue()
         {
-            if (SelectedAvailableIncome != null)
+            if ((SelectedAvailableIncome != null) && (IncomeValueValue > 0))
             {
                 var incomeValue = Budget.AddIncomeValue(SelectedAvailableIncome, IncomeValueValue, IncomeValueDate, IncomeValueDescription);
                 SaveRevenue(incomeValue);
                 IncomeValueValue = 0;
                 IncomeValueDescription = string.Empty;
+                SelectedAvailableIncome = null;
             }
         }
 
@@ -184,7 +174,6 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             {
                 _selectedAvailableSaving = value;
                 NotifyOfPropertyChange(() => SelectedAvailableSaving);
-                NotifyOfPropertyChange(() => CanAddSavingValue);
             }
         }
 
@@ -196,7 +185,6 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             {
                 _savingValueDate = value;
                 NotifyOfPropertyChange(() => SavingValueDate);
-                NotifyOfPropertyChange(() => CanAddSavingValue);
             }
         }
 
@@ -208,7 +196,6 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             {
                 _savingValueValue = value;
                 NotifyOfPropertyChange(() => SavingValueValue);
-                NotifyOfPropertyChange(() => CanAddSavingValue);
             }
         }
 
@@ -220,17 +207,6 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             {
                 _savingValueDescription = value;
                 NotifyOfPropertyChange(() => SavingValueDescription);
-            }
-        }
-
-        public bool CanAddSavingValue
-        {
-            get
-            {
-                bool isSavingSelected = SelectedAvailableSaving != null;
-                bool isSavingValueNotZero = SavingValueValue > 0;
-
-                return isSavingSelected && isSavingValueNotZero;
             }
         }
 
@@ -266,12 +242,13 @@ namespace Adalbertus.BudgetPlanner.ViewModels
 
         public void AddSavingValue()
         {
-            if (SelectedAvailableSaving != null)
+            if ((SelectedAvailableSaving != null) && (SavingValueValue > 0))
             {
                 var savingValue = Budget.WithdrawSavingValue(SelectedAvailableSaving, SavingValueValue, SavingValueDate, SavingValueDescription);
                 SaveRevenue(savingValue);
                 SavingValueValue = 0;
                 SavingValueDescription = string.Empty;
+                SelectedAvailableSaving = null;
             }
         }
 
@@ -286,12 +263,28 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         private void SaveRevenue(Entity entity)
         {
             Save(entity);
+            if (entity is IncomeValue)
+            {
+                CachedService.Clear(CachedServiceKeys.AllIncomes);
+            }
+            if (entity is SavingValue)
+            {
+                CachedService.Clear(CachedServiceKeys.AllSavings);
+            }
             RefreshSummaryValues();
         }
 
         private void DeleteRevenue(Entity entity)
         {
             Delete(entity);
+            if (entity is IncomeValue)
+            {
+                CachedService.Clear(CachedServiceKeys.AllIncomes);
+            }
+            if (entity is SavingValue)
+            {
+                CachedService.Clear(CachedServiceKeys.AllSavings);
+            }
             RefreshSummaryValues();
         }
     }

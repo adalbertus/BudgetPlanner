@@ -15,6 +15,7 @@ using Microsoft.Windows.Controls;
 
 namespace Adalbertus.BudgetPlanner.Controls
 {
+    [TemplatePart(Name = "PART_OpenListButtonHost", Type = typeof(Button))]
     public class WatermarkTextBoxExt : WatermarkTextBox
     {
         static WatermarkTextBoxExt()
@@ -40,20 +41,39 @@ namespace Adalbertus.BudgetPlanner.Controls
         public static readonly DependencyProperty DefaultTextProperty =
             DependencyProperty.Register("DefaultText", typeof(string), typeof(WatermarkTextBoxExt), new UIPropertyMetadata(string.Empty));
 
+        public Button ClearTextButton { get; set; }
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
-            var imageBorder = GetTemplateChild("PART_ClearIconBorder") as Border;
-            if (imageBorder != null)
+            //var clearTextButton = GetTemplateChild("PART_ClearButtonHost") as Button;
+            //ClearTextButton = clearTextButton;
+            //if (clearTextButton != null)
+            //{
+            //    clearTextButton.MouseLeftButtonDown += (s, e) =>
+            //        {
+            //            if (!string.IsNullOrWhiteSpace(Text))
+            //            {
+            //                Text = DefaultText;
+            //            }
+            //        };
+            //    clearTextButton.PreviewMouseLeftButtonDown += (s, e) =>
+            //    {
+            //        if (!string.IsNullOrWhiteSpace(Text))
+            //        {
+            //            Text = DefaultText;
+            //        }
+            //    };
+            //}
+        }
+
+        protected override void OnPreviewMouseLeftButtonDown(MouseButtonEventArgs e)
+        {
+            base.OnPreviewMouseLeftButtonDown(e);
+            if (e.OriginalSource is Image)
             {
-                imageBorder.MouseLeftButtonDown += (s, e) =>
-                {
-                    if (!string.IsNullOrWhiteSpace(Text))
-                    {
-                        Text = DefaultText;
-                    }
-                };
-            }
+                Text = DefaultText;
+                e.Handled = true;
+            }            
         }
     }
 }

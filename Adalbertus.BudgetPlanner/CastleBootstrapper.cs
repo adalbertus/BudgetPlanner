@@ -7,6 +7,7 @@ using Caliburn.Micro;
 using Castle.Core;
 using Castle.Windsor;
 using Adalbertus.BudgetPlanner.ViewModels;
+using Microsoft.Windows.Controls;
 
 namespace Adalbertus.BudgetPlanner
 {
@@ -20,6 +21,27 @@ namespace Adalbertus.BudgetPlanner
         protected override void Configure()
         {
             container = new ApplicationContainer();            
+        }
+
+        static CastleBootstrapper()
+        {
+            LogManager.GetLog = type => new Core.NLogLogger(type);
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+        }
+
+        private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            LogManager.GetLog(typeof(Core.NLogLogger)).Error(e.ExceptionObject as Exception);
+            var sb = new StringBuilder();
+            sb.AppendLine("Wystąpił nieokreślony błąd. Niestety aplikacja musi zostać zamknięta.");
+            sb.AppendLine();
+            sb.AppendLine("Proszę o przesłanie pliku z zebranymi informacjami o błędzie do autora.");
+            sb.AppendLine(string.Format("Plik z informacjami: {0}", Core.NLogLogger.LogFileName));
+            sb.AppendLine();
+            sb.AppendLine("Być może uruchomienie aplikacji ze starszą wersją bazy danych umożliwi jej działanie.");
+            sb.AppendLine("Starsze wersje baz znajdują się w katalogu Archiwum.");
+            MessageBox.Show(sb.ToString(), "Błąd", System.Windows.MessageBoxButton.OK);
+            System.Windows.Application.Current.Shutdown();
         }
 
         protected override object GetInstance(Type service, string key)

@@ -1,0 +1,129 @@
+﻿<UserControl x:Class="Adalbertus.BudgetPlanner.Views.BudgetCalculationsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:cal="http://www.caliburnproject.org"
+             xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+             xmlns:ext="clr-namespace:Adalbertus.BudgetPlanner.Extensions"
+             xmlns:extToolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit/extended"
+             xmlns:ctrl="clr-namespace:Adalbertus.BudgetPlanner.Controls"
+             xmlns:vm="clr-namespace:Adalbertus.BudgetPlanner.ViewModels"
+             xmlns:m="clr-namespace:Adalbertus.BudgetPlanner.Models"
+             xmlns:conv="clr-namespace:Adalbertus.BudgetPlanner.Converters"
+>
+    <UserControl.Resources>
+        <ControlTemplate x:Key="GroupTreeViewItem" TargetType="{x:Type TreeViewItem}">
+            <Expander Style="{StaticResource DarkExpander}" IsExpanded="False">
+                <Expander.Header>
+                    <ContentPresenter Name="PART_Header" Content="{Binding}" />
+                </Expander.Header>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <WrapPanel Grid.Row="0">
+                        <ctrl:WatermarkTextBoxExt Watermark="Nazwa" Width="200"/>
+
+                        <ctrl:AutoCompleteBox x:Name="valueType" Watermark="Rodzaj" Width="200" FilterBy="Name" DisplayMemberPath="Name" 
+                                              SelectedItem="{Binding DataContext.NewValueTypeName, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}, UpdateSourceTrigger=PropertyChanged}"
+                                              ItemsSource="{Binding DataContext.ValueTypes, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}" />
+
+                        <ctrl:AutoCompleteBox x:Name="operatorType" Watermark="Działanie" Width="200" FilterBy="Name" DisplayMemberPath="Name" 
+                                              Visibility="Collapsed"
+                                              SelectedItem="{Binding DataContext.NewOperatorTypeName, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
+                                              ItemsSource="{Binding DataContext.OperatorTypes, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}" />
+
+                        <ctrl:NumericTextBox Watermark="Wartość" Width="200"
+                                             Value="{Binding DataContext.NewEquationItemValue, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"/>
+
+                        <ctrl:AutoCompleteBox Watermark="Równanie" Width="200" FilterBy="Name" DisplayMemberPath="Name"                                              
+                                              ItemsSource="{Binding DataContext.AvaiableEquations, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}" />
+
+                        <ctrl:ImageButton Content="Dodaj element" cal:Message.Attach="[Event Click] = [Action AddItem($dataContext)]"/>
+                    </WrapPanel>
+                    <TextBlock x:Name="emptyMessage" Grid.Row="1" 
+                               Text="Równanie nie ma jeszcze żadnych zdefiniowanych elementów"
+                               Visibility="Collapsed" FontWeight="Bold" Margin="4"/>
+                    <ItemsPresenter Grid.Row="1"/>
+                </Grid>
+            </Expander>
+            <ControlTemplate.Triggers>
+                <DataTrigger Binding="{Binding SelectedItem, ElementName=valueType}" Value="Operator">
+                    <Setter TargetName="operatorType" Property="Visibility" Value="Visible"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Items, Converter={StaticResource IsEmpty}}" Value="True">
+                    <Setter TargetName="emptyMessage" Property="Visibility" Value="Visible"/>
+                </DataTrigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+
+        <ControlTemplate x:Key="DetailsTreeViewItem" TargetType="{x:Type TreeViewItem}">
+            <ContentPresenter Name="PART_Header" Content="{Binding}" />
+        </ControlTemplate>
+
+        <Style TargetType="{x:Type TreeViewItem}">
+            <Setter Property="Template" Value="{StaticResource GroupTreeViewItem}" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Converter={StaticResource DataType}}" Value="{x:Type m:BudgetCalculatorItem}">
+                    <Setter Property="Template" Value="{StaticResource DetailsTreeViewItem}" />
+                    <Setter Property="ItemsPanel">
+                        <Setter.Value>
+                            <ItemsPanelTemplate>
+                                <Grid />
+                            </ItemsPanelTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style TargetType="ListViewItem">
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        </Style>
+
+        <HierarchicalDataTemplate DataType="{x:Type m:BudgetCalculatorEquation}" ItemsSource="{Binding Items}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <WrapPanel Grid.Column="0">
+                    <TextBlock>Nazwa równania:</TextBlock>
+                    <TextBox Text="{Binding Name}" Width="200" Margin="4,0"/>
+                </WrapPanel>
+                <CheckBox Grid.Column="1" IsChecked="{Binding IsVisible}" Content="Widoczne na ekranie budżetu" Margin="4,0"/>
+            </Grid>
+        </HierarchicalDataTemplate>
+
+        <DataTemplate DataType="{x:Type m:BudgetCalculatorItem}">
+            <Expander >
+            </Expander>
+        </DataTemplate>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <GroupBox Grid.Row="0" Header="Wstaw nowe równanie">
+            <!--<Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <ctrl:WatermarkTextBoxExt Grid.Column="0" Watermark="Nazwa równania" Text="{Binding NewEquationName}"
+                                      ext:FocusExtension.IsFocused="{Binding IsNewEquationNameFocused}" />
+                <CheckBox Grid.Column="1" Content="Widoczne na ekranie budżetu" IsChecked="{Binding IsNewEquationVisible}"/>
+                <ctrl:ImageButton Grid.Column="2" Content="Wstaw" 
+                              cal:Message.Attach="[Event Click] = [Action AddAndMoveToEquationName]"/>
+            </Grid>-->
+            <Border BorderBrush="LightGray" BorderThickness="1" CornerRadius="4">
+                <ContentControl x:Name="Wizard" Width="600"/>
+            </Border>
+        </GroupBox>
+        <TreeView Grid.Row="1" ItemsSource="{Binding Equations}" BorderThickness="0" />
+    </Grid>
+</UserControl>

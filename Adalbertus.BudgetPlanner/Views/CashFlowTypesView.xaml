@@ -41,9 +41,10 @@
                         </i:Interaction.Triggers>
                     </extToolkit:WatermarkTextBox>
 
-                    <ComboBox Grid.Column="2" ItemsSource="{Binding CashFlowGroups}" 
-                              SelectedItem="{Binding NewCashFlowGroup, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                              DisplayMemberPath="Name" Margin="0,0,4,0"/>
+                    <ctrl:AutoCompleteBox Grid.Column="2" ItemsSource="{Binding CashFlowGroups}" 
+                                          SelectedItem="{Binding NewCashFlowGroup, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                          DisplayMemberPath="Name" Margin="0,0,4,0"
+                                          CanBeEmpty="False"/>
 
                     <ctrl:ImageButton Grid.Column="3" ImageUrl="Images/save.png" Content="Wstaw"
                                       cal:Message.Attach="[Event Click] = [Action AddNewCashFlowType()]"/>
@@ -69,54 +70,26 @@
                         <DataGridTemplateColumn Header="Nazwa" Width="100">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <StackPanel>
                                         <extToolkit:WatermarkTextBox x:Name="TextBox" Text="{Binding Name, UpdateSourceTrigger=LostFocus}"
-                                                 HorizontalAlignment="Stretch" BorderThickness="0" />
-                                        <TextBlock x:Name="TextBoxReadOnly" Text="{Binding Name}" 
-                                                   Visibility="Collapsed" />
-                                    </StackPanel>
-                                    <DataTemplate.Triggers>
-                                        <DataTrigger Binding="{Binding IsReadOnly}" Value="True">
-                                            <Setter TargetName="TextBox" Property="Visibility" Value="Collapsed" />
-                                            <Setter TargetName="TextBoxReadOnly" Property="Visibility" Value="Visible" />
-                                        </DataTrigger>
-                                    </DataTemplate.Triggers>
+                                                                     IsReadOnly="{Binding IsReadOnly}" HorizontalAlignment="Stretch" BorderThickness="0" />
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn Header="Opis" Width="200">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <StackPanel>
                                         <extToolkit:WatermarkTextBox x:Name="TextBox" Text="{Binding Description, UpdateSourceTrigger=LostFocus}"
-                                                 BorderThickness="0"/>
-                                        <TextBlock x:Name="TextBoxReadOnly" Text="{Binding Description, UpdateSourceTrigger=LostFocus}" Visibility="Collapsed"/>
-                                    </StackPanel>
-                                    <DataTemplate.Triggers>
-                                        <DataTrigger Binding="{Binding IsReadOnly}" Value="true">
-                                            <Setter TargetName="TextBox" Property="Visibility" Value="Collapsed" />
-                                            <Setter TargetName="TextBoxReadOnly" Property="Visibility" Value="Visible" />
-                                        </DataTrigger>
-                                    </DataTemplate.Triggers>
-
+                                                 BorderThickness="0" IsReadOnly="{Binding IsReadOnly}"/>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn Header="Grupa" Width="150">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <StackPanel>
-                                        <ComboBox x:Name="CashFlowGroupsCB" ItemsSource="{Binding DataContext.CashFlowGroups, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}" 
-                                                  SelectedItem="{Binding Group, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                  IsSynchronizedWithCurrentItem="False" BorderThickness="0"/>
-                                        <TextBlock x:Name="TextBoxReadOnly" Text="{Binding Group}" Visibility="Collapsed"/>
-                                    </StackPanel>
-                                    <DataTemplate.Triggers>
-                                        <DataTrigger Binding="{Binding IsReadOnly}" Value="true">
-                                            <Setter TargetName="CashFlowGroupsCB" Property="Visibility" Value="Collapsed" />
-                                            <Setter TargetName="TextBoxReadOnly" Property="Visibility" Value="Visible" />
-                                        </DataTrigger>
-                                    </DataTemplate.Triggers>
+                                        <ctrl:AutoCompleteBox x:Name="CashFlowGroupsCB" IsReadOnly="{Binding IsReadOnly}"
+                                                              ItemsSource="{Binding DataContext.CashFlowGroups, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}" 
+                                                              SelectedItem="{Binding Group, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                              BorderThickness="0"/>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
@@ -178,34 +151,16 @@
                         <DataGridTemplateColumn Header="Nazwa" Width="100">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <StackPanel>
                                         <extToolkit:WatermarkTextBox x:Name="TextBox" Text="{Binding Name, UpdateSourceTrigger=LostFocus}"
-                                                 HorizontalAlignment="Stretch" BorderThickness="0"/>
-                                        <TextBlock x:Name="TextBoxReadOnly" Text="{Binding Name}" Visibility="Collapsed"/>
-                                    </StackPanel>
-                                    <DataTemplate.Triggers>
-                                        <DataTrigger Binding="{Binding IsReadOnly}" Value="true">
-                                            <Setter TargetName="TextBox" Property="Visibility" Value="Collapsed" />
-                                            <Setter TargetName="TextBoxReadOnly" Property="Visibility" Value="Visible" />
-                                        </DataTrigger>
-                                    </DataTemplate.Triggers>
+                                                 HorizontalAlignment="Stretch" BorderThickness="0" IsReadOnly="{Binding IsReadOnly}"/>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn Header="Opis" Width="*">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <StackPanel>
                                         <extToolkit:WatermarkTextBox x:Name="TextBox" Text="{Binding Description, UpdateSourceTrigger=LostFocus}"
-                                                 BorderThickness="0"/>
-                                        <TextBlock x:Name="TextBoxReadOnly" Text="{Binding Name}" Visibility="Collapsed"/>
-                                    </StackPanel>
-                                    <DataTemplate.Triggers>
-                                        <DataTrigger Binding="{Binding IsReadOnly}" Value="true">
-                                            <Setter TargetName="TextBox" Property="Visibility" Value="Collapsed" />
-                                            <Setter TargetName="TextBoxReadOnly" Property="Visibility" Value="Visible" />
-                                        </DataTrigger>
-                                    </DataTemplate.Triggers>
+                                                 BorderThickness="0" IsReadOnly="{Binding IsReadOnly}"/>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>

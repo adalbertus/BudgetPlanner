@@ -28,7 +28,8 @@ namespace Adalbertus.BudgetPlanner.Database
 
 
         Transaction GetTransaction();
-        
+
+        object Insert(object poco);
         void Save(object poco);
         int Update(object poco);
         int Update<T>(string sql, params object[] args);

@@ -5,6 +5,7 @@ using System.Linq;
 using Caliburn.Micro;
 using System.ComponentModel;
 using System.Collections.Specialized;
+using Adalbertus.BudgetPlanner.Extensions;
 using Adalbertus.BudgetPlanner.Core;
 using Adalbertus.BudgetPlanner.Models;
 using Adalbertus.BudgetPlanner.Database;
@@ -19,8 +20,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             _savings = new BindableCollectionExt<Saving>();
             _incomes = new BindableCollectionExt<Income>();
 
-            _savings.PropertyChanged += (s, e) => { OnPropertyChanged(s, e); };
-            _incomes.PropertyChanged += (s, e) => { OnPropertyChanged(s, e); };
+            _savings.PropertyChanged += OnSavingPropertyChanged;
         }
 
         private BindableCollectionExt<Saving> _savings;
@@ -50,7 +50,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             LoadIncomesData();
         }
 
-        protected override void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
+        protected void OnSavingPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (sender is Entity)
             {
@@ -59,64 +59,37 @@ namespace Adalbertus.BudgetPlanner.ViewModels
                     case "Name":
                     case "Description":
                     case "Value":
-                        if (sender is Saving)
+                        var saving = sender as Saving;
+                        var savingValue = sender as SavingValue;
+                        if (saving != null)
                         {
-                            UpdateSaving(sender as Saving, true);
+                            UpdateSaving(saving, true);
                         }
-                        else
+
+                        if (savingValue != null)
                         {
-                            Save(sender as Entity);
+                            Save(savingValue);
+                            savingValue.Saving.Refresh();
+                            CachedService.Clear(CachedServiceKeys.AllSavings);
+                            CachedService.Clear(CachedServiceKeys.AllIncomes);
                         }
                         break;
                 }
             }
         }
 
-        private void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-        }
-
         private void LoadSavingsData()
         {
             Savings.Clear();
-            var sql = PetaPoco.Sql.Builder
-                .Select("*")
-                .From("Saving")
-                .InnerJoin("CashFlow")
-                .On("CashFlow.Id = Saving.CashFlowId")
-                .InnerJoin("CashFlowGroup")
-                .On("CashFlow.CashFlowGroupId = CashFlowGroup.Id");
 
-
-            var savingsList = Database.Query<Saving, CashFlow, CashFlowGroup>(sql);
+            var savingsList = CachedService.GetAllSavings();
             savingsList.ForEach(x =>
             {
-                var savingValues = Database.Query<SavingValue, Budget, Expense>(PetaPoco.Sql.Builder
-                    .Select("*")
-                    .From("SavingValue")
-                    .LeftJoin("Budget")
-                    .On("Budget.Id = SavingValue.BudgetId")
-                    .LeftJoin("Expense")
-                    .On("Expense.Id = SavingValue.ExpenseId")
-                    .Where("SavingId=@0", x.Id)).ToList();
-                savingValues.ForEach(v =>
-                {
-                    if (v.Budget.IsTransient())
-                    {
-                        v.Budget = null;
-                    }
-                    if (v.Expense.IsTransient())
-                    {
-                        v.Expense = null;
-                    }
-                    v.Saving = x; x.Values.Add(v);
-                });
                 Savings.Add(x);
                 var notifyPropertyChanged = (x.Values as BindableCollectionExt<SavingValue>);
-
                 if (notifyPropertyChanged != null)
                 {
-                    notifyPropertyChanged.PropertyChanged += OnPropertyChanged;
+                    notifyPropertyChanged.PropertyChanged += OnSavingPropertyChanged;
                 }
             });
         }
@@ -124,33 +97,16 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         private void LoadIncomesData()
         {
             Incomes.Clear();
-            var incomesList = Database.Query<Income>().ToList();
+            var incomesList = CachedService.GetAllIncomes();
             incomesList.ForEach(x =>
             {
-                var values = Database.Query<IncomeValue>("WHERE IncomeId = @0", x.Id);
-                x.Values.AddRange(values);
+                Incomes.Add(x);
+                x.PropertyChanged += (s, e) =>
+                {
+                    Save(x);
+                    CachedService.Clear(CachedServiceKeys.AllIncomes);
+                };
             });
-            incomesList.ForEach(x => Incomes.Add(x));
-        }
-
-        protected override void Delete(Entity entity)
-        {
-            using (var tx = Database.GetTransaction())
-            {
-                Saving saving = entity as Saving;
-                if (saving != null)
-                {
-                    Database.Delete(saving.CashFlow);
-                    Database.Delete<SavingValue>("WHERE SavingId=@0", saving.Id);
-                }
-                Income income = entity as Income;
-                if (income != null)
-                {
-                    Database.Delete<IncomeValue>("WHERE IncomeId=@0", income.Id);
-                }
-                Database.Delete(entity);
-                tx.Complete();
-            }
         }
 
         #region Savings
@@ -171,6 +127,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         public void RemoveSaving(Saving saving)
         {
             Delete(saving);
+            CachedService.Clear(CachedServiceKeys.AllSavings);
             LoadSavingsData();
         }
 
@@ -191,6 +148,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             {
                 Database.Delete(savingValue);
                 tx.Complete();
+                CachedService.Clear(CachedServiceKeys.AllSavings);
             }
             LoadSavingsData();
         }
@@ -215,7 +173,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         private void SaveSaving(Saving saving)
         {
             using (var tx = Database.GetTransaction())
-            {                
+            {
                 if (Database.IsNew(saving.CashFlow))
                 {
                     Database.Save(saving.CashFlow);
@@ -223,6 +181,8 @@ namespace Adalbertus.BudgetPlanner.ViewModels
                 Database.Save(saving);
 
                 tx.Complete();
+                CachedService.Clear(CachedServiceKeys.AllSavings);
+                CachedService.Clear(CachedServiceKeys.AllCashFlows);
             }
         }
 
@@ -237,6 +197,8 @@ namespace Adalbertus.BudgetPlanner.ViewModels
                     Database.Update(saving.CashFlow);
                 }
                 tx.Complete();
+                CachedService.Clear(CachedServiceKeys.AllSavings);
+                CachedService.Clear(CachedServiceKeys.AllCashFlows);
             }
         }
         #endregion
@@ -250,6 +212,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
                 Name = incomeDefaultName,
             };
             Save(income);
+            CachedService.Clear(CachedServiceKeys.AllIncomes);
             LoadIncomesData();
         }
 
@@ -279,6 +242,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
                 Database.Delete(income);
                 tx.Complete();
             }
+            CachedService.Clear(CachedServiceKeys.AllIncomes);
             LoadIncomesData();
         }
 

@@ -36,8 +36,9 @@
                             <TextBlock TextWrapping="Wrap" VerticalAlignment="Center">
                                 Przenieś wszystkie powiązane elementy do nowej kategorii
                             </TextBlock>
-                            <ComboBox ItemsSource="{Binding CashFlows}" SelectedItem="{Binding SelectedCashFlow}"
-                                      IsSynchronizedWithCurrentItem="False" Width="230" />
+                            <ctrl:AutoCompleteBox ItemsSource="{Binding CashFlows}" 
+                                                  SelectedItem="{Binding SelectedCashFlow}"
+                                                  Width="230" />
                         </WrapPanel>
                         <WrapPanel>
                             <TextBlock TextWrapping="Wrap">a następnie usuń kategorię:</TextBlock>

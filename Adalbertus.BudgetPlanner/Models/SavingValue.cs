@@ -140,18 +140,18 @@ namespace Adalbertus.BudgetPlanner.Models
             StringBuilder sb = new StringBuilder();
             
             sb.AppendFormat("Budżet {0}-{1}", Budget.DateFrom.Year.ToString("0000"), Budget.DateFrom.Month.ToString("00"));
-            if (Expense != null)
-            {
-                if (!string.IsNullOrWhiteSpace(Expense.Description))
-                {
-                    sb.AppendFormat(": {0}", Expense.Description);
-                }
-            }
-            else
+            if (Expense.IsTransient())
             {
                 if (!string.IsNullOrWhiteSpace(Description))
                 {
                     sb.AppendFormat(": {0}", Description);
+                }                
+            }
+            else
+            {
+                if (!string.IsNullOrWhiteSpace(Expense.Description))
+                {
+                    sb.AppendFormat(": {0}", Expense.Description);
                 }
             }
             Description = sb.ToString();

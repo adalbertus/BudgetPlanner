@@ -14,7 +14,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
     public class ExpensesViewModel : BaseViewModel, IHandle<ExpensesFilterVM>
     {
         public ExpensesViewModel(IShellViewModel shell, IDatabase database, IConfigurationManager configuration, ICachedService cashedService, IEventAggregator eventAggregator)
-            : base(shell ,database, configuration, cashedService, eventAggregator)
+            : base(shell, database, configuration, cashedService, eventAggregator)
         {
             ExpensesGridCashFlows = new BindableCollectionExt<CashFlow>();
             CashFlows = new BindableCollectionExt<CashFlow>();
@@ -25,13 +25,6 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         protected override void Initialize()
         {
             base.Initialize();
-            _expenseValues = new BindableCollectionExt<decimal>();
-            _expenseValues.CollectionChanged += (s, e) =>
-            {
-                NotifyOfPropertyChange(() => ExpenseTotalValue);
-                NotifyOfPropertyChange(() => CanAddExpense);
-                NotifyOfPropertyChange(() => IsCalculatorListBoxVisible);
-            };
             SelectedExpenseDate = DateTime.Now;
         }
 
@@ -49,6 +42,14 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             get
             {
                 return FilteredBudgetExpenses();
+            }
+        }
+
+        public decimal TotalExpensesValue
+        {
+            get
+            {
+                return FilteredBudgetExpenses().Sum(x => x.Value);
             }
         }
 
@@ -71,7 +72,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             {
                 _isFilteringEnabled = value;
                 NotifyOfPropertyChange(() => IsFilteringEnabled);
-                NotifyOfPropertyChange(() => BudgetExpenses);
+                RefreshUI();
             }
         }
 
@@ -119,7 +120,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
                 NotifyOfPropertyChange(() => CanAddExpense);
             }
         }
-        
+
         private string _expenseDescription;
         public string ExpenseDescription
         {
@@ -129,28 +130,6 @@ namespace Adalbertus.BudgetPlanner.ViewModels
                 _expenseDescription = value;
                 NotifyOfPropertyChange(() => ExpenseDescription);
             }
-        }
-
-        public decimal ExpenseTotalValue
-        {
-            get
-            {
-                return ExpenseValues.Sum();
-            }
-        }
-
-        private BindableCollectionExt<decimal> _expenseValues;
-        public BindableCollectionExt<decimal> ExpenseValues
-        {
-            get
-            {
-                return _expenseValues;
-            }
-        }
-
-        public bool IsCalculatorListBoxVisible
-        {
-            get { return ExpenseValues.Any(); }
         }
 
         #region Focus properties
@@ -181,6 +160,12 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         }
         #endregion
 
+        public void RefreshUI()
+        {
+            NotifyOfPropertyChange(() => BudgetExpenses);
+            NotifyOfPropertyChange(() => TotalExpensesValue);
+        }
+
         public void LoadData(Budget budget)
         {
             Budget = budget;
@@ -201,7 +186,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
                 }
             };
 
-            NotifyOfPropertyChange(() => BudgetExpenses);
+            RefreshUI();
         }
 
         private void FillFilterData()
@@ -225,7 +210,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
 
             Filter.IsNotifying = false;
             Filter.DateFrom = Budget.DateFrom;
-            Filter.DateTo                = Budget.DateTo;
+            Filter.DateTo = Budget.DateTo;
             Filter.IsNotifying = true;
 
             Filter.CashFlows.IsNotifying = false;
@@ -249,7 +234,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             Filter.CashFlowGroups.ForEach(x => x.IsSelected = Filter.CashFlows.Where(f => f.ParentId == x.EntityId).All(f => f.IsSelected));
             Filter.CashFlowGroups.IsNotifying = true;
             Filter.CashFlowGroups.Refresh();
-            NotifyOfPropertyChange(() => BudgetExpenses);
+            RefreshUI();
         }
 
         private void UpdateCashFlowFilter()
@@ -258,7 +243,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             Filter.CashFlows.ForEach(x => x.IsSelected = Filter.CashFlowGroups.First(g => g.EntityId == x.ParentId).IsSelected);
             Filter.CashFlows.IsNotifying = true;
             Filter.CashFlows.Refresh();
-            NotifyOfPropertyChange(() => BudgetExpenses);
+            RefreshUI();
         }
 
         private void LoadCashFlows()
@@ -311,34 +296,23 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         public void RemoveExpense(Expense expense)
         {
             _budgetExpenses.Remove(expense);
-            NotifyOfPropertyChange(() => BudgetExpenses);
+            RefreshUI();
         }
 
         public bool CanAddExpense
         {
             get
             {
-                if (ExpenseValues.Any())
-                {
-                    return (SelectedExpenseCashFlow != null) && (ExpenseTotalValue > 0);
-                }
                 return (SelectedExpenseCashFlow != null) && (ExpenseValue > 0);
             }
         }
 
         public void AddExpense()
         {
-            decimal expenseValue = ExpenseValue;
-            if (ExpenseValues.Any())
-            {
-                expenseValue = ExpenseTotalValue;
-            }
-
-            var expense = Budget.AddExpense(SelectedExpenseCashFlow, expenseValue, ExpenseDescription, SelectedExpenseDate);
+            var expense = Budget.AddExpense(SelectedExpenseCashFlow, ExpenseValue, ExpenseDescription, SelectedExpenseDate);
 
             Save(expense);
 
-            ExpenseValues.Clear();
             ExpenseValue = 0;
             ExpenseDescription = string.Empty;
         }
@@ -369,8 +343,9 @@ namespace Adalbertus.BudgetPlanner.ViewModels
                 }
 
                 tx.Complete();
+                CachedService.Clear(CachedServiceKeys.AllSavings);
             }
-            NotifyOfPropertyChange(() => BudgetExpenses);
+            RefreshUI();
             PublishRefreshRequest(expense);
         }
 
@@ -384,21 +359,6 @@ namespace Adalbertus.BudgetPlanner.ViewModels
                 tx.Complete();
             }
             PublishRefreshRequest(expense);
-        }
-
-        public void AddExpenseValueToCalculator()
-        {
-            if (ExpenseValue == 0)
-            {
-                return;
-            }
-            ExpenseValues.Add(ExpenseValue);
-            ExpenseValue = 0;
-        }
-
-        public void RemoveExpenseValueFromCalculator(decimal value)
-        {
-            ExpenseValues.Remove(value);
         }
 
         public void MoveToExpenseValue()
@@ -446,7 +406,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
 
                 if (!string.IsNullOrWhiteSpace(Filter.Description))
                 {
-                    predicate = predicate.And(p => p.Description.IsEqual(Filter.Description, false));
+                    predicate = predicate.And(p => p.Description.Contains(Filter.Description, false));
                 }
 
                 expenses = _budgetExpenses.AsQueryable().Where(predicate).ToList();
@@ -455,7 +415,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             {
                 expenses = _budgetExpenses.ToList();
             }
-            
+
             IsExpensesFiltered = expenses.Count != _budgetExpenses.Count;
             return expenses;
         }
@@ -500,7 +460,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
 
         public void Handle(ExpensesFilterVM message)
         {
-            NotifyOfPropertyChange(() => BudgetExpenses);
+            RefreshUI();
         }
 
         #endregion
