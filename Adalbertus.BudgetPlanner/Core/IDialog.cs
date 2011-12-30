@@ -12,10 +12,10 @@ namespace Adalbertus.BudgetPlanner.Core
         Cancel,
     }
 
-    public interface IDialog
+    public interface IDialog<TModel>
     {
         DialogState State { get; }
-        object Result { get; }
+        TModel Result { get; }
         Action OKCallback { get; set; }
         Action CancelCallback { get; set; }
         Action AfterCloseCallback { get; set; }

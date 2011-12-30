@@ -54,6 +54,11 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             get { return ValidateMoveBack(); }
         }
 
+        public bool CanFinish
+        {
+            get { return ValidateFinish(); }
+        }
+
         private string _nextPageName;
         public string NextPageName
         {
@@ -91,6 +96,10 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         {
         }
 
+        public virtual void Finish()
+        {
+        }
+
         protected virtual bool ValidateMoveNext()
         {
             return !string.IsNullOrWhiteSpace(NextPageName);
@@ -99,6 +108,19 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         protected virtual bool ValidateMoveBack()
         {
             return !string.IsNullOrWhiteSpace(BackPageName);
+        }
+
+        protected virtual bool ValidateFinish()
+        {
+            return true;
+        }
+
+        public virtual void OnActivating()
+        {
+        }
+
+        public virtual void OnActivated()
+        {
         }
     }
 }

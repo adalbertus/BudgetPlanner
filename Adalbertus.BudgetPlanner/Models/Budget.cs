@@ -12,7 +12,7 @@ namespace Adalbertus.BudgetPlanner.Models
     [PetaPoco.ExplicitColumns]
     public class Budget : Entity
     {
-        [PetaPoco.Column]
+        [PetaPoco.Column]        
         public virtual DateTime DateFrom { get; set; }
         [PetaPoco.Column]
         public virtual DateTime DateTo { get; set; }

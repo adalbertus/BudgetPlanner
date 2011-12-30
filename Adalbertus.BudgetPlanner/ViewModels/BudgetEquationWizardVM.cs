@@ -5,21 +5,46 @@ using System.Text;
 using Caliburn.Micro;
 using Adalbertus.BudgetPlanner.Models;
 using Adalbertus.BudgetPlanner.Core;
+using Adalbertus.BudgetPlanner.Extensions;
 
 namespace Adalbertus.BudgetPlanner.ViewModels
 {
     public class BudgetEquationWizardVM : PropertyChangedBase
     {
-        public List<BudgetCalculatorItem> Items { get; set; }
-        private string _equationName;
+        private BudgetCalculatorEquation _equation;
+        public BudgetCalculatorEquation Equation { get { return _equation; } }
+        public List<BudgetCalculatorItem> InnerEquationList { get; set; }
+
+        public BudgetCalculatorEvaluator BudgetCalculatorEvaluator { get; set; }
+
         public string EquationName
         {
-            get { return _equationName; }
+            get { return _equation.Name; }
             set
             {
-                _equationName = value;
+                _equation.Name = value;
                 NotifyOfPropertyChange(() => EquationName);
             }
+        }
+
+        public decimal? EquationValue
+        {
+            get { return _equation.Value;  }
+        }
+
+        public bool IsVisible 
+        {
+            get { return _equation.IsVisible; }
+            set
+            {
+                _equation.IsVisible = value;
+                NotifyOfPropertyChange(() => IsVisible);
+            }
+        }
+
+        public BindableCollectionExt<BudgetCalculatorItem> Items
+        {
+            get { return _equation.Items; }
         }
 
         private int _currentPageIndex;
@@ -30,7 +55,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
 
         public int TotalPagesNumber
         {
-            get { return Items.Count; }
+            get { return InnerEquationList.Count; }
         }
 
         public BudgetCalculatorItem CurrentItem { get; set; }
@@ -38,6 +63,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
 
         public bool MoveNext()
         {
+            RefreshCalculations();
             if (CurrentItem == null)
             {
                 return false;
@@ -49,20 +75,30 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             }
 
             _currentPageIndex++;
-            if (Items.Count >= _currentPageIndex + 1)
+            CurrentItem = Items.GetOrDefaultByIndex(_currentPageIndex);
+            if (CurrentItem == null)
             {
-                CurrentItem = Items[_currentPageIndex];
-            }
-            else
-            {
-                CurrentItem = null;
+                var lastInner = InnerEquationList.GetOrDefaultByIndex(_currentPageIndex);
+                if (lastInner != null)
+                {
+                    CurrentItem = lastInner;
+                }
             }
             return true;
 
         }
 
+        private void RefreshCalculations()
+        {
+            if (BudgetCalculatorEvaluator != null && Equation != null)
+            {
+                BudgetCalculatorEvaluator.Refresh(Equation);
+            }
+        }
+
         public bool MoveBack()
         {
+            RefreshCalculations();
             if (_currentPageIndex <= 0)
             {
                 return false;
@@ -79,35 +115,57 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             return true;
         }
 
-        public int MyProperty { get; set; }
-        
         public IEnumerable<BudgetCalculatorEquation> Equations { get; set; }
-        public IEnumerable<dynamic> ValueTypes { get; set; }
-        public IEnumerable<dynamic> OperatorTypes { get; set; }
+        public IEnumerable<ComboItemVM<CalculatorValueType>> ValueTypes { get; set; }
+        public IEnumerable<ComboItemVM<CalculatorOperatorType>> OperatorTypes { get; set; }
+        public IEnumerable<CashFlow> CashFlows { get; set; }
+        public IEnumerable<CashFlowGroup> CashFlowGroups { get; set; }
+        public IEnumerable<Income> Incomes { get; set; }
+        public IEnumerable<Saving> Savings { get; set; }
 
-        public BudgetEquationWizardVM()
+        private BudgetEquationWizardVM()
         {
-            Items = new List<BudgetCalculatorItem>();
             _currentPageIndex = 0;
+            _equation = new BudgetCalculatorEquation();
+            InnerEquationList = new List<BudgetCalculatorItem>();
         }
 
-        public BudgetCalculatorItem AddItem(CalculatorValueType valueType, CalculatorOperatorType operatorType, decimal? value = null, BudgetCalculatorEquation equation = null)
+        public static BudgetEquationWizardVM CreateInstance()
+        {
+            return new BudgetEquationWizardVM();
+        }
+
+        public void Clear(BudgetCalculatorEquation equation = null)
+        {            
+            _currentPageIndex = 0;
+            InnerEquationList.Clear();
+            if (equation == null)
+            {
+                _equation = new BudgetCalculatorEquation();
+            }
+            else
+            {
+                _equation = equation;
+                InnerEquationList.AddRange(equation.Items);
+            }
+
+            RefreshCalculations();
+            CurrentItem = Items.FirstOrDefault();
+            Refresh();
+        }
+
+        public void CreateDefaultCurrentItem()
         {
             CurrentItem = new BudgetCalculatorItem
             {
-                ValueType = valueType,
-                OperatorType = operatorType,
-                Value = value,
-                Equation = equation,
-                ForeignId = 0,
+                Equation = this.Equation                
             };
-            if (equation != null)
-            {
-                CurrentItem.ForeignId = equation.Id;
-            }
+            InnerEquationList.Add(CurrentItem);
+        }
 
-            Items.Add(CurrentItem);
-
+        public BudgetCalculatorItem AddItem(CalculatorValueType valueType, CalculatorOperatorType operatorType, decimal? value, int foreignId)
+        {
+            CurrentItem = _equation.AddItem(string.Empty, valueType, operatorType, value, foreignId);
             return CurrentItem;
         }
     }

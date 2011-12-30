@@ -34,18 +34,22 @@ namespace Adalbertus.BudgetPlanner.Core
         private readonly static Stack<DiagnosticStopwatch> _stopwatches = new Stack<DiagnosticStopwatch>();
 
         private readonly static StringBuilder _logger = new StringBuilder();
-        private readonly static StackTrace _stackTrace = new StackTrace();
+        //private readonly static StackTrace _stackTrace = new StackTrace();
 
         public static void Start(string description = null)
         {
-            var frame = _stackTrace.GetFrame(2);
+#if DEBUG
+            var _stackTrace = new StackTrace();
+            var frame = _stackTrace.GetFrame(1);
             var method = frame.GetMethod();
             var methodName = string.Format("{0}.{1}", method.DeclaringType.Name, method.Name);
             _stopwatches.Push(DiagnosticStopwatch.GetDiagnosticStopwatch(description, methodName));
+#endif
         }
 
-        public static void Stop()
+        public static TimeSpan Stop()
         {
+#if DEBUG
             var currentStopwatch = _stopwatches.Pop();
             currentStopwatch.Stop();
             var elapsed = currentStopwatch.Elapsed;
@@ -57,6 +61,10 @@ namespace Adalbertus.BudgetPlanner.Core
             {
                 Log("{0}: {1}ms [{2}]", currentStopwatch.MethodName, elapsed.TotalMilliseconds, currentStopwatch.Description);
             }
+            return elapsed;
+#else
+            return default(TimeSpan);
+#endif
         }
 
         public static string GetLog(bool isMarkupEnabled = true)

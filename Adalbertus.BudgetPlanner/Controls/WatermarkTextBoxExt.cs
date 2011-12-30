@@ -12,6 +12,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Microsoft.Windows.Controls;
+using Adalbertus.BudgetPlanner.Core;
 
 namespace Adalbertus.BudgetPlanner.Controls
 {
@@ -45,35 +46,21 @@ namespace Adalbertus.BudgetPlanner.Controls
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
-            //var clearTextButton = GetTemplateChild("PART_ClearButtonHost") as Button;
-            //ClearTextButton = clearTextButton;
-            //if (clearTextButton != null)
-            //{
-            //    clearTextButton.MouseLeftButtonDown += (s, e) =>
-            //        {
-            //            if (!string.IsNullOrWhiteSpace(Text))
-            //            {
-            //                Text = DefaultText;
-            //            }
-            //        };
-            //    clearTextButton.PreviewMouseLeftButtonDown += (s, e) =>
-            //    {
-            //        if (!string.IsNullOrWhiteSpace(Text))
-            //        {
-            //            Text = DefaultText;
-            //        }
-            //    };
-            //}
         }
 
         protected override void OnPreviewMouseLeftButtonDown(MouseButtonEventArgs e)
         {
             base.OnPreviewMouseLeftButtonDown(e);
-            if (e.OriginalSource is Image)
+            
+            if (e.OriginalSource is DependencyObject)
             {
-                Text = DefaultText;
-                e.Handled = true;
-            }            
+                var button = UI.FindVisualParent<Button>(e.OriginalSource as DependencyObject);
+                if (button != null && button.Name == "PART_ClearButtonHost")
+                {
+                    Text = DefaultText;
+                    e.Handled = true;
+                }
+            }
         }
     }
 }

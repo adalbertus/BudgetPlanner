@@ -1,0 +1,24 @@
+﻿<UserControl x:Class="Adalbertus.BudgetPlanner.Views.NotepadView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:cal="http://www.caliburnproject.org"
+             xmlns:ctrl="clr-namespace:Adalbertus.BudgetPlanner.Controls"
+             xmlns:extToolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit/extended"
+>
+    <DockPanel LastChildFill="True" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <Border DockPanel.Dock="Bottom" Style="{StaticResource DialogButtonsBorder}">
+            <WrapPanel HorizontalAlignment="Right">
+                <ctrl:ImageButton Content="Anuluj" cal:Message.Attach="[Event Click] = [Action Cancel()]" Style="{StaticResource Button80}" />
+                <ctrl:ImageButton Content="OK" ImageUrl="Images/button-checked.png" cal:Message.Attach="[Event Click] = [Action Close()]" Style="{StaticResource Button80}" />
+            </WrapPanel>
+        </Border>
+        <ctrl:WatermarkTextBoxExt Width="600" Height="400" TextWrapping="Wrap" Watermark="Tutaj wpisz swoje notatki..."
+                                  AcceptsReturn="True" AcceptsTab="True"
+                                HorizontalContentAlignment="Left" VerticalContentAlignment="Top"
+                                Margin="10" Text="{Binding Text}"/>
+        <!--<extToolkit:RichTextBox Width="600" Height="400" 
+                                AcceptsReturn="True" AcceptsTab="True"
+                                HorizontalContentAlignment="Left" VerticalContentAlignment="Top"
+                                Margin="10" Text="{Binding Text}" FontSize="11"/>-->
+    </DockPanel>
+</UserControl>

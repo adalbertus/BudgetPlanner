@@ -14,5 +14,20 @@ namespace Adalbertus.BudgetPlanner.Extensions
                 action(item);
             }
         }
+
+        public static T GetOrDefaultByIndex<T>(this IEnumerable<T> items, int index)
+        {
+            if (!items.Any())
+            {
+                return default(T);
+            }
+
+            if (index + 1 > items.Count())
+            {
+                return default(T);
+            }
+
+            return items.ToArray()[index];
+        }
     }
 }

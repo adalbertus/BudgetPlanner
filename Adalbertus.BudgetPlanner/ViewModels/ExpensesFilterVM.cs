@@ -10,8 +10,30 @@ namespace Adalbertus.BudgetPlanner.ViewModels
 {
     public class ExpensesFilterVM : PropertyChangedBase
     {
-        public BindableCollectionExt<ExpensesFilterEntityVM> CashFlows { get; set; }
-        public BindableCollectionExt<ExpensesFilterEntityVM> CashFlowGroups { get; set; }
+        //public BindableCollectionExt<ExpensesFilterEntityVM> CashFlows { get; set; }
+        //public BindableCollectionExt<ExpensesFilterEntityVM> CashFlowGroups { get; set; }
+
+        private CashFlow _cashFlow;
+        public CashFlow CashFlow
+        {
+            get { return _cashFlow; }
+            set
+            {
+                _cashFlow = value;
+                NotifyOfPropertyChange(() => CashFlow);
+            }
+        }
+
+        private CashFlowGroup _cashFlowGroup;
+        public CashFlowGroup CashFlowGroup
+        {
+            get { return _cashFlowGroup; }
+            set
+            {
+                _cashFlowGroup = value;
+                NotifyOfPropertyChange(() => CashFlowGroup);
+            }
+        }
 
         private DateTime _dateFrom;
         public DateTime DateFrom
@@ -68,18 +90,12 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             }
         }
 
-        public System.Action PropertyChangedCallback = delegate { };
-        
         public ExpensesFilterVM(IEventAggregator eventAggregator)
         {
-            CashFlows = new BindableCollectionExt<ExpensesFilterEntityVM>();
-            CashFlowGroups = new BindableCollectionExt<ExpensesFilterEntityVM>();
-            PropertyChanged += (s, e) => { eventAggregator.Publish(this); };
-        }
-
-        private void ExpensesFilterVM_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
+            //CashFlows = new BindableCollectionExt<ExpensesFilterEntityVM>();
+            //CashFlowGroups = new BindableCollectionExt<ExpensesFilterEntityVM>();
             
+            PropertyChanged += (s, e) => { eventAggregator.Publish(this); };
         }
     }
 }

@@ -28,6 +28,8 @@ namespace Adalbertus.BudgetPlanner.Controls
             set { SetValue(ValueProperty, value); }
         }
 
+        private static int _counter = 0;
+
         private static void OnValueChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
             var numericControl = o as NumericTextBox;

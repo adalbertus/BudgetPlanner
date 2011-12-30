@@ -2,23 +2,69 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:cal="http://www.caliburnproject.org"
+             xmlns:m="clr-namespace:Adalbertus.BudgetPlanner.Models"
+             xmlns:ext="clr-namespace:Adalbertus.BudgetPlanner.Extensions"
+             xmlns:ctrl="clr-namespace:Adalbertus.BudgetPlanner.Controls"             
 >
-    <DockPanel LastChildFill="True">
-        <Grid DockPanel.Dock="Left" Background="LightGray">
-            <StackPanel>
-                <TextBlock FontWeight="Bold">Kreator tworzenia równania</TextBlock>
-                <TextBlock Text="{Binding CurrentPageTitle}" />
-            </StackPanel>
-        </Grid>
-        <Grid DockPanel.Dock="Bottom" Background="AntiqueWhite">
+    <UserControl.Resources>
+        <DataTemplate DataType="{x:Type m:BudgetCalculatorItem}">
             <WrapPanel>
-                <Button Content="Previous" cal:Message.Attach="[Event Click] = [Action MoveBack]" />
-                <Button Content="Next"  cal:Message.Attach="[Event Click] = [Action MoveNext]" />
-                <Button Content="Cancel"  cal:Message.Attach="[Event Click] = [Action Cancel]" />
-                <Button Content="Finish"  cal:Message.Attach="[Event Click] = [Action Finish]"/>
+                <TextBlock Text="{Binding Description}" Margin="0,0,4,0"/>
+                <TextBlock x:Name="valueControl" TextAlignment="Right" HorizontalAlignment="Stretch"
+                       Text="{Binding CalculatedValue, Converter={StaticResource CurrencyFormatter}}" />                
             </WrapPanel>
-        </Grid>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding ValueType}" Value="UserValue">
+                    <Setter TargetName="valueControl" Property="Text"
+                            Value="{Binding CalculatedValue, Converter={StaticResource ValueFormatter}}" />
+                </DataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
+    </UserControl.Resources>
+    <!--<Border BorderBrush="LightGray" BorderThickness="1" CornerRadius="4">-->
+    <DockPanel LastChildFill="True" Margin="4">
+        <Border DockPanel.Dock="Left" BorderBrush="LightGray" BorderThickness="0,0,1,0" Width="200">
+            <Grid>
+                <StackPanel ext:MarginSetterExtension.Margin="4">
+                    <TextBlock FontWeight="Bold" FontSize="12">Kreator tworzenia równania</TextBlock>
 
-        <ContentControl x:Name="ActiveItem" />
+                    <TextBlock Text="{Binding CurrentPageTitle}" FontStyle="Italic" />
+                    <WrapPanel>
+                        <TextBlock Text="Wartość:" />
+                        <TextBlock Text="{Binding EquationValue, Converter={StaticResource CurrencyFormatter}}"
+                                   Margin="4,0"/>
+                    </WrapPanel>
+                    <TextBlock Text="{Binding EquationName}" />
+                    <ListBox ItemsSource="{Binding EquationElements}" Background="Transparent" BorderBrush="LightGray" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <Border DockPanel.Dock="Bottom" BorderBrush="LightGray" BorderThickness="0,1,0,0" Width="400">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width=".5*"/>
+                    <ColumnDefinition Width=".5*"/>
+                </Grid.ColumnDefinitions>
+                <WrapPanel Grid.Column="0" HorizontalAlignment="Left">
+                    <ctrl:ImageButton ImageUrl="Images\arrow-left.png" Style="{StaticResource Button90}"
+                                  Content="Poprzednia" cal:Message.Attach="[Event Click] = [Action MoveBack]" />
+                    <ctrl:ImageButton ImageUrl="Images\arrow-right.png" Style="{StaticResource Button90}"
+                                      Margin="4,0,0,0"
+                                      Content="Następna" cal:Message.Attach="[Event Click] = [Action MoveNext]" />
+                </WrapPanel>
+                <WrapPanel Grid.Column="1" HorizontalAlignment="Right">
+                    <ctrl:ImageButton ImageUrl="Images/system-delete-alt.png" Style="{StaticResource Button90}"
+                                  Content="Anuluj" cal:Message.Attach="[Event Click] = [Action Cancel]" />
+                    <ctrl:ImageButton ImageUrl="Images/button-checked.png" Style="{StaticResource Button90}"
+                                      Margin="4,0,0,0"
+                                      Content="Zakończ" cal:Message.Attach="[Event Click] = [Action Finish]"/>
+                </WrapPanel>
+            </Grid>
+        </Border>
+
+        <ContentControl x:Name="ActiveItem" Height="150" 
+                            VerticalContentAlignment="Stretch" VerticalAlignment="Stretch"/>
     </DockPanel>
+    <!--</Border>-->
 </UserControl>

@@ -6,38 +6,45 @@ using Caliburn.Micro;
 using Adalbertus.BudgetPlanner.Database;
 using Adalbertus.BudgetPlanner.Core;
 using Adalbertus.BudgetPlanner.Models;
+using Adalbertus.BudgetPlanner.Extensions;
 using ILCalc;
+using Microsoft.Windows.Controls;
 
 namespace Adalbertus.BudgetPlanner.ViewModels
 {
-    public class BudgetCalculationsViewModel : BaseViewModel
+    public class BudgetCalculationsViewModel : BaseViewModel, IHandle<WizardEvent<BudgetEquationWizardVM>>
     {
         public BudgetCalculationsViewModel(IShellViewModel shell, IDatabase database, IConfigurationManager configuration, ICachedService cashedService, IEventAggregator eventAggregator)
             : base(shell, database, configuration, cashedService, eventAggregator)
         {
+            SuppressEvent = false;
             Equations = new BindableCollectionExt<BudgetCalculatorEquation>();
-            IsNewEquationVisible = true;
-            Equations.PropertyChanged += (s, e) => { Save(s as Entity); };
+            BudgetCalculatorEvaluator = IoC.Get<BudgetCalculatorEvaluator>();
+            Equations.PropertyChanged += (s, e) => { if (!SuppressEvent) { Save(s as Entity); } };
+            EventAggregator.Subscribe(this);
         }
 
-        public BudgetEquationWizardShellViewModel Wizard { get; set; }
+        private bool SuppressEvent { get; set; }
 
         public BindableCollectionExt<BudgetCalculatorEquation> Equations { get; set; }
         public IEnumerable<BudgetCalculatorEquation> AvaiableEquations
         {
             get
             {
-                return Equations.ToList();
+                return Equations.Where(x => x.IsVisible).OrderBy(x => x.Position).ToList();
             }
         }
         public Budget Budget { get; set; }
+        public BudgetCalculatorEvaluator BudgetCalculatorEvaluator { get; private set; }
         private int LastEquationPosition { get; set; }
+        public BudgetCalculatorEquation EquationToEdit { get; set; }
         
-        public IEnumerable<dynamic> ValueTypes { get; private set; }
-        public IEnumerable<dynamic> OperatorTypes { get; private set; }
+        public IEnumerable<ComboItemVM<CalculatorValueType>> ValueTypes { get; private set; }
+        public IEnumerable<ComboItemVM<CalculatorOperatorType>> OperatorTypes { get; private set; }
         
         public void LoadData(Budget budget)
         {
+            BudgetCalculatorEvaluator.Budget = budget;
             LoadValueTypes();
             LoadOperatorTypes();
             Budget = budget;
@@ -45,280 +52,238 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             {
                 LastEquationPosition = Database.ExecuteScalar<int>("SELECT MAX(Position) FROM [BudgetCalculatorEquation]");
             }
-            var equations = Database.Query<BudgetCalculatorEquation>("ORDER BY Id").ToList();
-            equations.ForEach(eq =>
-            {
-                var equationItems = Database.Query<BudgetCalculatorItem>("WHERE BudgetCalculatorEquationId = @0 ORDER BY Id", eq.Id).ToList();
-                eq.Items.Clear();
-                eq.Items.AddRange(equationItems);
+            var equations = CachedService.GetAllEquations();            
+            equations.ForEach(x => 
+            {                
+                BudgetCalculatorEvaluator.Refresh(x);
             });
-            AttachEvaluators(equations);
 
             Equations.IsNotifying = false;
             Equations.Clear();
             Equations.AddRange(equations);
             Equations.IsNotifying = true;
-
-            LoadWizard();
-        }
-
-        private void LoadWizard()
-        {
-            var wizard = IoC.Get<BudgetEquationWizardShellViewModel>();
-            wizard.LoadData();
-            wizard.Model.ValueTypes = ValueTypes.ToList();
-            wizard.Model.OperatorTypes = OperatorTypes.ToList();
-            wizard.Model.Equations = Equations.ToList();
-            Wizard = wizard;
+            Equations.Refresh();
         }
 
         private void LoadValueTypes()
         {            
-            ValueTypes = new dynamic[]
+            ValueTypes = new ComboItemVM<CalculatorValueType>[]
             {
-                new 
+                new ComboItemVM<CalculatorValueType>
                 { 
                     Value = CalculatorValueType.BudgetIncomesValue,
-                    Name = "Suma wszystkich dochodów",
                 },
-                //new 
-                //{ 
-                //    Value = CalculatorValueType.Operator,
-                //    Name = "Działanie arytmetyczne",
-                //},
-                new 
+                new ComboItemVM<CalculatorValueType>
+                { 
+                    Value = CalculatorValueType.BudgetIncomesValueOfType,
+                },
+                new ComboItemVM<CalculatorValueType>
+                { 
+                    Value = CalculatorValueType.BudgetSavingsValue,
+                },
+                new ComboItemVM<CalculatorValueType>
+                { 
+                    Value = CalculatorValueType.BudgetSavingsValueOfType,
+                },
+                new ComboItemVM<CalculatorValueType>
+                { 
+                    Value = CalculatorValueType.BudgetTotalRevenuesValue,
+                },
+                new ComboItemVM<CalculatorValueType>
+                { 
+                    Value = CalculatorValueType.BudgetExpensesValueOfType,
+                },
+                new ComboItemVM<CalculatorValueType>
+                { 
+                    Value = CalculatorValueType.BudgetExpensesWithDescription,
+                },
+                new ComboItemVM<CalculatorValueType>
+                { 
+                    Value = CalculatorValueType.BudgetPlanValue,
+                },
+                new ComboItemVM<CalculatorValueType>
+                { 
+                    Value = CalculatorValueType.BudgetPlanValueOfGroup,
+                },
+                new ComboItemVM<CalculatorValueType>
+                { 
+                    Value = CalculatorValueType.BudgetPlanValueOfCategory,
+                },
+                new ComboItemVM<CalculatorValueType>
                 {
                     Value = CalculatorValueType.UserValue,
-                    Name = "Wartość wprowadzona ręcznie",
                 },
-                new
+                new ComboItemVM<CalculatorValueType>
                 {
                     Value = CalculatorValueType.CalculatorEquationValue,
-                    Name = "Wynik innego równania",
                 },
             };
-            NewValueTypeName = null;
+            ValueTypes.ForEach(x => x.Name = x.Value.ToName());
         }
 
         private void LoadOperatorTypes()
         {
-            OperatorTypes = new dynamic[]
+            OperatorTypes = new ComboItemVM<CalculatorOperatorType>[]
             {
-                new 
+                new ComboItemVM<CalculatorOperatorType>
                 { 
                     Value = CalculatorOperatorType.None,
                     Name = "Brak",
                 },
-                new 
+                new ComboItemVM<CalculatorOperatorType>
                 {
                     Value = CalculatorOperatorType.Add,
                     Name = "Dodaj",
                 },
-                new 
+                new ComboItemVM<CalculatorOperatorType>
                 {
                     Value = CalculatorOperatorType.Substract,
                     Name = "Odejmij",
                 },
-                new 
+                new ComboItemVM<CalculatorOperatorType>
                 {
                     Value = CalculatorOperatorType.Multiply,
                     Name = "Pomnóż",
                 },
-                new 
+                new ComboItemVM<CalculatorOperatorType>
                 {
                     Value = CalculatorOperatorType.Divide,
                     Name = "Podziel",
                 },
 
             };
-            NewOperatorTypeName = null;
         }
 
-        private void AttachEvaluators(IEnumerable<BudgetCalculatorEquation> equations)
+        public void Create()
         {
-            foreach (var equation in equations)
+            EquationToEdit = new BudgetCalculatorEquation { IsVisible = true };
+            ShowWizard();
+        }
+
+        public void Edit(BudgetCalculatorEquation equation)
+        {
+            EquationToEdit = equation;
+            ShowWizard();
+        }
+
+        public void Delete(BudgetCalculatorEquation equation)
+        {
+            Delete(equation, false);
+        }
+        public void Delete(BudgetCalculatorEquation equation, bool omitConfirmation)
+        {
+            if (!omitConfirmation)
             {
-                foreach (var item in equation.Items)
+                var isRequiredForOthers = Database.ExecuteScalar<int>(PetaPoco.Sql.Builder
+                    .Select("COUNT(*)")
+                    .From("BudgetCalculatorItem")
+                    .Where("ForeignId = @0 AND ValueTypeName = 'CalculatorEquationValue'", equation.Id)) > 0;
+                if (isRequiredForOthers)
                 {
-                    switch (item.ValueType)
-                    {
-                        case CalculatorValueType.BudgetIncomesValue:
-                            item.Evaluator = () => { return GetSumOfBudgetIncomes(); };
-                            break;
-                        case CalculatorValueType.BudgetExpensesOfFlowType:
-                            var cashFlow = CachedService.GetAllCashFlows().FirstOrDefault(x => x.Id == item.ForeignId);
-                            item.Evaluator = () => { return GetSumOfBudgetExpenses(cashFlow); };
-                            break;
-                        case CalculatorValueType.CalculatorEquationValue:
-                            var calculatorEquation = equations.FirstOrDefault(x => x.Id == item.ForeignId);
-                            if (calculatorEquation == null)
-                            {
-                                throw new NullReferenceException(string.Format("Nie udało się odnaleźć równania powiązanego z równaniem: {0}", item.Name));
-                            }
-                            item.Evaluator = () => { return calculatorEquation.CalculateValue(); };
-                            break;
-                    }
+                    StringBuilder sb = new StringBuilder();
+                    sb.AppendFormat(string.Format("Równanie {0} jest wykorzystywane w innych równaniach.", equation.Name));
+                    sb.AppendLine();
+                    sb.AppendLine("Usunięcie go spowoduje usunięcie wsztkich równań, które są od niego zależne.");
+                    sb.AppendLine();
+                    sb.AppendLine("Na pewno chcesz wykonać operację?");
+                    
+                    Shell.ShowMessage(sb.ToString(), () => Delete(equation, true), null, System.Windows.MessageBoxButton.OKCancel, System.Windows.MessageBoxImage.Question);
+                    return;
                 }
             }
+
+            DeleteEquation(equation);
+            var equationsToDelete = Equations.Where(eq => 
+            {
+                if (eq.Id == equation.Id)
+                {
+                    return true;
+                }
+                else
+                {
+                    return eq.Items.Any(x => x.ForeignId == equation.Id && x.ValueType == CalculatorValueType.CalculatorEquationValue);
+                }
+            }).ToList();
+
+            Equations.RemoveRange(equationsToDelete);
         }
 
-        private string _newEquationName;
-        public string NewEquationName
+        private void ShowWizard()
         {
-            get { return _newEquationName; }
-            set
+            Shell.ShowDialog<BudgetEquationWizardShellViewModel, BudgetEquationWizardVM>(
+                new
+                {
+                    ValueTypes = ValueTypes.ToList(),
+                    OperatorTypes = OperatorTypes.ToList(),
+                    Incomes = CachedService.GetAllIncomes().ToList(),
+                    Savings = CachedService.GetAllSavings().ToList(),
+                    CashFlows = CachedService.GetAllCashFlows().ToList(),
+                    CashFlowGroups = CachedService.GetAllCashFlowGroups().ToList(),
+                    Equations = Equations.ToList(),
+                    Equation = EquationToEdit,
+                    BudgetCalculatorEvaluator = BudgetCalculatorEvaluator,
+                },
+                null,
+                null);
+        }
+
+        #region IHandle<WizardEvent<BudgetEquationWizardVM>> Members
+
+        public void Handle(WizardEvent<BudgetEquationWizardVM> message)
+        {
+            if (EquationToEdit != null && message.Status == WizardStatus.OK)
             {
-                _newEquationName = value;
-                NotifyOfPropertyChange(() => NewEquationName);
+                SuppressEvent = true;
+                SaveEquation(message.Model.Equation);
+                var equation = Equations.FirstOrDefault(x => x.Id == message.Model.Equation.Id);
+                if (equation != null)
+                {
+                    equation.Name = message.Model.Equation.Name;
+                    equation.IsVisible = message.Model.Equation.IsVisible;
+                    equation.Items.Clear();
+                    equation.Items.AddRange(message.Model.Equation.Items);
+                    BudgetCalculatorEvaluator.Refresh(equation);
+                    equation.Refresh();
+                }
+                else
+                {
+                    Equations.Add(message.Model.Equation);
+                }
+
+                BudgetCalculatorEvaluator.Refresh(message.Model.Equation);
+                SuppressEvent = false;
             }
         }
 
-        private bool _isNewEquationVisible;
-        public bool IsNewEquationVisible
+        private void SaveEquation(BudgetCalculatorEquation budgetCalculatorEquation)
         {
-            get { return _isNewEquationVisible; }
-            set
-            {
-                _isNewEquationVisible = value;
-                NotifyOfPropertyChange(() => IsNewEquationVisible);
-            }
-        }
-
-        private bool _isNewEquationNameFocused;
-
-        public bool IsNewEquationNameFocused
-        {
-            get { return _isNewEquationNameFocused; }
-            set
-            {
-                _isNewEquationNameFocused = value;
-                NotifyOfPropertyChange(() => IsNewEquationNameFocused);
-            }
-        }
-
-
-        public void AddAndMoveToEquationName()
-        {
-            if (string.IsNullOrWhiteSpace(NewEquationName))
-            {
-                return;
-            }
-
-            var equation = new BudgetCalculatorEquation
-            {
-                Name = NewEquationName,
-                IsVisible = IsNewEquationVisible,
-                Position = ++LastEquationPosition,
-            };
-
-            Save(equation);
-
-            Equations.Add(equation);
-
-            NewEquationName = string.Empty;
-            IsNewEquationVisible = true;
-            IsNewEquationNameFocused = false;
-            IsNewEquationNameFocused = true;
-        }
-
-        private dynamic _newValueTypeName;
-        public dynamic NewValueTypeName
-        {
-            get { return _newValueTypeName; }
-            set { 
-                _newValueTypeName = value;
-                NotifyOfPropertyChange(() => NewValueTypeName);
-            }
-        }
-
-        private dynamic _newOperatorTypeName;
-        public dynamic NewOperatorTypeName
-        {
-            get { return _newOperatorTypeName; }
-            set
-            {
-                _newOperatorTypeName = value;
-                NotifyOfPropertyChange(() => NewOperatorTypeName);
-            }
-        }
-
-        public void AddItem(BudgetCalculatorEquation equation)
-        {
-            if (equation == null)
-            {
-                return;
-            }
-
-            NewValueTypeName = null;
-            NewOperatorTypeName = null;
-            
-        }
-
-        [Obsolete("Remove after VM is done", false)]
-        private void InitSampleData()
-        {
-            if (Database.Count<BudgetCalculatorEquation>() > 0)
-            {
-                return;
-            }
-
             using (var tx = Database.GetTransaction())
             {
-                var eq1 = new BudgetCalculatorEquation
-                {
-                    Name = "Dziesięcina",
-                    IsVisible = true,
-                };
-
-                eq1.AddItem("Wszystkie dochody", CalculatorValueType.BudgetIncomesValue);
-                eq1.AddItem("*", CalculatorValueType.Operator, CalculatorOperatorType.Multiply);
-                eq1.AddItem("0.1", CalculatorValueType.UserValue, CalculatorOperatorType.None, 0.1M);
-
-                Database.Save(eq1);
-                Database.SaveAll(eq1.Items);
-
-                var eq2 = new BudgetCalculatorEquation
-                {
-                    Name = "Dziesięcina bez obiadów",
-                    IsVisible = true,
-                };
-
-                eq2.AddItem("Dziesięcina", CalculatorValueType.CalculatorEquationValue, foreignId: eq1.Id);
-                eq2.AddItem("-", CalculatorValueType.Operator, CalculatorOperatorType.Substract);
-                var obiadyCashFlow = CachedService.GetAllCashFlows().First(x => x.Name == "Obiady");
-                eq2.AddItem("Wydatki na obiady", CalculatorValueType.BudgetExpensesOfFlowType, foreignId: obiadyCashFlow.Id);
-
-                Database.Save(eq2);
-                Database.SaveAll(eq2.Items);
-
+                Database.Save(budgetCalculatorEquation);
+                var itemsToDelete = EquationToEdit.Items.Where(x => !budgetCalculatorEquation.Items.Any(y => x.Id == y.Id));
+                itemsToDelete.ForEach(x => Database.Delete(x));
+                Database.SaveAll(budgetCalculatorEquation.Items);
                 tx.Complete();
+                CachedService.Clear(CachedServiceKeys.AllEquations);
+                PublishRefreshRequest(budgetCalculatorEquation);
             }
         }
 
-        #region Equation evaluators
-        private decimal GetSumOfBudgetIncomes(string incomeName = null)
+        private void DeleteEquation(BudgetCalculatorEquation equation)
         {
-            if (string.IsNullOrWhiteSpace(incomeName))
+            using (var tx = Database.GetTransaction())
             {
-                return Budget.SumOfRevenueIncomes;
-            }
-            else
-            {
-                return Budget.IncomeValues.Where(x => x.IncomeName == incomeName).Sum(x => x.Value);
+                // delete all related equations
+                var equationsDeletedCounter = Database.Execute("DELETE FROM BudgetCalculatorEquation WHERE Id IN (SELECT BudgetCalculatorEquationId FROM BudgetCalculatorItem WHERE ForeignId = @0 AND ValueTypeName = 'CalculatorEquationValue')", equation.Id);
+                Database.Execute("DELETE FROM BudgetCalculatorItem WHERE ForeignId = @0 AND ValueTypeName = 'CalculatorEquationValue'", equation.Id);
+                Database.Execute("DELETE FROM BudgetCalculatorItem WHERE BudgetCalculatorEquationId = @0", equation.Id);
+                Database.Delete(equation);                
+                tx.Complete();
+                CachedService.Clear(CachedServiceKeys.AllEquations);
+                PublishRefreshRequest(equation);
             }
         }
 
-        private decimal GetSumOfBudgetExpenses(CashFlow cashFlow = null)
-        {
-            if (cashFlow == null)
-            {
-                return Budget.TotalExpenseValue;
-            }
-            else
-            {
-                return Budget.Expenses.Where(x => x.Flow.Equals(cashFlow)).Sum(x => x.Value);
-            }
-        }
-        #endregion Equation evaluators
+        #endregion
     }
 }

@@ -2,16 +2,22 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Adalbertus.BudgetPlanner.Extensions;
 
 namespace Adalbertus.BudgetPlanner.Models
 {
     public enum CalculatorValueType
     {
-        BudgetExpenses,
-        BudgetExpensesOfFlowType,
-        BudgetExpensesOfFlowTypeAndDescription,
         BudgetIncomesValue,
         BudgetIncomesValueOfType,
+        BudgetTotalRevenuesValue,
+        BudgetSavingsValue,
+        BudgetSavingsValueOfType,
+        BudgetExpensesValueOfType,
+        BudgetExpensesWithDescription,
+        BudgetPlanValue,
+        BudgetPlanValueOfGroup,
+        BudgetPlanValueOfCategory,
         UserValue,
         CalculatorEquationValue,
         Operator,
@@ -38,7 +44,8 @@ namespace Adalbertus.BudgetPlanner.Models
         public int Position { get; set; }
 
         [PetaPoco.Column]
-        public string ValueTypeName {
+        public string ValueTypeName
+        {
             get { return ValueType.ToString(); }
             set { ValueType = (CalculatorValueType)Enum.Parse(typeof(CalculatorValueType), value); }
         }
@@ -51,18 +58,49 @@ namespace Adalbertus.BudgetPlanner.Models
             set { OperatorType = (CalculatorOperatorType)Enum.Parse(typeof(CalculatorOperatorType), value); }
         }
         public CalculatorOperatorType OperatorType { get; set; }
-        
+
+        public string Description
+        {
+            get
+            {
+                string baseDescription = string.Empty;
+                if (ValueType == CalculatorValueType.Operator)
+                {
+                    baseDescription = OperatorType.ToName();
+                }
+                else
+                {
+                    baseDescription = ValueType.ToName();
+                }
+
+                //if (!string.IsNullOrWhiteSpace(ForeignDescription))
+                //{
+                //    return string.Format("{0}: {1}", baseDescription, ForeignDescription);
+                //}
+                return baseDescription;
+
+            }
+        }
+
         [PetaPoco.Column]
         public int ForeignId { get; set; }
-        
-         [PetaPoco.Column]
+        public string ForeignDescription { get; set; }
+
+        [PetaPoco.Column]
         public decimal? Value { get; set; }
+
+        [PetaPoco.Column]
+        public string Text { get; set; }
 
         [PetaPoco.Column]
         public int BudgetCalculatorEquationId { get { return Equation.Id; } set { } }
         public BudgetCalculatorEquation Equation { get; set; }
 
-        public Func<decimal> Evaluator;
+        public decimal? CalculatedValue
+        {
+            get { return CalculateValue();}
+        }
+        public Func<decimal?> Evaluator;
 
         public decimal? CalculateValue()
         {
@@ -84,6 +122,22 @@ namespace Adalbertus.BudgetPlanner.Models
         {
             ValueType = CalculatorValueType.UserValue;
             OperatorType = CalculatorOperatorType.None;
+        }
+
+        public BudgetCalculatorItem CreateCopy()
+        {
+            var copy = new BudgetCalculatorItem
+            {
+                Id = this.Id,
+                Name = this.Name,
+                Position = this.Position,
+                ValueType = this.ValueType,
+                OperatorType = this.OperatorType,
+                ForeignId = this.ForeignId,
+                Value = this.Value,
+                Equation = this.Equation,
+            };
+            return copy;
         }
     }
 }

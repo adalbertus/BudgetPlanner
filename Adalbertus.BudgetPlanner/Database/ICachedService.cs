@@ -14,5 +14,6 @@ namespace Adalbertus.BudgetPlanner.Database
         IEnumerable<CashFlowGroup> GetAllCashFlowGroups();
         IEnumerable<Income> GetAllIncomes();
         IEnumerable<Saving> GetAllSavings();
+        IEnumerable<BudgetCalculatorEquation> GetAllEquations();
     }
 }

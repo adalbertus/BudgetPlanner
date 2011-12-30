@@ -72,22 +72,26 @@ namespace Adalbertus.BudgetPlanner.ViewModels
 
         protected virtual void Save(Entity entity)
         {
+            Diagnostics.Start(entity.GetType().FullName);
             using (var tx = Database.GetTransaction())
             {
                 Database.Save(entity);
                 tx.Complete();
             }
             PublishRefreshRequest(entity);
+            Diagnostics.Stop();
         }
 
         protected virtual void Delete(Entity entity)
         {
+            Diagnostics.Start(entity.GetType().FullName);
             using (var tx = Database.GetTransaction())
             {
                 Database.Delete(entity);
                 tx.Complete();
             }
             PublishRefreshRequest(entity);
+            Diagnostics.Stop();
         }
 
         #region IHandle<RefreshEvent> Members

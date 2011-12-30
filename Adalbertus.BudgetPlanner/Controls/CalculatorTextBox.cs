@@ -61,14 +61,17 @@ namespace Adalbertus.BudgetPlanner.Controls
         {
             if (ResultPopup != null)
             {
-                ResultPopup.IsOpen = IsFocused && Result.HasValue;
+                ResultPopup.IsOpen = IsFocused && Result.HasValue;                
             }
         }
 
-        protected override void OnLostFocus(RoutedEventArgs e)
+        protected override void OnLostKeyboardFocus(System.Windows.Input.KeyboardFocusChangedEventArgs e)
         {
-            base.OnLostFocus(e);
-            ShowHideResultPopup();
+            base.OnLostKeyboardFocus(e);
+            if (ResultPopup != null)
+            {
+                ResultPopup.IsOpen = false;
+            }
         }
 
         protected override void ParseText()

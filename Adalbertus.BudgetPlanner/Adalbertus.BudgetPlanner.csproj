@@ -110,6 +110,8 @@
     <Compile Include="Converters\VisibilityConverter.cs" />
     <Compile Include="Core\BindableCollectionExt.cs" />
     <Compile Include="CastleBootstrapper.cs" />
+    <Compile Include="Core\UI.cs" />
+    <Compile Include="Core\WizardEvent.cs" />
     <Compile Include="Extensions\CollectionExtensions.cs" />
     <Compile Include="Core\ConfigurationHelper.cs" />
     <Compile Include="Core\Diagnostics.cs" />
@@ -129,6 +131,7 @@
     <Compile Include="Core\IConfigurationManager.cs">
       <DependentUpon>ConfigurationManager.cs</DependentUpon>
     </Compile>
+    <Compile Include="Extensions\DataGridExtensions.cs" />
     <Compile Include="Extensions\ImageExtension.cs" />
     <Compile Include="Extensions\KeyDownFocusAction.cs" />
     <Compile Include="Extensions\KeyTrigger.cs" />
@@ -140,7 +143,9 @@
     <Compile Include="Database\SQLiteHelper.cs" />
     <Compile Include="Extensions\FocusExtension.cs" />
     <Compile Include="Converters\StringFormatConverter.cs" />
+    <Compile Include="Extensions\ListViewExtensions.cs" />
     <Compile Include="Extensions\MarginSetterExtension.cs" />
+    <Compile Include="Extensions\ModelExtensions.cs" />
     <Compile Include="Extensions\MousePressExtension.cs" />
     <Compile Include="Extensions\StringExtenstions.cs" />
     <Compile Include="Models\Budget.cs" />
@@ -156,10 +161,12 @@
     <Compile Include="Models\Expense.cs" />
     <Compile Include="Models\Income.cs" />
     <Compile Include="Models\IncomeValue.cs" />
+    <Compile Include="Models\Note.cs" />
     <Compile Include="Models\Saving.cs" />
     <Compile Include="Models\SavingValue.cs" />
     <Compile Include="ViewModels\BaseViewModel.cs" />
     <Compile Include="ViewModels\BudgetCalculationsViewModel.cs" />
+    <Compile Include="ViewModels\BudgetCalculatorEvaluator.cs" />
     <Compile Include="ViewModels\BudgetEquationWizardElementViewModel.cs" />
     <Compile Include="ViewModels\BudgetEquationWizardFinishViewModel.cs" />
     <Compile Include="ViewModels\BudgetEquationWizardShellViewModel.cs" />
@@ -178,11 +185,13 @@
     <Compile Include="ViewModels\CashFlowDeleteConfirmationViewModel.cs" />
     <Compile Include="ViewModels\CashFlowGroupDeleteConfirmationViewModel.cs" />
     <Compile Include="ViewModels\CashFlowTypesViewModel.cs" />
-    <Compile Include="ViewModels\ExpensesFilterEntityVM.cs" />
+    <Compile Include="ViewModels\ComboItemVM.cs" />
+    <Compile Include="ViewModels\ExpensesFilteringViewModel.cs" />
     <Compile Include="ViewModels\ExpensesFilterVM.cs" />
     <Compile Include="ViewModels\ExpensesViewModel.cs" />
     <Compile Include="ViewModels\ExternalSourcesViewModel.cs" />
     <Compile Include="ViewModels\MessageBoxViewModel.cs" />
+    <Compile Include="ViewModels\NotepadViewModel.cs" />
     <Compile Include="ViewModels\RevenuesViewModel.cs" />
     <Compile Include="ViewModels\BaseDailogViewModel.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
@@ -195,6 +204,10 @@
     </Compile>
     <Compile Include="ViewModels\WizardPageViewModel.cs" />
     <Compile Include="ViewModels\WizardShellViewModel.cs" />
+    <Page Include="DataTemplates.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Styles.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -247,6 +260,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\ExpensesFilteringView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\ExpensesView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -256,6 +273,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\MessageBoxView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\NotepadView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -392,6 +413,13 @@
     <Resource Include="Help\Zdefiniowane wpływy z dochodów.png" />
     <Resource Include="Help\Zdefiniowane wpływy ze środków zewnętrznych.png" />
     <Resource Include="Images\calculator-add.png" />
+    <Resource Include="Images\system-delete-alt.png" />
+    <Resource Include="Images\edit.png" />
+    <Resource Include="Images\bulb.png" />
+    <Resource Include="Images\notepad-add.png" />
+    <Resource Include="Images\category.png" />
+    <Resource Include="Images\external.png" />
+    <Resource Include="Images\notepad.png" />
     <Content Include="Licence.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

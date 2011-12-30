@@ -1,8 +1,39 @@
 ﻿<UserControl x:Class="Adalbertus.BudgetPlanner.Views.BudgetEquationWizardFinishView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:m="clr-namespace:Adalbertus.BudgetPlanner.Models"
+             xmlns:ext="clr-namespace:Adalbertus.BudgetPlanner.Extensions"
              >
-    <Grid>
-        <Label>No i koniec :)</Label>
-    </Grid>
+    <UserControl.Resources>
+        <DataTemplate x:Key="CalculatorValueTemplate" DataType="{x:Type m:BudgetCalculatorItem}">
+            <TextBlock x:Name="valueControl" TextAlignment="Right" HorizontalAlignment="Stretch"
+                       Text="{Binding CalculatedValue, Converter={StaticResource CurrencyFormatter}}" />
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding ValueType}" Value="UserValue">
+                    <Setter TargetName="valueControl" Property="Text"
+                            Value="{Binding CalculatedValue, Converter={StaticResource ValueFormatter}}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding ValueType}" Value="BudgetExpensesWithDescription">
+                    <Setter TargetName="valueControl" Property="Text"
+                            Value="{Binding Text}" />
+                </DataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
+
+    </UserControl.Resources>
+    <StackPanel ext:MarginSetterExtension.Margin="4">
+        <WrapPanel>
+            <TextBlock>Równanie</TextBlock>
+        </WrapPanel>
+        <ListView Grid.Row="1" ItemsSource="{Binding Items}" Margin="4">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="Typ" DisplayMemberBinding="{Binding Description}" Width="Auto" />
+                    <GridViewColumn Header="Wartość"
+                                                CellTemplate="{StaticResource CalculatorValueTemplate}" Width="Auto"/>
+                    <GridViewColumn Header="Opis" DisplayMemberBinding="{Binding ForeignDescription}" Width="Auto"/>
+                </GridView>
+            </ListView.View>
+        </ListView>
+    </StackPanel>
 </UserControl>

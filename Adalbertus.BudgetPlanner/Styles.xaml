@@ -68,6 +68,11 @@
         </Setter>
     </Style>
 
+    <Style TargetType="{x:Type ListView}">
+        <Setter Property="BorderBrush" Value="LightGray" />
+        <Setter Property="BorderThickness" Value="1" />
+    </Style>
+
     <!-- TextBlock -->
     <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource {x:Type TextBlock}}">
         <Setter Property="VerticalAlignment" Value="Center" />
@@ -75,6 +80,17 @@
 
     <!-- TextBox -->
     <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource {x:Type TextBox}}">
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="BorderBrush" Value="{StaticResource TextBoxBorder}"/>
+        <Setter Property="Padding" Value="3"/>
+        <Style.Triggers>
+            <Trigger Property="IsFocused" Value="true">
+                <Setter Property="Background" Value="{StaticResource {x:Static SystemColors.HighlightBrushKey}}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style TargetType="{x:Type extToolkit:RichTextBox}" BasedOn="{StaticResource {x:Type RichTextBox}}">
         <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="BorderBrush" Value="{StaticResource TextBoxBorder}"/>
         <Setter Property="Padding" Value="3"/>
@@ -153,6 +169,14 @@
 
     <Style x:Key="Button80" TargetType="{x:Type ctrl:ImageButton}" BasedOn="{StaticResource {x:Type ctrl:ImageButton}}">
         <Setter Property="Width" Value="80" />
+    </Style>
+
+    <Style x:Key="Button90" TargetType="{x:Type ctrl:ImageButton}" BasedOn="{StaticResource {x:Type ctrl:ImageButton}}">
+        <Setter Property="Width" Value="90" />
+    </Style>
+
+    <Style x:Key="Button100" TargetType="{x:Type ctrl:ImageButton}" BasedOn="{StaticResource {x:Type ctrl:ImageButton}}">
+        <Setter Property="Width" Value="100" />
     </Style>
 
     <Style x:Key="DeleteButton" TargetType="{x:Type ctrl:ImageButton}" BasedOn="{StaticResource {x:Type Button}}">

@@ -37,6 +37,11 @@ namespace Adalbertus.BudgetPlanner.Models
             Values = new BindableCollectionExt<IncomeValue>();
         }
 
+        public override string ToString()
+        {
+            return Name;
+        }
+
         public virtual IncomeValue AddIncomeValue(Budget budget, decimal value, DateTime date, string description)
         {
             IncomeValue incomeValue = new IncomeValue

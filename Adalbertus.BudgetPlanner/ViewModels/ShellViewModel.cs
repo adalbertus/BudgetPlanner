@@ -14,10 +14,10 @@ using System.IO;
 
 namespace Adalbertus.BudgetPlanner.ViewModels
 {
-    public class ShellViewModel : Conductor<IScreen>, IShellViewModel
+    public class ShellViewModel : Conductor<IScreen>, IShellViewModel, IHandle<RefreshEvent>
     {
-        private IDialog _dialogScreen;
-        public IDialog DialogScreen
+        private object _dialogScreen;
+        public object DialogScreen
         {
             get { return _dialogScreen; }
             set
@@ -106,14 +106,21 @@ namespace Adalbertus.BudgetPlanner.ViewModels
 
         public void ShowBudgetCalculator()
         {
-            ActivateItem(IoC.Get<BudgetCalculationsViewModel>());
+            var calculator = IoC.Get<BudgetCalculationsViewModel>();
+            calculator.LoadData(CurrentBudget);
+            ActivateItem(calculator);
+        }
+
+        public void ShowNotepad()
+        {            
+            ShowDialog<NotepadViewModel>(null, null);
         }
 
         protected override void OnActivate()
         {
-            CachedService.LoadAll();
             if (DatabaseVerification())
             {
+                CachedService.LoadAll();
                 ShowCurrentBudget();
             }
             if (ConfigurationManager.GetValueOrDefault<bool>(ConfigurationKeys.IsFirstRun, true))
@@ -134,7 +141,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             message.AppendLine("W tej chwili jedyna dostępna pomoc to filmik pokazujący jak używać aplikacji.");
             message.AppendLine();
             message.AppendLine("Po kliknięciu przycisku OK zostanie otwarta przeglądarka z filmikiem");
-            ShowMessage(message.ToString(), RunFlashHelp ,null, MessageBoxButton.OK, MessageBoxImage.Information);            
+            ShowMessage(message.ToString(), RunFlashHelp, null, MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         private void RunFlashHelp()
@@ -213,8 +220,17 @@ namespace Adalbertus.BudgetPlanner.ViewModels
 
         }
 
+        public void ShowDialog<TDialogViewModel>(System.Action okCallback, System.Action cancelCallback) where TDialogViewModel : IDialog<object>
+        {
+            ShowDialog<TDialogViewModel, object>(new { }, okCallback, cancelCallback);
+        }
 
-        public void ShowDialog<TDialogViewModel>(dynamic initParameters, System.Action okCallback, System.Action cancelCallback) where TDialogViewModel : IDialog
+        public void ShowDialog<TDialogViewModel>(dynamic initParameters, System.Action okCallback, System.Action cancelCallback) where TDialogViewModel : IDialog<object>
+        {
+            ShowDialog<TDialogViewModel, object>(initParameters, okCallback, cancelCallback);
+        }
+
+        public void ShowDialog<TDialogViewModel, TModel>(dynamic initParameters, System.Action okCallback, System.Action cancelCallback) where TDialogViewModel : IDialog<TModel>
         {
             var dialog = IoC.Get<TDialogViewModel>();
             dialog.Initialize(initParameters);
@@ -225,6 +241,76 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             DialogScreen = dialog;
         }
 
+        public void ShowDialog<TDialogViewModel, TModel>(TDialogViewModel instance, System.Action okCallback, System.Action cancelCallback) where TDialogViewModel : IDialog<TModel>
+        {
+            instance.OKCallback = okCallback;
+            instance.CancelCallback = cancelCallback;
+            instance.AfterCloseCallback = () => { DialogScreen = null; };
+            DialogScreen = instance;
+        }
         #endregion
+
+        #region IHandle<RefreshEvent> Members
+
+        public void Handle(RefreshEvent message)
+        {
+            if (message.ChangedEntity is Budget)
+            {
+                CurrentBudget = message.ChangedEntity as Budget;
+            }
+        }
+
+        #endregion
+
+        #region Debug
+        public bool IsDebug
+        {
+            get {
+#if DEBUG
+                return true;
+#else
+                return false;
+#endif
+                }
+        }
+
+        private bool _isDebugLogVisible;
+        public bool IsDebugLogVisible
+        {
+            get { return _isDebugLogVisible; }
+            set
+            {
+                _isDebugLogVisible = value;
+                NotifyOfPropertyChange(() => IsDebugLogVisible);
+            }
+        }
+
+        private string _debugLog;
+        public string DebugLog
+        {
+            get { return _debugLog; }
+            set
+            {
+                _debugLog = value;
+                NotifyOfPropertyChange(() => DebugLog);
+            }
+        }
+
+        public void DebugShowLog()
+        {
+#if DEBUG
+            DebugLog = Diagnostics.GetLogAndClear();
+            IsDebugLogVisible = true;
+#endif
+        }
+
+        public void DebugCleadAndHideLog()
+        {
+#if DEBUG
+            DebugLog = string.Empty;
+            IsDebugLogVisible = false;
+#endif
+        }
+        #endregion Debug
     }
 }

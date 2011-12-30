@@ -37,13 +37,23 @@
                             </WrapPanel>
                         </ctrl:ImageButton>
 
-                        <ctrl:ImageButton Content="Kategorie wydatków" HorizontalAlignment="Right" Margin="50 0 4 0"
+                        <ctrl:ImageButton ImageUrl="Images/category.png"
+                            Content="Kategorie wydatków" HorizontalAlignment="Right" Margin="50 0 4 0"
                                           cal:Message.Attach="[Event Click] = [Action ShowCashFlowTypes()]"/>
-                        <ctrl:ImageButton Content="Środki zewnętrzne" HorizontalAlignment="Right"
+                        <ctrl:ImageButton ImageUrl="Images/external.png"
+                            Content="Środki zewnętrzne" HorizontalAlignment="Right"
                                           cal:Message.Attach="[Event Click] = [Action ShowExternalSources()]"/>
 
-                        <ctrl:ImageButton Content="Obliczenia" HorizontalAlignment="Right"
+                        <ctrl:ImageButton ImageUrl="Images/bulb.png" Content="Obliczenia" Margin="4 0 4 0"
+                                          HorizontalAlignment="Right"
                                           cal:Message.Attach="[Event Click] = [Action ShowBudgetCalculator()]"/>
+
+                        <ctrl:ImageButton ImageUrl="Images/notepad.png" Content="Notatnik" Margin="4 0 4 0"
+                                          HorizontalAlignment="Right"
+                                          cal:Message.Attach="[Event Click] = [Action ShowNotepad()]"/>
+
+                        <Button Content="ShowLog" cal:Message.Attach="[Event Click] = [Action DebugShowLog()]"
+                                Visibility="{Binding IsDebug, Converter={StaticResource Visibility}}" />
                     </StackPanel>
                     <WrapPanel Margin="0,2,4,0" Orientation="Vertical"
                                HorizontalAlignment="Right" VerticalAlignment="Top">
@@ -61,7 +71,7 @@
                 </Grid>
             </Border>
             <Rectangle Style="{StaticResource OverlayRectangle}"
-                           Visibility="{Binding DialogScreen, Converter={StaticResource NullToCollapsed}}" />
+                       Visibility="{Binding DialogScreen, Converter={StaticResource NullToCollapsed}}" />
         </Grid>
 
         <Border Grid.Row="1" BorderBrush="AliceBlue" BorderThickness="0,1,0,0">
@@ -82,6 +92,14 @@
             </Grid>
         </Border>
 
+        <Border Grid.Row="0" Grid.RowSpan="2" Margin="100" Background="WhiteSmoke"
+                CornerRadius="10" BorderBrush="Red" BorderThickness="2" Padding="20"
+                Visibility="{Binding IsDebugLogVisible, Converter={StaticResource Visibility}}">
+            <StackPanel>
+                <Button Content="Clear and hide" cal:Message.Attach="[Event Click] = [Action DebugCleadAndHideLog()]" />
+                <TextBox IsReadOnly="True" Text="{Binding DebugLog}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+            </StackPanel>
+        </Border>
         <ContentControl Grid.Row="0" Grid.RowSpan="2" x:Name="DialogScreen" HorizontalAlignment="Center" VerticalAlignment="Center"
                         Visibility="{Binding DialogScreen, Converter={StaticResource NullToCollapsed}}">
             <ContentControl.Template>

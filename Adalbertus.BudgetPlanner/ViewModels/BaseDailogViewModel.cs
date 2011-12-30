@@ -9,7 +9,7 @@ using System.Windows;
 
 namespace Adalbertus.BudgetPlanner.ViewModels
 {
-    public abstract class BaseDailogViewModel : BaseViewModel, IDialog
+    public abstract class BaseDailogViewModel : BaseViewModel, IDialog<object>
     {
         public BaseDailogViewModel(IShellViewModel shell, IDatabase database, IConfigurationManager configuration, ICachedService cashedService, IEventAggregator eventAggregator)
             : base(shell, database, configuration, cashedService, eventAggregator)

@@ -38,20 +38,20 @@ namespace Adalbertus.BudgetPlanner.ViewModels
 
         protected override void OnRefreshRequest(RefreshEvent refreshEvent)
         {
+            Diagnostics.Start();
             if (refreshEvent.Sender == typeof(ExpensesViewModel).Name)
             {
                 AllBudgetPlanList.ForEach(x => x.RefreshUI());
-            }            
+            }
+            Diagnostics.Stop();
         }
-        #endregion
-
-        #region Budget main data
         #endregion
 
         #region Budget plan items
         
         private void LoadBudgetPlanItems()
         {
+            Diagnostics.Start();
             var cashFlows = CachedService.GetAllCashFlows();
 
             var sql = PetaPoco.Sql.Builder
@@ -89,46 +89,58 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             });
                       
             AttachToBudgetPlanItems();
+            Diagnostics.Stop();
         }
 
         private void AttachToBudgetPlanItems()
         {
+            Diagnostics.Start();
             AllBudgetPlanList.ForEach(x =>
             {
                 x.Values.CollectionChanged += BudgetPlanListCollectionChanged;
                 x.Values.PropertyChanged += (s, e) => { SaveBudgetPlan(s as BudgetPlan); };
             });
+            Diagnostics.Stop();
         }
 
         private void DetachFromBudgetPlanItems()
         {
+            Diagnostics.Start();
             AllBudgetPlanList.ForEach(x =>
             {
                 x.Values.CollectionChanged -= BudgetPlanListCollectionChanged;
             });
+            Diagnostics.Stop();
         }
 
         private void SaveBudgetPlan(BudgetPlan budgetPlan)
         {
+            Diagnostics.Start();
             Save(budgetPlan);
+            Diagnostics.Stop();
         }
 
         private BudgetPlanItemVM FindBudgetPlanItemVMFor(BudgetPlan budgetPlan)
         {
+            Diagnostics.Start();
             var budgetPlanItem = AllBudgetPlanList
                     .Where(x => x.CashFlow.Id == budgetPlan.CashFlowId && x.Budget.Id == budgetPlan.BudgetId)
                     .First();
+            Diagnostics.Stop();
             return budgetPlanItem;
         }
 
         public void FocusNewValue(BudgetPlanItemVM budgetPlanItem)
         {
+            Diagnostics.Start();
             budgetPlanItem.IsNewValueFocused = false;
             budgetPlanItem.IsNewValueFocused = true;
+            Diagnostics.Stop();
         }
 
         public void AddNewValueToBudgetPlan(BudgetPlanItemVM budgetPlanItem)
         {
+            Diagnostics.Start();
             if (budgetPlanItem.NewValue.GetValueOrDefault(0) == 0)
             {
                 FocusNewValue(budgetPlanItem);
@@ -139,10 +151,12 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             budgetPlanItem.NewDescription = string.Empty;
             budgetPlanItem.NewValue = null;
             FocusNewValue(budgetPlanItem);
+            Diagnostics.Stop();
         }
 
         public void DeleteBudgetPlanItem(BudgetPlan planItem)
         {
+            Diagnostics.Start();
             using (var tx = Database.GetTransaction())
             {
                 Database.Delete(planItem);
@@ -151,15 +165,18 @@ namespace Adalbertus.BudgetPlanner.ViewModels
                 budgetPlanItem.Values.Remove(planItem);
                 PublishRefreshRequest(planItem);
             }
+            Diagnostics.Stop();
         }
 
         private void BudgetPlanListCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
+            Diagnostics.Start();
             if (e.Action == NotifyCollectionChangedAction.Remove)
             {
                 var planItem = e.OldItems[0] as BudgetPlan;
                 DeleteBudgetPlanItem(planItem);
             }
+            Diagnostics.Stop();
         }
 
         #endregion

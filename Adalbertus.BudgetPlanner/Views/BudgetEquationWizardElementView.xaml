@@ -3,46 +3,134 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:ctrl="clr-namespace:Adalbertus.BudgetPlanner.Controls"
              xmlns:m="clr-namespace:Adalbertus.BudgetPlanner.Models"
+             xmlns:ext="clr-namespace:Adalbertus.BudgetPlanner.Extensions"
 >
-    <UserControl.Resources>
+    <UserControl.Resources>        
         <DataTemplate x:Key="NormalElementTemplate">
-            <UniformGrid Columns="2">
-                <TextBlock>Użyj</TextBlock>
-                <ctrl:AutoCompleteBox x:Name="valueTypes" ItemsSource="{Binding ValueTypes}" FilterBy="Name" DisplayMemberPath="Name" 
-                              SelectedItem="{Binding SelectedValueType}" CanBeEmpty="False" />
+            <Grid ext:MarginSetterExtension.Margin="4">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="140"/>
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Column="0" Grid.Row="0">Użyj</TextBlock>
+                <ctrl:AutoCompleteBox Grid.Column="1" Grid.Row="0"
+                                      x:Name="valueTypes" ItemsSource="{Binding ValueTypes}"
+                                      SelectedItem="{Binding SelectedValueType}" CanBeEmpty="False" />
 
-                <TextBlock x:Name="userValueLabel" Visibility="Collapsed">Wartość</TextBlock>
-                <ctrl:CalculatorTextBox x:Name="userValue" Value="{Binding UserValue}" FormatString="{x:Null}" Visibility="Collapsed"/>
+                <TextBlock Grid.Column="0" Grid.Row="1" 
+                           x:Name="userValueLabel" Visibility="Collapsed">Wartość</TextBlock>
+                <ctrl:CalculatorTextBox Grid.Column="1" Grid.Row="1"
+                                        x:Name="userValue" Value="{Binding UserValue}" FormatString="{x:Null}" Visibility="Collapsed"/>
+                <ctrl:WatermarkTextBoxExt Grid.Column="1" Grid.Row="1"
+                                        x:Name="userText" Text="{Binding UserText}" Visibility="Collapsed"/>
 
-                <TextBlock>Równanie</TextBlock>
-                <ctrl:AutoCompleteBox ItemsSource="{Binding Equations}" FilterBy="Name" DisplayMemberPath="Name" 
-                              SelectedItem="{Binding SelectedEquation}" CanBeEmpty="False" />
+                <TextBlock Grid.Column="0" Grid.Row="1"
+                           x:Name="selectedEquationLabel" Visibility="Collapsed">Równanie</TextBlock>
+                <ctrl:AutoCompleteBox Grid.Column="1" Grid.Row="1"
+                                      x:Name="selectedEquation" ItemsSource="{Binding Equations}" DisplayMemberPath="Name"
+                                      SelectedItem="{Binding SelectedEquation}" CanBeEmpty="False" Visibility="Collapsed" />
 
-            </UniformGrid>
+                <TextBlock Grid.Column="0" Grid.Row="1"
+                           x:Name="selectedCashFlowLabel" Visibility="Collapsed">Kategoria wydatków</TextBlock>
+                <ctrl:AutoCompleteBox Grid.Column="1" Grid.Row="1"                                      
+                                      x:Name="selectedCashFlow" ItemsSource="{Binding CashFlows}"
+                                      SelectedItem="{Binding SelectedCashFlow}" CanBeEmpty="False" Visibility="Collapsed" />
+
+                <TextBlock Grid.Column="0" Grid.Row="1"
+                           x:Name="selectedCashFlowGroupLabel" Visibility="Collapsed">Grupa wydatków</TextBlock>
+                <ctrl:AutoCompleteBox Grid.Column="1" Grid.Row="1"                                      
+                                      x:Name="selectedCashFlowGroup" ItemsSource="{Binding CashFlowGroups}"
+                                      SelectedItem="{Binding SelectedCashFlowGroup}" CanBeEmpty="False" Visibility="Collapsed" />
+
+                <TextBlock Grid.Column="0" Grid.Row="1"
+                           x:Name="selectedIncomeLabel" Visibility="Collapsed">Dochody</TextBlock>
+                <ctrl:AutoCompleteBox Grid.Column="1" Grid.Row="1"
+                                      x:Name="selectedIncome" ItemsSource="{Binding Incomes}"
+                                      SelectedItem="{Binding SelectedIncome}" CanBeEmpty="False" Visibility="Collapsed" />
+
+                <TextBlock Grid.Column="0" Grid.Row="1"
+                           x:Name="selectedSavingLabel" Visibility="Collapsed">Zewnętrzne źródło</TextBlock>
+                <ctrl:AutoCompleteBox Grid.Column="1" Grid.Row="1"
+                                      x:Name="selectedSaving" ItemsSource="{Binding Savings}"
+                                      SelectedItem="{Binding SelectedSaving}" CanBeEmpty="False" Visibility="Collapsed" />
+            </Grid>
             <DataTemplate.Triggers>
                 <DataTrigger Binding="{Binding IsOperatorElementVisible}" Value="True">
                     <Setter Property="UniformGrid.Visibility" Value="Collapsed" />
                 </DataTrigger>
-                <DataTrigger Binding="{Binding SelectedItem.Value, ElementName=valueTypes}" Value="CalculatorValueType.UserValue">
+                
+                <DataTrigger Binding="{Binding SelectedItem.Value, ElementName=valueTypes}" Value="UserValue">
                     <Setter TargetName="userValueLabel" Property="Visibility" Value="Visible" />
                     <Setter TargetName="userValue" Property="Visibility" Value="Visible" />
+                </DataTrigger>
+
+                <DataTrigger Binding="{Binding SelectedItem.Value, ElementName=valueTypes}" Value="CalculatorEquationValue">
+                    <Setter TargetName="selectedEquationLabel" Property="Visibility" Value="Visible" />
+                    <Setter TargetName="selectedEquation" Property="Visibility" Value="Visible" />
+                </DataTrigger>
+
+                <DataTrigger Binding="{Binding SelectedItem.Value, ElementName=valueTypes}" Value="BudgetExpensesValueOfType">
+                    <Setter TargetName="selectedCashFlowLabel" Property="Visibility" Value="Visible" />
+                    <Setter TargetName="selectedCashFlow" Property="Visibility" Value="Visible" />
+                </DataTrigger>
+               
+                <DataTrigger Binding="{Binding SelectedItem.Value, ElementName=valueTypes}" Value="BudgetExpensesWithDescription">
+                    <Setter TargetName="userValueLabel" Property="Visibility" Value="Visible" />
+                    <Setter TargetName="userText" Property="Visibility" Value="Visible" />
+                </DataTrigger>
+
+                <DataTrigger Binding="{Binding SelectedItem.Value, ElementName=valueTypes}" Value="BudgetPlanValueOfCategory">
+                    <Setter TargetName="selectedCashFlowLabel" Property="Visibility" Value="Visible" />
+                    <Setter TargetName="selectedCashFlow" Property="Visibility" Value="Visible" />
+                </DataTrigger>
+
+                <DataTrigger Binding="{Binding SelectedItem.Value, ElementName=valueTypes}" Value="BudgetPlanValueOfGroup">
+                    <Setter TargetName="selectedCashFlowGroupLabel" Property="Visibility" Value="Visible" />
+                    <Setter TargetName="selectedCashFlowGroup" Property="Visibility" Value="Visible" />
+                </DataTrigger>
+
+                <DataTrigger Binding="{Binding SelectedItem.Value, ElementName=valueTypes}" Value="BudgetIncomesValueOfType">
+                    <Setter TargetName="selectedIncomeLabel" Property="Visibility" Value="Visible" />
+                    <Setter TargetName="selectedIncome" Property="Visibility" Value="Visible" />
+                </DataTrigger>
+
+                <DataTrigger Binding="{Binding SelectedItem.Value, ElementName=valueTypes}" Value="BudgetSavingsValueOfType">
+                    <Setter TargetName="selectedSavingLabel" Property="Visibility" Value="Visible" />
+                    <Setter TargetName="selectedSaving" Property="Visibility" Value="Visible" />
                 </DataTrigger>
             </DataTemplate.Triggers>
         </DataTemplate>
     </UserControl.Resources>
     <Grid>
         <ContentPresenter ContentTemplate="{StaticResource NormalElementTemplate}" Content="{Binding}" />
-        <StackPanel Visibility="{Binding IsOperatorElementVisible, Converter={StaticResource Visibility}}">
-            <CheckBox x:Name="checkBox" Content="Wstawić następny element" IsChecked="{Binding IsNextElement}" />
-            <TextBlock Visibility="{Binding IsChecked, ElementName=checkBox, Converter={StaticResource Visibility}}">
-                Następny element
-            </TextBlock>
-            <UniformGrid Columns="1" Visibility="{Binding IsChecked, ElementName=checkBox, Converter={StaticResource Visibility}}">
+
+        <Grid Visibility="{Binding IsOperatorElementVisible, Converter={StaticResource Visibility}}"
+            ext:MarginSetterExtension.Margin="4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150"/>
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Column="0" Grid.Row="0" Text="Wstawić następny element" />
+            <CheckBox Grid.Column="1" Grid.Row="0"
+                      x:Name="checkBox" IsChecked="{Binding IsLastElement, Converter={StaticResource Not}}" />
+
+            <TextBlock Grid.Column="0" Grid.Row="1" Text="Następny element"
+                       Visibility="{Binding IsChecked, ElementName=checkBox, Converter={StaticResource Visibility}}"/>
+            <StackPanel Grid.Column="1" Grid.Row="1" 
+                        Visibility="{Binding IsChecked, ElementName=checkBox, Converter={StaticResource Visibility}}">
                 <RadioButton Content="Dodaj" IsChecked="{Binding IsAddOperatorSelected}" />
                 <RadioButton Content="Odejmij" IsChecked="{Binding IsSubstractOperatorSelected}" />
                 <RadioButton Content="Pomnóż" IsChecked="{Binding IsMultiplyOperatorSelected}" />
                 <RadioButton Content="Podziel" IsChecked="{Binding IsDivideOperatorSelected}" />
-            </UniformGrid>
-        </StackPanel>
+            </StackPanel>
+        </Grid>
     </Grid>
 </UserControl>

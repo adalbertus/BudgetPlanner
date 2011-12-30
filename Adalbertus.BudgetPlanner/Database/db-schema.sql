@@ -90,6 +90,7 @@ CREATE TABLE [BudgetCalculatorItem] (
   [OperatorTypeName] VARCHAR(500),
   [ForeignId] INTEGER,
   [Value] NUMERIC,
+  [Text] VARCHAR(250),
   [Position] INTEGER DEFAULT 0
 );
 
@@ -99,4 +100,10 @@ CREATE TABLE [BudgetCalculatorEquation] (
   [Name] VARCHAR(250),
   [IsVisible] INTEGER(1) DEFAULT 1,
   [Position] INTEGER DEFAULT 0
+);
+
+DROP TABLE IF EXISTS [Note];
+CREATE TABLE [Note] (
+  [Id]  INTEGER PRIMARY KEY AUTOINCREMENT,
+  [Text] TEXT
 );

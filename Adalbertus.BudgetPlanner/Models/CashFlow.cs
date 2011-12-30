@@ -10,7 +10,7 @@ namespace Adalbertus.BudgetPlanner.Models
     [PetaPoco.TableName("CashFlow")]
     [PetaPoco.PrimaryKey("Id")]
     [PetaPoco.ExplicitColumns]
-    public class CashFlow : Entity
+    public class CashFlow : Entity, IComparable
     {
         private string _name;
         [PetaPoco.Column]
@@ -83,5 +83,15 @@ namespace Adalbertus.BudgetPlanner.Models
                 Saving = saving
             };
         }
+
+        #region IComparable Members
+
+        public int CompareTo(object obj)
+        {
+            var cashFlow = obj as CashFlow;
+            return this.Name.CompareTo(cashFlow.Name);
+        }
+
+        #endregion
     }
 }

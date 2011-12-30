@@ -3,9 +3,23 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:cal="http://www.caliburnproject.org"
              xmlns:ctrl="clr-namespace:Adalbertus.BudgetPlanner.Controls"
+             xmlns:ext="clr-namespace:Adalbertus.BudgetPlanner.Extensions"
              >
-    <UniformGrid Columns="2">
-        <TextBlock>Nazwa równania</TextBlock>
-        <ctrl:WatermarkTextBoxExt Text="{Binding EquationName, UpdateSourceTrigger=PropertyChanged}" />
-    </UniformGrid>
+    <Grid ext:MarginSetterExtension.Margin="4">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="140"/>
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        
+        <TextBlock Grid.Row="0" Grid.Column="0">Nazwa równania</TextBlock>
+        <ctrl:WatermarkTextBoxExt Grid.Row="0" Grid.Column="1" 
+                                  Text="{Binding EquationName, UpdateSourceTrigger=PropertyChanged}" />
+
+        <TextBlock Grid.Row="1" Grid.Column="0" TextWrapping="Wrap">Czy równanie ma być widoczne na ekranie budżetu</TextBlock>
+        <CheckBox Grid.Row="1" Grid.Column="1" IsChecked="{Binding IsVisible}" />
+    </Grid>
 </UserControl>

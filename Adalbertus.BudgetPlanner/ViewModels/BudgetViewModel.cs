@@ -33,6 +33,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
 
         public override void LoadData()
         {
+            Diagnostics.Start();
             LoadOrCreateDefaultBudget();
             BudgetPlanViewModel.LoadData(Budget);
             RevenuesViewModel.LoadData(Budget);
@@ -40,10 +41,12 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             BudgetCalculatorViewModel.LoadData(Budget);
 
             RefreshUI();
+            Diagnostics.Stop();
         }
 
         private void LoadOrCreateDefaultBudget()
         {
+            Diagnostics.Start();
             using (var tx = Database.GetTransaction())
             {
                 var cashFlowList = CachedService.GetAllCashFlows();
@@ -60,13 +63,19 @@ namespace Adalbertus.BudgetPlanner.ViewModels
                 }
 
                 tx.Complete();
+                PublishRefreshRequest(Budget);
             }
 
-            Budget.PropertyChanged += (s, e) => { Save(s as Budget); };
+            Budget.PropertyChanged += (s, e) => 
+            { 
+                Save(s as Budget);
+            };
+            Diagnostics.Stop();
         }
 
         protected override void OnRefreshRequest(RefreshEvent refreshEvent)
         {
+            Diagnostics.Start();
             if (refreshEvent.Sender == typeof(RevenuesViewModel).Name)
             {
                 RefreshBudgetSummary();
@@ -79,14 +88,36 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             {
                 RefreshBudgetSummary();
             }
+            else if (refreshEvent.Sender == typeof(BudgetCalculationsViewModel).Name)
+            {
+                RefreshBudgetSummary();
+            }
+            Diagnostics.Stop();
+        }
+
+        public IEnumerable<BudgetCalculatorEquation> BudgetEquations { 
+            get
+            {
+                return BudgetCalculatorViewModel.AvaiableEquations;
+            }
+        }
+
+        public bool IsBudgetEquationsEmpty
+        {
+            get
+            {
+                return !BudgetEquations.Any();
+            }
         }
 
         private void RefreshUI()
         {
+            Diagnostics.Start();
             NotifyOfPropertyChange(() => DateFrom);
             NotifyOfPropertyChange(() => DateTo);
             NotifyOfPropertyChange(() => TransferedValue);
             RefreshBudgetSummary();
+            Diagnostics.Stop();
         }        
 
         public DateTime DateFrom
@@ -171,6 +202,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
 
         private void RefreshBudgetSummary()
         {
+            Diagnostics.Start();
             NotifyOfPropertyChange(() => RealBudgetBilans);
             NotifyOfPropertyChange(() => TotalBudgetValue);
             NotifyOfPropertyChange(() => TotalSumOfRevenues);
@@ -182,6 +214,10 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             NotifyOfPropertyChange(() => TotalExpenseValue);
             NotifyOfPropertyChange(() => TotalBalanceProcentValue);
             NotifyOfPropertyChange(() => TotalBalanceValue);
+
+            NotifyOfPropertyChange(() => BudgetEquations);
+            NotifyOfPropertyChange(() => IsBudgetEquationsEmpty);
+            Diagnostics.Stop();
         }
     }
 }

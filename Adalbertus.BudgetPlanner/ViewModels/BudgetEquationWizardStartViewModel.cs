@@ -10,7 +10,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         public BudgetEquationWizardStartViewModel()
         {
             NextPageName = typeof(BudgetEquationWizardElementViewModel).Name;
-            Title = "Nazwa równania";
+            Title = "Podstawowe informacje";
         }
 
         public string EquationName
@@ -20,6 +20,15 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             {
                 Model.EquationName = value;
                 Parent.RefreshNavigationUI();
+            }
+        }
+
+        public bool IsVisible {
+            get { return Model.IsVisible; }
+            set
+            {
+                Model.IsVisible = value;
+                NotifyOfPropertyChange(() => IsVisible);
             }
         }
 
@@ -39,12 +48,6 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             }
 
             return base.ValidateMoveNext();
-        }
-
-        public override void MoveNext()
-        {
-            base.MoveNext();
-            
         }
     }
 }

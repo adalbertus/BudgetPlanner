@@ -5,6 +5,7 @@
              xmlns:cal="http://www.caliburnproject.org"
              xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
              xmlns:ext="clr-namespace:Adalbertus.BudgetPlanner.Extensions"
+             xmlns:m="clr-namespace:Adalbertus.BudgetPlanner.Models"
              xmlns:extToolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit/extended"
              xmlns:ctrl="clr-namespace:Adalbertus.BudgetPlanner.Controls"
 >
@@ -14,6 +15,13 @@
                 <PropertyGroupDescription PropertyName="GroupName" />
             </CollectionViewSource.GroupDescriptions>
         </CollectionViewSource>
+
+        <DataTemplate DataType="{x:Type m:BudgetCalculatorEquation}">
+            <WrapPanel>
+                <TextBlock Text="{Binding Name}"/>
+                <TextBlock Text="{Binding Value, Converter={StaticResource CurrencyFormatter}}" />
+            </WrapPanel>
+        </DataTemplate>
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -26,82 +34,116 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            <GroupBox Grid.Row="0" Header="Podsumowanie budżetu">
-                <GroupBox.Resources>
-                    <Style TargetType="TextBlock">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource Self},Converter={StaticResource LessThan}}" Value="True">
-                                <Setter Property="FontWeight" Value="Bold" />
-                                <Setter Property="Foreground" Value="Red" />
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </GroupBox.Resources>
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
+            <Grid Grid.Row="0" >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <GroupBox Grid.Column="0" Header="Podsumowanie budżetu">
+                    <GroupBox.Resources>
+                        <Style TargetType="TextBlock">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource Self},Converter={StaticResource LessThan}}" Value="True">
+                                    <Setter Property="FontWeight" Value="Bold" />
+                                    <Setter Property="Foreground" Value="Red" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </GroupBox.Resources>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
 
-                    <Border Grid.Column="0" BorderBrush="LightGray" BorderThickness="0,0,1,0" Margin="0,0,4,0" Padding="0,0,4,0">
-                        <Grid ext:MarginSetterExtension.Margin="2">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="80"/>
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition/>
-                                <RowDefinition/>
-                                <RowDefinition/>
-                                <RowDefinition/>
-                            </Grid.RowDefinitions>
+                        <Border Grid.Column="0" BorderBrush="LightGray" BorderThickness="0,0,1,0" Margin="0,0,4,0" Padding="0,0,4,0">
+                            <Grid ext:MarginSetterExtension.Margin="2">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="80"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
 
-                            <!--Rzeczywisty bilans-->
-                            <TextBlock Grid.Row="0" Grid.Column="0"
+                                <!--Rzeczywisty bilans-->
+                                <TextBlock Grid.Row="0" Grid.Column="0"
                                    ToolTip="Różnica łącznej wartości dostępnego budżetu do reczywistych wydatków"
                                    Text="Rzeczywisty bilans" />
-                            <TextBlock Grid.Row="0" Grid.Column="1" TextAlignment="Right"
+                                <TextBlock Grid.Row="0" Grid.Column="1" TextAlignment="Right"
                                    ToolTip="Różnica łącznej wartości dostępnego budżetu do reczywistych wydatków"
                                    Text="{Binding RealBudgetBilans, Converter={StaticResource CurrencyFormatter}}"
                                    FontWeight="Bold"
                                    Tag="{Binding RealBudgetBilans}">
-                            </TextBlock>
+                                </TextBlock>
 
-                            <!--Wartość budżetu do planu-->
-                            <TextBlock Grid.Row="1" Grid.Column="0"
+                                <!--Wartość budżetu do planu-->
+                                <TextBlock Grid.Row="1" Grid.Column="0"
                                    ToolTip="Łączna wartość budżetu" 
                                    Text="Wartość budżetu"/>
-                            <TextBlock Grid.Row="1" Grid.Column="1" TextAlignment="Right"
+                                <TextBlock Grid.Row="1" Grid.Column="1" TextAlignment="Right"
                                    ToolTip="Łaczna wartość budżetu" 
                                    Text="{Binding TotalBudgetValue, Converter={StaticResource CurrencyFormatter}}" />
 
-                            <!--Wartość budżetu do planu-->
-                            <TextBlock Grid.Row="2" Grid.Column="0"
+                                <!--Wartość budżetu do planu-->
+                                <TextBlock Grid.Row="2" Grid.Column="0"
                                    ToolTip="Różnica łącznej wartości dostępnego budżetu do planowanych wydatków" 
                                    Text="Różnica budżetu do planu"/>
-                            <TextBlock Grid.Row="2" Grid.Column="1" TextAlignment="Right"
+                                <TextBlock Grid.Row="2" Grid.Column="1" TextAlignment="Right"
                                    ToolTip="Różnica łącznej wartości dostępnego budżetu do planowanych wydatków"
                                    Text="{Binding TotalBudgetBilans, Converter={StaticResource CurrencyFormatter}}"
                                    Tag="{Binding TotalBudgetBilans}" />
 
-                            <!--Z poprzedniego okresu-->
-                            <TextBlock Grid.Row="3" Grid.Column="0"
+                                <!--Z poprzedniego okresu-->
+                                <TextBlock Grid.Row="3" Grid.Column="0"
                                    ToolTip="Kwota, która pozostała nie wydana w poprzednim okresie budżetowym"
                                    Text="Z poprzedniego okresu" />
-                            <ctrl:NumericTextBox Grid.Row="3" Grid.Column="1"
+                                <ctrl:NumericTextBox Grid.Row="3" Grid.Column="1"
                                              ToolTip="Kwota, która pozostała nie wydana w poprzednim okresie budżetowym"
                                              HorizontalAlignment="Stretch" 
                                              Value="{Binding TransferedValue, UpdateSourceTrigger=PropertyChanged}"/>
 
-                        </Grid>
-                    </Border>
+                            </Grid>
+                        </Border>
 
-                    <Border Grid.Column="1" BorderBrush="LightGray" BorderThickness="0,0,1,0" Margin="4,0,4,0" Padding="0,0,4,0">
-                        <Grid ext:MarginSetterExtension.Margin="2">
+                        <Border Grid.Column="1" BorderBrush="LightGray" BorderThickness="0,0,1,0" Margin="4,0,4,0" Padding="0,0,4,0">
+                            <Grid ext:MarginSetterExtension.Margin="2">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="80"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+
+                                <!--Wszystkie wpływy łącznie-->
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="Wszystkie wpływy łącznie" />
+                                <TextBlock Grid.Row="0" Grid.Column="1" TextAlignment="Right" 
+                                   Text="{Binding TotalSumOfRevenues, Converter={StaticResource CurrencyFormatter}}"/>
+
+                                <!--Wpływy z dochodów-->
+                                <TextBlock Grid.Row="1" Grid.Column="0" Text="Wpływy z dochodów" />
+                                <TextBlock Grid.Row="1" Grid.Column="1" TextAlignment="Right" 
+                                   Text="{Binding SumOfRevenueIncomes, Converter={StaticResource CurrencyFormatter}}"/>
+
+                                <!--Wpływy z zewnętrznych źródeł-->
+                                <TextBlock Grid.Row="2" Grid.Column="0" Text="Wpływy z zew. źródeł" />
+                                <TextBlock Grid.Row="2" Grid.Column="1" TextAlignment="Right" 
+                                   Text="{Binding SumOfRevenueSavings, Converter={StaticResource CurrencyFormatter}}"/>
+                            </Grid>
+                        </Border>
+
+                        <Grid Grid.Column="2" ext:MarginSetterExtension.Margin="2">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="80"/>
+                                <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
                                 <RowDefinition/>
@@ -109,63 +151,65 @@
                                 <RowDefinition/>
                             </Grid.RowDefinitions>
 
-                            <!--Wszystkie wpływy łącznie-->
-                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Wszystkie wpływy łącznie" />
-                            <TextBlock Grid.Row="0" Grid.Column="1" TextAlignment="Right" 
-                                   Text="{Binding TotalSumOfRevenues, Converter={StaticResource CurrencyFormatter}}"/>
-
-                            <!--Wpływy z dochodów-->
-                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Wpływy z dochodów" />
-                            <TextBlock Grid.Row="1" Grid.Column="1" TextAlignment="Right" 
-                                   Text="{Binding SumOfRevenueIncomes, Converter={StaticResource CurrencyFormatter}}"/>
-
-                            <!--Wpływy z oszczędności-->
-                            <TextBlock Grid.Row="2" Grid.Column="0" Text="Wpływy z oszczędności" />
-                            <TextBlock Grid.Row="2" Grid.Column="1" TextAlignment="Right" 
-                                   Text="{Binding SumOfRevenueSavings, Converter={StaticResource CurrencyFormatter}}"/>
-                        </Grid>
-                    </Border>
-
-                    <Grid Grid.Column="2" ext:MarginSetterExtension.Margin="2">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="80"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition/>
-                            <RowDefinition/>
-                            <RowDefinition/>
-                        </Grid.RowDefinitions>
-
-                        <!--Suma planu budżetowego-->
-                        <TextBlock Grid.Column="0" Grid.Row="0" Text="Suma planu budżetowego" />
-                        <TextBlock Grid.Column="1" Grid.Row="0" TextAlignment="Right" 
+                            <!--Suma planu budżetowego-->
+                            <TextBlock Grid.Column="0" Grid.Row="0" Text="Suma planu budżetowego" />
+                            <TextBlock Grid.Column="1" Grid.Row="0" TextAlignment="Right" 
                                    Text="{Binding TotalBudgetPlanValue, Converter={StaticResource CurrencyFormatter}}"/>
 
-                        <!--Łącznie wydane-->
-                        <TextBlock Grid.Column="0" Grid.Row="1" Text="Łącznie wydane" />
-                        <TextBlock Grid.Column="1" Grid.Row="1" TextAlignment="Right" 
+                            <!--Łącznie wydane-->
+                            <TextBlock Grid.Column="0" Grid.Row="1" Text="Łącznie wydane" />
+                            <TextBlock Grid.Column="1" Grid.Row="1" TextAlignment="Right" 
                                    Text="{Binding TotalExpenseValue, Converter={StaticResource CurrencyFormatter}}"/>
-                        <WrapPanel Grid.Column="2" Grid.Row="1">
-                            <TextBlock>[</TextBlock>
-                            <TextBlock TextAlignment="Right" Text="{Binding TotalBalanceProcentValue, Converter={StaticResource ProcentFormatter}}" />
-                            <TextBlock>]</TextBlock>
-                        </WrapPanel>
+                            <WrapPanel Grid.Column="2" Grid.Row="1">
+                                <TextBlock>[</TextBlock>
+                                <TextBlock TextAlignment="Right" Text="{Binding TotalBalanceProcentValue, Converter={StaticResource ProcentFormatter}}" />
+                                <TextBlock>]</TextBlock>
+                            </WrapPanel>
 
-                        <!--Łącznie do wydania-->
-                        <TextBlock Grid.Column="0" Grid.Row="2" 
+                            <!--Łącznie do wydania-->
+                            <TextBlock Grid.Column="0" Grid.Row="2" 
                                    ToolTip="Łączna kwota pozostała do wydania na podstawie planu budżetowego i zrealizowanych wydatków"
                                    Text="Łącznie do wydania" />
-                        <TextBlock Grid.Column="1" Grid.Row="2" TextAlignment="Right"
+                            <TextBlock Grid.Column="1" Grid.Row="2" TextAlignment="Right"
                                    ToolTip="Łączna kwota pozostała do wydania na podstawie planu budżetowego i zrealizowanych wydatków"
                                    Text="{Binding TotalBalanceValue, Converter={StaticResource CurrencyFormatter}}"
                                    Tag="{Binding TotalBalanceValue}">
-                        </TextBlock>
-                    </Grid>
-                </Grid>
+                            </TextBlock>
+                        </Grid>
 
-            </GroupBox>
+                    </Grid>
+
+                </GroupBox>
+
+                <GroupBox Grid.Column="1" Header="Obliczenia" VerticalAlignment="Stretch">
+                    <Grid>
+                        <ListView ItemsSource="{Binding BudgetEquations}" FontSize="10" Margin="0" Padding="0" BorderThickness="0">
+                            <ListView.Resources>
+                                <Style TargetType="ListViewItem">
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                </Style>
+                                <DataTemplate x:Key="CalculatorValueTemplate" DataType="{x:Type m:BudgetCalculatorItem}">
+                                    <TextBlock x:Name="valueControl" TextAlignment="Right" HorizontalAlignment="Stretch"
+                                           Text="{Binding Value, Converter={StaticResource CurrencyFormatter}}" />
+                                </DataTemplate>
+
+                                <Style TargetType="{x:Type GridViewColumnHeader}">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </Style>
+                            </ListView.Resources>
+                            <ListView.View>
+                                <GridView>
+                                    <GridViewColumn Header="Typ" DisplayMemberBinding="{Binding Name}" Width="Auto" />
+                                    <GridViewColumn Header="Opis" Width="Auto" CellTemplate="{StaticResource CalculatorValueTemplate}"/>
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+                        <TextBlock Visibility="{Binding IsBudgetEquationsEmpty, Converter={StaticResource Visibility}}">
+                            Brak zdefiniowanych lub widocznych obliczeń.
+                        </TextBlock>                        
+                    </Grid>
+                </GroupBox>
+            </Grid>
             <ContentControl x:Name="RevenuesViewModel" Grid.Row="2" />
         </Grid>
 

@@ -8,7 +8,7 @@
     <DockPanel LastChildFill="True" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         <Border DockPanel.Dock="Bottom" Style="{StaticResource DialogButtonsBorder}">
             <WrapPanel HorizontalAlignment="Right">
-                <ctrl:ImageButton Content="Anuluj" cal:Message.Attach="[Event Click] = [Action Cancel()]"
+                <ctrl:ImageButton Content="Anuluj" ImageUrl="Images/system-delete-alt.png" cal:Message.Attach="[Event Click] = [Action Cancel()]"
                                   Visibility="{Binding IsCancelButtonVisible, Converter={StaticResource Visibility}}"
                                   Style="{StaticResource Button80}" />
                 <ctrl:ImageButton Content="OK" ImageUrl="Images/button-checked.png" cal:Message.Attach="[Event Click] = [Action Close()]" 

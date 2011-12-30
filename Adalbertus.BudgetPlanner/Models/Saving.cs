@@ -67,6 +67,11 @@ namespace Adalbertus.BudgetPlanner.Models
             CashFlow = new CashFlow { Description = "Oszczędności" };
         }
 
+        public override string ToString()
+        {
+            return Name;
+        }
+
         public virtual SavingValue Withdraw(decimal value, DateTime date, string description, Budget withdrawToBudget)
         {
             SavingValue newSavingValue = new SavingValue

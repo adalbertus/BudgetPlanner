@@ -1,0 +1,59 @@
+﻿<UserControl x:Class="Adalbertus.BudgetPlanner.Views.ExpensesFilteringView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:cal="http://www.caliburnproject.org"
+             xmlns:ctrl="clr-namespace:Adalbertus.BudgetPlanner.Controls"
+             xmlns:vm="clr-namespace:Adalbertus.BudgetPlanner.ViewModels"
+             xmlns:m="clr-namespace:Adalbertus.BudgetPlanner.Models"
+
+>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <StackPanel Grid.Column="0" Margin="4" >
+            <ctrl:AutoCompleteBox Watermark="Wybierz grupę kategorii" ItemsSource="{Binding CashFlowGroups}"
+                                  IsClearButtonVisible="True" Margin="4"
+                                  SelectedItem="{Binding SelectedCashFlowGroup, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                  MinWidth="200"/>
+            <ctrl:AutoCompleteBox Watermark="Wybierz kategorię" ItemsSource="{Binding CashFlows}"
+                                  MinWidth="200" IsClearButtonVisible="True" Margin="4"
+                                  SelectedItem="{Binding SelectedCashFlow, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+        </StackPanel>
+        <Grid Grid.Column="2" Margin="4" VerticalAlignment="Top">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Row="0" Grid.Column="0" Margin="4">Data od</TextBlock>
+            <DatePicker Grid.Row="0" Grid.Column="1" Margin="4" SelectedDate="{Binding DateFrom, UpdateSourceTrigger=PropertyChanged}"
+                                        SelectedDateFormat="Long"/>
+            <TextBlock Grid.Row="1" Grid.Column="0" Margin="4">Data do</TextBlock>
+            <DatePicker Grid.Row="1" Grid.Column="1" Margin="4" SelectedDate="{Binding DateTo, UpdateSourceTrigger=PropertyChanged}"
+                                        SelectedDateFormat="Long"/>
+        </Grid>
+
+        <StackPanel Grid.Column="3" Margin="4" >
+            <WrapPanel Margin="4">
+                <ctrl:NumericTextBox Grid.Row="0" Grid.Column="0" Value="{Binding ValueFrom}"                                         
+                                         Width="100" Margin="0,0,4,0" Watermark="Kwota od"
+                                         IsClearButtonVisible="True" DefaultValue="{x:Null}"/>
+                <ctrl:NumericTextBox Grid.Row="0" Grid.Column="1" Value="{Binding ValueTo}"
+                                         Width="100" Margin="0" Watermark="Kwota do" DefaultValue="{x:Null}"
+                                         IsClearButtonVisible="True" />
+            </WrapPanel>
+            <ctrl:WatermarkTextBoxExt Grid.ColumnSpan="2" Margin="4" Width="204"
+                                              IsClearButtonVisible="True" HorizontalAlignment="Stretch" 
+                                              Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}"
+                                              Watermark="Opis"/>
+
+        </StackPanel>
+    </Grid>
+</UserControl>

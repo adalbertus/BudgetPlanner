@@ -64,6 +64,10 @@ namespace Adalbertus.BudgetPlanner.Models
             }
             set
             {
+                if (_value == value)
+                {
+                    return;
+                }
                 _value = value;
                 UpdateSavingValue();
                 NotifyOfPropertyChange(() => Value);

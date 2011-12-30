@@ -10,6 +10,7 @@ using System.Collections;
 using System.Windows.Input;
 using System.Windows.Media;
 using Microsoft.Windows.Controls;
+using Adalbertus.BudgetPlanner.Core;
 
 namespace Adalbertus.BudgetPlanner.Controls
 {
@@ -52,6 +53,17 @@ namespace Adalbertus.BudgetPlanner.Controls
             get { return (bool)GetValue(SelectAllOnGotFocusProperty); }
             set { SetValue(SelectAllOnGotFocusProperty, value); }
         }
+
+        public bool IsClearButtonVisible
+        {
+            get { return (bool)GetValue(IsClearButtonVisibleProperty); }
+            set { SetValue(IsClearButtonVisibleProperty, value); }
+        }
+
+        public static readonly DependencyProperty IsClearButtonVisibleProperty =
+            DependencyProperty.Register("IsClearButtonVisible", typeof(bool), typeof(AutoCompleteBox), new UIPropertyMetadata(false));
+
+
 
         #endregion //SelectAllOnGotFocus
 
@@ -141,7 +153,7 @@ namespace Adalbertus.BudgetPlanner.Controls
 
         // Using a DependencyProperty as the backing store for DisplayMemberPath.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty DisplayMemberPathProperty =
-            DependencyProperty.Register("DisplayMemberPath", typeof(string), typeof(AutoCompleteBox), new UIPropertyMetadata(default(string)));
+            DependencyProperty.Register("DisplayMemberPath", typeof(string), typeof(AutoCompleteBox), new UIPropertyMetadata(default(string), OnDisplayMemberPathChanged));
         private static void OnDisplayMemberPathChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
             AutoCompleteBox autoCompleteBox = o as AutoCompleteBox;
@@ -320,6 +332,17 @@ namespace Adalbertus.BudgetPlanner.Controls
 
             if (_bypassSelectAll)
             {
+
+                if (e.OriginalSource is DependencyObject)
+                {
+                    var button = UI.FindVisualParent<Button>(e.OriginalSource as DependencyObject);
+                    if (button != null && button.Name == "PART_ClearButtonHost")
+                    {
+                        SelectedItem = null;
+                        e.Handled = true;
+                    }
+                }
+
                 base.OnPreviewMouseLeftButtonDown(e);
                 return;
             }
@@ -395,6 +418,7 @@ namespace Adalbertus.BudgetPlanner.Controls
                 SearchResults.ItemsSource = ItemsSource;
                 SearchResults.DisplayMemberPath = DisplayMemberPath;
                 SearchResults.SelectedValuePath = SelectedValuePath;
+                SearchResults.SelectedItem = SelectedItem;
                 SearchResults.KeyDown += SearchResults_KeyDown;
                 SearchResults.PreviewMouseLeftButtonDown += SearchResults_PreviewMouseLeftButtonDown;
             }

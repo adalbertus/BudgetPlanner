@@ -170,7 +170,7 @@
                                           Visibility="Collapsed"/>
                         <Button x:Name="PART_ClearButtonHost" Grid.Column="1" Background="Transparent" Margin="0"                                 
                                 Padding="0" BorderThickness="0" Visibility="Collapsed">
-                            <Image Height="16"                                    
+                            <Image Height="16"
                                    Source="/Adalbertus.BudgetPlanner;component/Images/clear-text.png" HorizontalAlignment="Right" />
                         </Button>
                     </Grid>
@@ -249,10 +249,17 @@
                                           HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                                           IsHitTestVisible="False"
                                           Margin="{TemplateBinding Padding}"
-                                          Visibility="Collapsed"/>
-                        <Button x:Name="PART_OpenListButtonHost" Grid.Column="1" Background="Transparent" Margin="0" Padding="0" BorderThickness="0">
-                            <Image Height="16" Source="/Adalbertus.BudgetPlanner;component/Images/open-list.png" HorizontalAlignment="Right" />
-                        </Button>
+                                          Visibility="Hidden"/>
+                        <WrapPanel Grid.Column="1">
+                            <Button x:Name="PART_ClearButtonHost"  Background="Transparent" Margin="0"                                 
+                                Padding="0" BorderThickness="0" Visibility="Collapsed">
+                                <Image Height="16"                                    
+                                   Source="/Adalbertus.BudgetPlanner;component/Images/clear-text.png" HorizontalAlignment="Right" />
+                            </Button>
+                            <Button x:Name="PART_OpenListButtonHost" Background="Transparent" Margin="0" Padding="0" BorderThickness="0">
+                                <Image Height="16" Source="/Adalbertus.BudgetPlanner;component/Images/open-list.png" HorizontalAlignment="Right" />
+                            </Button>
+                        </WrapPanel>
                         <local:AutoCompleteBoxPopup x:Name="PART_SearchResultsHost" Width="{TemplateBinding ActualWidth}"
                                                     AllowsTransparency="True">
                             <Border BorderThickness="{TemplateBinding BorderThickness}" 
@@ -299,9 +306,9 @@
                         <Trigger Property="IsFocused" Value="True">
                             <Setter TargetName="FocusVisual" Property="Opacity"  Value="1" />
                         </Trigger>
-                        <!--<Trigger SourceName="PART_SearchResultsHost" Property="IsOpen" Value="False">
-                            <Setter TargetName="FocusVisual" Property="Opacity"  Value="1" />
-                        </Trigger>-->
+                        <Trigger Property="IsClearButtonVisible" Value="True">
+                            <Setter TargetName="PART_ClearButtonHost" Property="Visibility" Value="Visible" />
+                        </Trigger>
                         <Trigger Property="IsEnabled" Value="false">
                             <Setter TargetName="Border"  Property="BorderBrush" Value="{StaticResource TextBox_DisabledBorder}"/>
                             <Setter TargetName="Border"  Property="Background" Value="{StaticResource TextBox_DisabledBackground}"/>
@@ -353,7 +360,7 @@
                                           Visibility="Collapsed"/>
                         <Button x:Name="PART_ClearButtonHost" Grid.Column="1" Background="Transparent" Margin="0"                                 
                                 Padding="0" BorderThickness="0" Visibility="Collapsed">
-                            <Image Height="16"                                    
+                            <Image Height="16"
                                    Source="/Adalbertus.BudgetPlanner;component/Images/clear-text.png" HorizontalAlignment="Right" />
                         </Button>
                         <Popup x:Name="PART_ResultHost" Width="{TemplateBinding ActualWidth}" IsOpen="False"

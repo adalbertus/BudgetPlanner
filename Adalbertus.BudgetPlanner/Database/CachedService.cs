@@ -13,6 +13,7 @@ namespace Adalbertus.BudgetPlanner.Database
         public const string AllSavings = "{C73C3425-F43F-4CAC-A2E7-C8438F79F528}";
         public const string AllCashFlows = "{45C2830E-8256-4D20-A332-EFAC5BF34D6C}";
         public const string AllCashFlowGroups = "{D5D25298-C18D-4AD5-859C-45EEC9BADC58}";
+        public const string AllEquations = "{990C0C95-7153-48B1-8890-5AD7C034A8E9}";
     }
 
     public class CachedService : ICachedService
@@ -32,6 +33,7 @@ namespace Adalbertus.BudgetPlanner.Database
             GetAllCashFlowGroups();
             GetAllIncomes();
             GetAllSavings();
+            GetAllEquations();
         }
 
         public void Clear(string key = null)
@@ -40,6 +42,9 @@ namespace Adalbertus.BudgetPlanner.Database
             {
                 Cache[CachedServiceKeys.AllCashFlows] = null;
                 Cache[CachedServiceKeys.AllCashFlowGroups] = null;
+                Cache[CachedServiceKeys.AllIncomes] = null;
+                Cache[CachedServiceKeys.AllSavings] = null;
+                Cache[CachedServiceKeys.AllEquations] = null;
             }
             else if(Cache.ContainsKey(key))
             {
@@ -147,6 +152,24 @@ namespace Adalbertus.BudgetPlanner.Database
 
             Cache[CachedServiceKeys.AllSavings] = savingsList;
             return Cache[CachedServiceKeys.AllSavings]  as IEnumerable<Saving>;
+        }
+
+        public IEnumerable<BudgetCalculatorEquation> GetAllEquations()
+        {
+            if (Cache.ContainsKey(CachedServiceKeys.AllEquations) && Cache[CachedServiceKeys.AllEquations] != null)
+            {
+                return Cache[CachedServiceKeys.AllEquations] as IEnumerable<BudgetCalculatorEquation>;
+            }
+            var equations = Database.Query<BudgetCalculatorEquation>("ORDER BY Id").ToList();
+            equations.ForEach(eq =>
+            {
+                var equationItems = Database.Query<BudgetCalculatorItem>("WHERE BudgetCalculatorEquationId = @0 ORDER BY Id", eq.Id).ToList();
+                equationItems.ForEach(x => x.Equation = eq);
+                eq.Items.AddRange(equationItems);
+            });
+            
+            Cache[CachedServiceKeys.AllEquations] = equations;
+            return Cache[CachedServiceKeys.AllEquations] as IEnumerable<BudgetCalculatorEquation>;
         }
     }
 }
