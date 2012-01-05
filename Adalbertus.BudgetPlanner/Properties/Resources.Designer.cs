@@ -61,24 +61,82 @@ namespace Adalbertus.BudgetPlanner.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 
-        ///DROP TABLE IF EXISTS [BudgetCalculatorItem];
+        ///   Looks up a localized string similar to INSERT INTO Configuration VALUES(&apos;DatabaseVersion&apos;,&apos;1&apos;,&apos;2&apos;,&apos;Wersja bazy danych&apos;);
+        ///INSERT INTO Configuration VALUES(&apos;IsFirstRun&apos;,&apos;1&apos;,&apos;True&apos;,&apos;Czy jest to pierwsze uruchomienie aplikacji&apos;);
         ///
-        ///CREATE TABLE [BudgetCalculatorItem] (
-        ///  [Id]  INTEGER PRIMARY KEY AUTOINCREMENT,
-        ///  [Name] VARCHAR(250),
-        ///  [ValueType] VARCHAR(500),
-        ///  [OperatorType] VARCHAR(500),
-        ///  [ForeignId] INTEGER,
-        ///  [Value] NUMERIC
+        ///INSERT INTO CashFlowGroup VALUES(1,&apos;Dom&apos;,&apos;Wszystkie wydatki związane z domem&apos;,&apos;0&apos;,2);
+        ///INSERT INTO CashFlowGroup VALUES(2,&apos;Oszczędności&apos;,NULL,&apos;1&apos;,11);
+        ///INSERT INTO CashFlowGroup VALUES(3,&apos;Osobiste&apos;,&apos;Nasze ubrania, usługi, kosmetyki, kieszonkowe&apos;,&apos;0&apos;,3);
+        ///INSERT INTO CashFlowGroup VALUES(4,&apos;Dzieci&apos;,&apos;Ubranka, pielęgnacja, [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string db_init {
+            get {
+                return ResourceManager.GetString("db_init", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to DROP TABLE IF EXISTS [Configuration];
+        ///CREATE TABLE [Configuration] (
+        ///  [Key] VARCHAR(64) PRIMARY KEY, 
+        ///  [IsActive] INTEGER(1) DEFAULT 1,
+        ///  [Value] TEXT,
+        ///  [Decription] TEXT
         ///);
         ///
-        ///UPDATE [Configuration] SET [Value] = 2
-        ///WHERE [Key] = &apos;DatabaseVersion&apos;;.
+        ///DROP TABLE IF EXISTS [Budget];
+        ///CREATE TABLE [Budget] (
+        ///  [Id] INTEGER PRIMARY KEY AUTOINCREMENT, 
+        ///  [DateFrom] DATETIME, 
+        ///  [DateTo] DATETIME,
+        ///  [TransferedValue] NUMERIC);
+        ///
+        ///DROP TABLE IF EXISTS [BudgetPlan];
+        ///CREATE TABLE [BudgetPlan] (
+        ///  [Id]  INTEGER PRIMARY KEY AUTOINCREMENT,   
+        ///  [BudgetId] INTEGER NOT NULL,
+        ///  [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string db_schema {
+            get {
+                return ResourceManager.GetString("db_schema", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to DROP TABLE IF EXISTS [BudgetCalculatorItem];
+        ///CREATE TABLE [BudgetCalculatorItem] (
+        ///  [Id]  INTEGER PRIMARY KEY AUTOINCREMENT,
+        ///  [BudgetCalculatorEquationId] INTEGER NOT NULL,
+        ///  [Name] VARCHAR(250),  
+        ///  [ValueTypeName] VARCHAR(500),
+        ///  [OperatorTypeName] VARCHAR(500),
+        ///  [ForeignId] INTEGER,
+        ///  [Value] NUMERIC,
+        ///  [Text] VARCHAR(250),
+        ///  [Position] INTEGER DEFAULT 0
+        ///);
+        ///
+        ///DROP TABLE IF EXISTS [BudgetCalculatorEquation];
+        ///CREATE TABLE [BudgetCalculatorEquation] (
+        ///  [Id]  INTEGER PRIMARY KEY AUTOINCREME [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string db_update_v002 {
             get {
                 return ResourceManager.GetString("db_update_v002", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Program Domowy Budżet jest  własnością autora: Wojciech Pietkiewicz &lt;domowe-wydatki@pietkiewicz.pl&gt;
+        ///            
+        ///Program Domowy Budżet jest darmowy i może być użytkowany, kopiowany i przekazywany dalej, jeśli spełnione są następujące warunki: 
+        ///1. Program może być używany prywatnie i zawodowo bez ograniczeń. Nie może być jednakże sprzedawany i nie może być dołączany do innych pakietów oprogramowania bez uzyskania zgody autora.
+        ///2. Program może być umieszczany na bezpłatnych stronach interetowych do pobran [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string Licence {
+            get {
+                return ResourceManager.GetString("Licence", resourceCulture);
             }
         }
     }

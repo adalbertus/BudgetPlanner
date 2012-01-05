@@ -2,6 +2,7 @@
 using System.Linq;
 using Caliburn.Micro;
 using Adalbertus.BudgetPlanner.Core;
+using Adalbertus.BudgetPlanner.Extensions;
 using Adalbertus.BudgetPlanner.Database;
 using Adalbertus.BudgetPlanner.Models;
 using System.Collections.Generic;
@@ -11,11 +12,14 @@ using System.Text;
 using System.Reflection;
 using System.Diagnostics;
 using System.IO;
+using System.Threading.Tasks;
+using System.Timers;
 
 namespace Adalbertus.BudgetPlanner.ViewModels
 {
     public class ShellViewModel : Conductor<IScreen>, IShellViewModel, IHandle<RefreshEvent>
     {
+        private Timer _timer;
         private object _dialogScreen;
         public object DialogScreen
         {
@@ -33,6 +37,8 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         public ICachedService CachedService { get; private set; }
         public ShellViewModel(IDatabase database, IEventAggregator eventAggregator, IConfigurationManager configurationManager, ICachedService cachedService)
         {
+            SQLiteHelper.CreateDefaultDatabase();
+
             Database = database;
             CachedService = cachedService;
             EventAggregator = eventAggregator;
@@ -40,17 +46,20 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             CurrentBudgetDate = DateTime.Now;
             DisplayName = "Domowy Budżet";
             EventAggregator.Subscribe(this);
-            SQLiteHelper.CreateDefaultDatabase();
-#if DEBUG
-            //CreateDefaultData();
-#endif
+            int updateIntervalMinutes = ConfigurationManager.GetValueOrDefault(ConfigurationKeys.UpdateMinutesInterval, 15);
+            _timer = new Timer(updateIntervalMinutes * 60 * 1000);
+            _timer.Elapsed += delegate
+            {
+                CheckForUpdates(false);   
+            };
+            CanCheckForUpdates = true;
         }
 
         public Budget CurrentBudget { get; set; }
 
         public string Version
         {
-            get { return GetVersion(); }
+            get { return Updater.CurrentVersion; }
         }
 
         private DateTime _currentBudgetDate;
@@ -62,12 +71,6 @@ namespace Adalbertus.BudgetPlanner.ViewModels
                 _currentBudgetDate = value;
                 NotifyOfPropertyChange(() => CurrentBudgetDate);
             }
-        }
-
-        private string GetVersion()
-        {
-            var version = Assembly.GetExecutingAssembly().GetName().Version;
-            return string.Format("{0}.{1}.{2}", version.Major, version.Minor, version.Build);
         }
 
         public void ShowCurrentBudget()
@@ -85,13 +88,11 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         public void ShowPreviousBudget()
         {
             CurrentBudgetDate = CurrentBudgetDate.AddMonths(-1);
-            //ShowCurrentBudget();
         }
 
         public void ShowNextBudget()
         {
             CurrentBudgetDate = CurrentBudgetDate.AddMonths(1);
-            //ShowCurrentBudget();
         }
 
         public void ShowCashFlowTypes()
@@ -128,43 +129,88 @@ namespace Adalbertus.BudgetPlanner.ViewModels
                 var message = new StringBuilder();
                 message.AppendLine("Witaj w programie Domowy Budżet");
                 message.AppendLine();
+                message.AppendLine("W pierwszej kolejności wprowadź dane dotyczące źródeł dochodów");
+                message.AppendLine("oraz ewentualnych kont oszczędnościowych itp. Aby to zrobić");
+                message.AppendLine("kliknij na przycisk 'Środki zewnętrzne' na górze ekranu.");
+                message.AppendLine();
                 message.AppendLine("Aby dowiedzieć się jak korzystać z programu kliknij na");
                 message.AppendLine("ikonkę pomocy umieszczoną w prawym górnym rogu ekranu.");
                 ShowMessage(message.ToString());
                 ConfigurationManager.SaveValue(ConfigurationKeys.IsFirstRun, false);
             }
+
+            CheckForUpdates(false);
+        }
+
+        private bool _canCheckForUpdates;
+        public bool CanCheckForUpdates
+        {
+            get { return _canCheckForUpdates; }
+            set
+            {
+                _canCheckForUpdates = value;
+                NotifyOfPropertyChange(() => CanCheckForUpdates);
+            }
+        }
+
+        public void CheckForUpdates(bool showValidVersionMessage)
+        {
+            _timer.Stop();
+            if (showValidVersionMessage)
+            {
+                CanCheckForUpdates = false;
+            }
+            Task.Factory.StartNew(() =>
+                {
+                    if (Updater.CheckForNewVersion(ConfigurationManager.GetValueOrDefault<string>(ConfigurationKeys.UpdatePage, string.Empty)))
+                    {
+                        ShowDialog<DownloadAndUpgradeViewModel>(() => UpdateApplication(), () => CanCheckForUpdates = true);
+                    }
+                    else
+                    {
+                        if (showValidVersionMessage)
+                        {
+                            ShowMessage("Wersja aplikacji jest aktualna", () => _timer.Start());
+                            CanCheckForUpdates = true;
+                        }
+                        else
+                        {
+                            _timer.Start();
+                        }
+                    }
+                });            
+        }
+
+        private void UpdateApplication()
+        {
+            Updater.RunUpdateAndExit();
         }
 
         public void ShowHelp()
         {
+            var helpPage = ConfigurationManager.GetValueOrDefault<string>(ConfigurationKeys.HelpPage);
+            if (helpPage.IsNullOrWhiteSpace())
+            {
+                ShowMessage("Nie mogę odnaleźć adresu strony WWW z pomocą.\r\nSpróbuj skontaktować się z Twórcą aplikacji.",
+                    null, null, MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
             var message = new StringBuilder();
             message.AppendLine("W tej chwili jedyna dostępna pomoc to filmik pokazujący jak używać aplikacji.");
             message.AppendLine();
             message.AppendLine("Po kliknięciu przycisku OK zostanie otwarta przeglądarka z filmikiem");
-            ShowMessage(message.ToString(), RunFlashHelp, null, MessageBoxButton.OK, MessageBoxImage.Information);
-        }
-
-        private void RunFlashHelp()
-        {
-            var helpFile = @"Help\Domowy budżet.htm";
-            if (File.Exists(helpFile))
-            {
-                Process.Start(helpFile);
-            }
-            else
-            {
-                Microsoft.Windows.Controls.MessageBox.Show(string.Format("Nie udało się odnaleźć pliku z pomocą: {0}", helpFile), "Brak pliku", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            ShowMessage(message.ToString(), () => Process.Start(helpPage), null, MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         public void ShowAbout()
         {
-
             var message = new StringBuilder();
             message.AppendLine("Domowy Budżet - program do budżetowania gospodarstwa domowego.");
-            message.AppendLine(string.Format("Wersja: {0}", GetVersion()));
+            message.AppendLine(string.Format("Wersja: {0}", Updater.CurrentVersion));
             message.AppendLine();
-            message.AppendLine("Program Domowy Budżet jest  własnością autora: Wojciech Pietkiewicz <domowe-wydatki@pietkiewicz.pl>");
+            message.AppendLine(string.Format("Program Domowy Budżet jest  własnością autora: Wojciech Pietkiewicz <{0}>", ConfigurationManager.GetValueOrDefault<string>(ConfigurationKeys.AuthorEmail)));
+            message.AppendLine(string.Format("Strona WWW: {0}", ConfigurationManager.GetValueOrDefault<string>(ConfigurationKeys.HomePage)));
             message.AppendLine();
             message.AppendLine("Program Domowy Budżet jest darmowy i może być użytkowany, kopiowany i przekazywany dalej, jeśli spełnione są następujące warunki: ");
             message.AppendLine("1. Program może być używany prywatnie i zawodowo bez ograniczeń. Nie może być jednakże sprzedawany i nie może być dołączany do innych pakietów oprogramowania bez uzyskania zgody autora.");
@@ -181,7 +227,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         private bool DatabaseVerification()
         {
             var dbHelper = new DatabaseBackupHelper();
-            int applicationDatabaseVersion = 2;
+            int applicationDatabaseVersion = 1;
             int currentDatabaseVersion = ConfigurationManager.GetValueOrDefault<int>(ConfigurationKeys.DatabaseVersion);
 
             if (currentDatabaseVersion == applicationDatabaseVersion)

@@ -6,7 +6,17 @@
              xmlns:cal="http://www.caliburnproject.org"
              xmlns:ctrl="clr-namespace:Adalbertus.BudgetPlanner.Controls"
              xmlns:extToolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit/extended"
+             xmlns:dd="clr-namespace:GongSolutions.Wpf.DragDrop;assembly=GongSolutions.Wpf.DragDrop"
 >
+    <UserControl.Resources>
+        <DataTemplate x:Key="DragAdornerTemplate">
+            <Border BorderBrush="Black" Background="{StaticResource BackgroundGradientBrush}" 
+                    BorderThickness="1" CornerRadius="4" Padding="10,4,10,4">
+                <TextBlock Text="{Binding Name}" />
+            </Border>
+        </DataTemplate>
+        
+    </UserControl.Resources>
     <UniformGrid Columns="2">
         <GroupBox Header="Kategorie wydatków">
             <Grid>
@@ -55,7 +65,9 @@
                 <DataGrid Grid.Row="1" ItemsSource="{Binding CashFlows}"
                           VerticalScrollBarVisibility="Auto" RowHeaderWidth="0"
                           HorizontalScrollBarVisibility="Auto"
-                          AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False">
+                          AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False"
+                          dd:DragDrop.IsDragSource="True" dd:DragDrop.IsDropTarget="True"
+                          dd:DragDrop.DropHandler="{Binding}" dd:DragDrop.DragAdornerTemplate="{StaticResource DragAdornerTemplate}">
                     <DataGrid.Columns>
                         <DataGridTemplateColumn Width="26">
                             <DataGridTemplateColumn.CellTemplate>
@@ -67,7 +79,7 @@
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
-                        <DataGridTemplateColumn Header="Nazwa" Width="100">
+                        <DataGridTemplateColumn Header="Nazwa" SortMemberPath="Name" Width="*">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                         <extToolkit:WatermarkTextBox x:Name="TextBox" Text="{Binding Name, UpdateSourceTrigger=LostFocus}"
@@ -75,7 +87,7 @@
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
-                        <DataGridTemplateColumn Header="Opis" Width="200">
+                        <DataGridTemplateColumn Header="Opis" SortMemberPath="Description" Width="200">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                         <extToolkit:WatermarkTextBox x:Name="TextBox" Text="{Binding Description, UpdateSourceTrigger=LostFocus}"
@@ -83,7 +95,7 @@
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
-                        <DataGridTemplateColumn Header="Grupa" Width="150">
+                        <DataGridTemplateColumn Header="Grupa" SortMemberPath="Group.Name" Width="150">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                         <ctrl:AutoCompleteBox x:Name="CashFlowGroupsCB" IsReadOnly="{Binding IsReadOnly}"
@@ -93,6 +105,26 @@
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="Przypisanie" Width="Auto" IsReadOnly="True" Selector.IsSelected="False"
+                                                CanUserReorder="False" CanUserResize="False">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Grid Cursor="Hand" Background="Transparent" ToolTip="Przenieś i upuść na grupie aby do niej przypisać"
+                                          HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                        <Image Source="/Adalbertus.BudgetPlanner;component/Images/arrow-move.png" 
+                                               Width="16" Height="16"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Grid>
+                                    <!--<WrapPanel>
+                                        <ctrl:ImageButton ImageUrl="Images/arrow-up.png" ToolTip="Przesuń w górę"
+                                                          cal:Message.Attach="[Event Click] = [Action MoveCashFlowGroupUp($dataContext)]" />
+                                        <ctrl:ImageButton ImageUrl="Images/arrow-down.png" ToolTip="Przesuń w dół"
+                                                          cal:Message.Attach="[Event Click] = [Action MoveCashFlowGroupDown($dataContext)]" />
+                                    </WrapPanel>-->
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
                     </DataGrid.Columns>
                 </DataGrid>
             </Grid>
@@ -136,7 +168,9 @@
                 </Grid>
                 <DataGrid  Grid.Row="1" ItemsSource="{Binding CashFlowGroups}" AutoGenerateColumns="False"
                            CanUserAddRows="False" CanUserDeleteRows="False" RowHeaderWidth="0"
-                           VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                           VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"                           
+                           dd:DragDrop.IsDragSource="True" dd:DragDrop.IsDropTarget="True"
+                           dd:DragDrop.DropHandler="{Binding}" dd:DragDrop.DragAdornerTemplate="{StaticResource DragAdornerTemplate}">
                     <DataGrid.Columns>
                         <DataGridTemplateColumn Width="26">
                             <DataGridTemplateColumn.CellTemplate>
@@ -164,15 +198,22 @@
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
-                        <DataGridTemplateColumn Header="Pozycja" Width="Auto" CanUserReorder="False" CanUserResize="False">
+                        <DataGridTemplateColumn Header="Pozycja" Width="Auto" IsReadOnly="True" Selector.IsSelected="False"
+                                                CanUserReorder="False" CanUserResize="False">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <WrapPanel>
+                                    <Grid Cursor="Hand" Background="Transparent" ToolTip="Przenieść i upuść aby zmienić kolejność"
+                                          HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                        <Image Source="/Adalbertus.BudgetPlanner;component/Images/arrow-move.png" 
+                                               Width="16" Height="16"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Grid>
+                                    <!--<WrapPanel>
                                         <ctrl:ImageButton ImageUrl="Images/arrow-up.png" ToolTip="Przesuń w górę"
                                                           cal:Message.Attach="[Event Click] = [Action MoveCashFlowGroupUp($dataContext)]" />
                                         <ctrl:ImageButton ImageUrl="Images/arrow-down.png" ToolTip="Przesuń w dół"
                                                           cal:Message.Attach="[Event Click] = [Action MoveCashFlowGroupDown($dataContext)]" />
-                                    </WrapPanel>
+                                    </WrapPanel>-->
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>

@@ -6,8 +6,6 @@ CREATE TABLE [Configuration] (
   [Decription] TEXT
 );
 
-INSERT INTO [Configuration] ([Key], [IsActive], [Value], [Decription]) VALUES ('DatabaseVersion', 1, '2', 'Wersja bazy danych');
-
 DROP TABLE IF EXISTS [Budget];
 CREATE TABLE [Budget] (
   [Id] INTEGER PRIMARY KEY AUTOINCREMENT, 

@@ -11,6 +11,11 @@ namespace Adalbertus.BudgetPlanner.Core
     {
         public const string DatabaseVersion = "DatabaseVersion";
         public const string IsFirstRun = "IsFirstRun";
+        public const string AuthorEmail = "AuthorEmail";
+        public const string HomePage = "HomePage";
+        public const string HelpPage = "HelpPage";
+        public const string UpdatePage = "UpdatePage";
+        public const string UpdateMinutesInterval = "UpdateMinutesInterval";
     }
 
     public class ConfigurationManager : Dictionary<string, Configuration>, IConfigurationManager

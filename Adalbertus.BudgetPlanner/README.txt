@@ -1,4 +1,5 @@
-﻿Screencast: http://www.debugmode.com/wink/
+﻿0.9.6
+Screencast: http://www.debugmode.com/wink/
 
 Instalator: http://nsis.sourceforge.net/ + https://github.com/ProjectHuman/NsisDotNetChecker
 Ikonki: http://www.iconfinder.com/search/?q=iconset%3Aspirit20

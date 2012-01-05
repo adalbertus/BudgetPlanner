@@ -183,7 +183,9 @@
 
                 <GroupBox Grid.Column="1" Header="Obliczenia" VerticalAlignment="Stretch">
                     <Grid>
-                        <ListView ItemsSource="{Binding BudgetEquations}" FontSize="10" Margin="0" Padding="0" BorderThickness="0">
+                        <ListView ItemsSource="{Binding BudgetEquations}" FontSize="10" Margin="0" Padding="0" BorderThickness="0"
+                                  ext:DataGridExtensions.IsColumnAutoSizeEnabled="True"
+                                  >
                             <ListView.Resources>
                                 <Style TargetType="ListViewItem">
                                     <Setter Property="HorizontalContentAlignment" Value="Stretch" />
@@ -199,7 +201,7 @@
                             </ListView.Resources>
                             <ListView.View>
                                 <GridView>
-                                    <GridViewColumn Header="Typ" DisplayMemberBinding="{Binding Name}" Width="Auto" />
+                                    <GridViewColumn Header="Typ" DisplayMemberBinding="{Binding Name, NotifyOnTargetUpdated=True}" Width="Auto" />
                                     <GridViewColumn Header="Opis" Width="Auto" CellTemplate="{StaticResource CalculatorValueTemplate}"/>
                                 </GridView>
                             </ListView.View>

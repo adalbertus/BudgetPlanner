@@ -126,8 +126,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
 
         public void RemoveSaving(Saving saving)
         {
-            Delete(saving);
-            CachedService.Clear(CachedServiceKeys.AllSavings);
+            DeleteSaving(saving);
             LoadSavingsData();
         }
 
@@ -151,6 +150,18 @@ namespace Adalbertus.BudgetPlanner.ViewModels
                 CachedService.Clear(CachedServiceKeys.AllSavings);
             }
             LoadSavingsData();
+        }
+
+        private void DeleteSaving(Saving saving)
+        {
+            using (var tx = Database.GetTransaction())
+            {
+                Database.Delete(saving.CashFlow);
+                Database.Delete(saving);
+                tx.Complete();
+                CachedService.Clear(CachedServiceKeys.AllSavings);
+                CachedService.Clear(CachedServiceKeys.AllCashFlows);
+            }
         }
 
         private CashFlow GetSavingCashFlow(Entity entity)

@@ -58,7 +58,11 @@
                     <WrapPanel Margin="0,2,4,0" Orientation="Vertical"
                                HorizontalAlignment="Right" VerticalAlignment="Top">
                         <WrapPanel>
-                        <ctrl:ImageButton ImageUrl="Images/system-question.png" ToolTip="Pomoc"
+                            <ctrl:ImageButton ImageUrl="Images/system-software-update-small.png" ToolTip="Sprawdź aktualizacje"
+                                          HorizontalAlignment="Right" FontSize="10"
+                                          cal:Message.Attach="[Event Click] = [Action CheckForUpdates('true')]" />
+
+                            <ctrl:ImageButton ImageUrl="Images/system-question.png" ToolTip="Pomoc"
                                           HorizontalAlignment="Right" FontSize="10"
                                           cal:Message.Attach="[Event Click] = [Action ShowHelp()]" />
 
@@ -71,7 +75,7 @@
                 </Grid>
             </Border>
             <Rectangle Style="{StaticResource OverlayRectangle}"
-                       Visibility="{Binding DialogScreen, Converter={StaticResource NullToCollapsed}}" />
+                       Visibility="{Binding DialogScreen, Converter={StaticResource EmptyToCollapsed}}" />
         </Grid>
 
         <Border Grid.Row="1" BorderBrush="AliceBlue" BorderThickness="0,1,0,0">
@@ -88,7 +92,7 @@
                 <ContentControl x:Name="ActiveItem" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                                 />
                 <Rectangle Style="{StaticResource OverlayRectangle}"
-                           Visibility="{Binding DialogScreen, Converter={StaticResource NullToCollapsed}}" />
+                           Visibility="{Binding DialogScreen, Converter={StaticResource EmptyToCollapsed}}" />
             </Grid>
         </Border>
 
@@ -101,7 +105,7 @@
             </StackPanel>
         </Border>
         <ContentControl Grid.Row="0" Grid.RowSpan="2" x:Name="DialogScreen" HorizontalAlignment="Center" VerticalAlignment="Center"
-                        Visibility="{Binding DialogScreen, Converter={StaticResource NullToCollapsed}}">
+                        Visibility="{Binding DialogScreen, Converter={StaticResource EmptyToCollapsed}}">
             <ContentControl.Template>
                 <ControlTemplate TargetType="ContentControl">
                     <Grid>

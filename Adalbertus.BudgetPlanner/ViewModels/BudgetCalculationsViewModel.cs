@@ -9,10 +9,12 @@ using Adalbertus.BudgetPlanner.Models;
 using Adalbertus.BudgetPlanner.Extensions;
 using ILCalc;
 using Microsoft.Windows.Controls;
+using GongSolutions.Wpf.DragDrop;
+using System.Windows;
 
 namespace Adalbertus.BudgetPlanner.ViewModels
 {
-    public class BudgetCalculationsViewModel : BaseViewModel, IHandle<WizardEvent<BudgetEquationWizardVM>>
+    public class BudgetCalculationsViewModel : BaseViewModel, IHandle<WizardEvent<BudgetEquationWizardVM>>, IDropTarget
     {
         public BudgetCalculationsViewModel(IShellViewModel shell, IDatabase database, IConfigurationManager configuration, ICachedService cashedService, IEventAggregator eventAggregator)
             : base(shell, database, configuration, cashedService, eventAggregator)
@@ -156,7 +158,13 @@ namespace Adalbertus.BudgetPlanner.ViewModels
 
         public void Create()
         {
-            EquationToEdit = new BudgetCalculatorEquation { IsVisible = true };
+            int maxPosition = 1;
+            if (Database.Count<BudgetCalculatorEquation>() > 0)
+            {
+                maxPosition = Database.ExecuteScalar<int>("SELECT MAX(Position) FROM BudgetCalculatorEquation");
+            }
+
+            EquationToEdit = new BudgetCalculatorEquation { IsVisible = true, Position = maxPosition };
             ShowWizard();
         }
 
@@ -285,5 +293,67 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         }
 
         #endregion
+
+        #region IDropTarget Members
+
+        public void DragOver(IDropInfo dropInfo)
+        {
+            var source = dropInfo.Data as BudgetCalculatorEquation;
+            var target = dropInfo.TargetItem as BudgetCalculatorEquation;
+
+            if (source != null && target != null)
+            {
+                dropInfo.DropTargetAdorner = DropTargetAdorners.Insert;
+                dropInfo.Effects = DragDropEffects.Move;
+            }
+        }
+
+        public void Drop(IDropInfo dropInfo)
+        {
+            var source = dropInfo.Data as BudgetCalculatorEquation;
+            var target = dropInfo.TargetItem as BudgetCalculatorEquation;
+
+            if (source != null && target != null)
+            {
+                ReorderCashFlowGroup(source, dropInfo.InsertIndex);
+            }
+        }
+
+        #endregion
+
+        private void ReorderCashFlowGroup(BudgetCalculatorEquation itemToReorder, int placeAtIndex)
+        {
+            //var itemsCopy = Equations.ToList();
+            var itemToReorderIndex = Equations.IndexOf(itemToReorder);
+            if (itemToReorderIndex < 0 || itemToReorderIndex == placeAtIndex)
+            {
+                return;
+            }
+            Equations.IsNotifying = false;           
+            SuppressEvent = true;
+            
+            Equations.Insert(placeAtIndex, itemToReorder);
+            if (placeAtIndex > itemToReorderIndex)
+            {
+                Equations.RemoveAt(itemToReorderIndex);
+            }
+            else
+            {
+                Equations.RemoveAt(itemToReorderIndex + 1);
+            }
+            int position = 1;
+            Equations.ForEach(x => x.Position = position++);
+            using (var tx = Database.GetTransaction())
+            {
+                Database.SaveAll(Equations);
+                tx.Complete();
+            }
+            Equations.IsNotifying = true;
+
+            Equations.Refresh();
+            NotifyOfPropertyChange(() => AvaiableEquations);            
+            CachedService.Clear(CachedServiceKeys.AllEquations);
+            SuppressEvent = false;
+        }
     }
 }

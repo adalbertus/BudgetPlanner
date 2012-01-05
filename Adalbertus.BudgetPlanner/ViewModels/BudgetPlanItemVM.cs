@@ -36,6 +36,14 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             }
         }
 
+        public IEnumerable<Expense> ToolTipExpenses
+        {
+            get
+            {
+                return Budget.Expenses.Where(x => x.CashFlowId == CashFlow.Id).ToList();
+            }
+        }
+
         private decimal? _newValue;
         public decimal? NewValue
         {

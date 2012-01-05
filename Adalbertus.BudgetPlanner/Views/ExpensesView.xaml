@@ -12,19 +12,16 @@
              KeyboardNavigation.TabNavigation="Local"
 >
     <UserControl.Resources>
-        <CollectionViewSource x:Key="budgetExpenses" Source="{Binding BudgetExpenses}"
-                              
-                              >
-        </CollectionViewSource>
-        
         <Style TargetType="{x:Type Expander}" BasedOn="{StaticResource {x:Type Expander}}">
             <Style.Triggers>
                 <DataTrigger Binding="{Binding IsExpensesFiltered}" Value="True">
                     <Setter Property="BorderBrush" Value="OrangeRed" />
                     <Setter Property="BorderThickness" Value="1" />
+                    <Setter Property="Background" Value="{StaticResource RedGradientVertical}" />
                 </DataTrigger>
             </Style.Triggers>
         </Style>
+
 
         <DataTemplate x:Key="ExpensesCalculatorTemplate">
             <Grid>
@@ -62,16 +59,36 @@
         <Expander Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,4,0,4" 
                   KeyboardNavigation.TabNavigation="Local">
             <Expander.Header>
-                <WrapPanel ext:MarginSetterExtension.Margin="2">
-                    <TextBlock>Filtrowanie</TextBlock>
-                    <CheckBox IsChecked="{Binding IsFilteringEnabled}" Content="Włącz filtrowanie" Visibility="Collapsed" />
-                </WrapPanel>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <WrapPanel ext:MarginSetterExtension.Margin="2" Grid.Column="0" VerticalAlignment="Center">
+                        <TextBlock>Filtrowanie</TextBlock>
+                        <CheckBox IsChecked="{Binding IsFilteringEnabled}" Content="Włącz filtrowanie" Visibility="Collapsed" />
+                    </WrapPanel>
+                    <WrapPanel Orientation="Vertical" Grid.Column="1" HorizontalAlignment="Right">
+                        <WrapPanel ext:MarginSetterExtension.Margin="2,0" HorizontalAlignment="Right">
+                            <TextBlock Text="Łączna widoczna kwota" FontSize="10"/>
+                            <TextBlock Text="{Binding TotalExpensesValue,Converter={StaticResource CurrencyFormatter}}"
+                                       FontSize="10"/>
+                        </WrapPanel>
+                        <WrapPanel ext:MarginSetterExtension.Margin="2,0" HorizontalAlignment="Right"
+                                   Visibility="{Binding IsExpensesFiltered, Converter={StaticResource Visibility}}">
+                            <TextBlock Text="Widocznych pozycji" FontSize="10"/>
+                            <TextBlock Text="{Binding BudgetExpensesFilteredCount}" FontSize="10"/>
+                            <TextBlock Text="z" FontSize="10"/>
+                            <TextBlock Text="{Binding BudgetExpensesTotalCount}" FontSize="10"/>
+                        </WrapPanel>
+                    </WrapPanel>
+                </Grid>
             </Expander.Header>
             <ContentControl x:Name="ExpensesFilteringViewModel" />
         </Expander>
 
         <DataGrid Grid.Row="1" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                  ItemsSource="{Binding Source={StaticResource budgetExpenses}}"
+                  ItemsSource="{Binding BudgetExpenses}"
                   ext:DataGridExtensions.ScrollToItem="{Binding ScrollToExpense}"
                   CanUserAddRows="False" CanUserDeleteRows="False"
                   ScrollViewer.CanContentScroll="True" 
@@ -80,7 +97,7 @@
                 <DataGridTemplateColumn CanUserReorder="False" CanUserResize="False" Width="25">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                                <ctrl:ImageButton ToolTip="Usuń" ImageUrl="Images/delete.png"
+                            <ctrl:ImageButton ToolTip="Usuń" ImageUrl="Images/delete.png"
                                                   cal:Message.Attach="[Event Click] = [Action RemoveExpense($dataContext)]" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
@@ -109,21 +126,12 @@
                     <DataGridTemplateColumn.CellEditingTemplate>
                         <DataTemplate>
                             <DatePicker SelectedDate="{Binding Date, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                        SelectedDateFormat="Long" BorderThickness="0"/>
+                                        SelectedDateFormat="Long" BorderThickness="0"
+                                        DisplayDateStart="{Binding Budget.DateFrom}" DisplayDateEnd="{Binding Budget.DateTo}"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellEditingTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTemplateColumn SortMemberPath="Value" Width="100" >
-                    <DataGridTemplateColumn.Header>
-                        <WrapPanel Orientation="Vertical">
-                            <TextBlock>Kwota</TextBlock>
-                            <WrapPanel ToolTip="Kwota łączna">
-                                <TextBlock Text="(" />
-                                <TextBlock Text="{Binding DataContext.TotalExpensesValue, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}, Converter={StaticResource CurrencyFormatter}}" />
-                                <TextBlock Text=")" />
-                            </WrapPanel>
-                        </WrapPanel>
-                    </DataGridTemplateColumn.Header>
+                <DataGridTemplateColumn SortMemberPath="Value" Width="100" Header="Kwota">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding Value, Converter={StaticResource CurrencyFormatter}}"
@@ -143,61 +151,73 @@
             </DataGrid.Columns>
         </DataGrid>
 
-        <Border Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-            <StackPanel Margin="4">
-                <Label>Kategoria</Label>
-                <ctrl:AutoCompleteBox ItemsSource="{Binding CashFlows}" Watermark="Wpisz nazwę kategorii"
+        <GroupBox Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                  Header="Wstaw wydatek" Margin="4,0">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                
+                
+                <TextBlock Grid.Row="0" Text="Kategoria" Margin="0,0,4,4"/>
+                <ctrl:AutoCompleteBox Grid.Row="1" ItemsSource="{Binding CashFlows}" Watermark="Wpisz nazwę kategorii"
                                       SelectedItem="{Binding SelectedExpenseCashFlow}" Focusable="True"
                                       CanBeEmpty="False">
-
                     <i:Interaction.Triggers>
                         <ext:KeyTrigger Key="Enter" FocusTarget="{Binding ElementName=ExpenseValueControl}">
                         </ext:KeyTrigger>
                     </i:Interaction.Triggers>
                 </ctrl:AutoCompleteBox>
 
-                <Label>Data</Label>
-                <DatePicker x:Name="ExpenseDate" SelectedDate="{Binding SelectedExpenseDate}" 
-                            SelectedDateFormat="Long">
+                <TextBlock Grid.Row="2" Text="Data" Margin="0,8,4,4"/>
+                <DatePicker Grid.Row="3" x:Name="ExpenseDate" SelectedDate="{Binding SelectedExpenseDate}" 
+                            SelectedDateFormat="Long" DisplayDateStart="{Binding Budget.DateFrom}"
+                            DisplayDateEnd="{Binding Budget.DateTo}">
                     <i:Interaction.Triggers>
                         <ext:KeyTrigger Key="Enter" FocusTarget="{Binding ElementName=ExpenseValueControl}">
                         </ext:KeyTrigger>
                     </i:Interaction.Triggers>
                 </DatePicker>
 
-                <Label>Kwota</Label>
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <ctrl:CalculatorTextBox x:Name="ExpenseValueControl" Value="{Binding ExpenseValue}"
-                                     VerticalAlignment="Stretch" Grid.Column="0"
+                <TextBlock Grid.Row="4" Text="Kwota" Margin="0,8,4,4"/>
+                <ctrl:CalculatorTextBox Grid.Row="5" x:Name="ExpenseValueControl" Value="{Binding ExpenseValue}"
+                                     VerticalAlignment="Stretch" Watermark="Wstaw kwotę"
                                      ext:FocusExtension.IsFocused="{Binding IsExpenseValueFocused}"
                                      ToolTip="Dopuszczalne są też wyrażenia matematyczne, np.: (250-3*3,56)+10">
 
-                        <i:Interaction.Triggers>
-                            <ext:KeyTrigger Key="Enter" Modifiers="Control">
-                                <cal:ActionMessage MethodName="AddAndMoveToExpenseValue" />
-                            </ext:KeyTrigger>
-                            <ext:KeyTrigger Key="Enter" FocusTarget="{Binding ElementName=ExpenseDescription}">
-                            </ext:KeyTrigger>
-                        </i:Interaction.Triggers>
-                    </ctrl:CalculatorTextBox>
-                </Grid>
+                    <i:Interaction.Triggers>
+                        <ext:KeyTrigger Key="Enter" Modifiers="Control">
+                            <cal:ActionMessage MethodName="AddAndMoveToExpenseValue" />
+                        </ext:KeyTrigger>
+                        <ext:KeyTrigger Key="Enter" FocusTarget="{Binding ElementName=ExpenseDescription}">
+                        </ext:KeyTrigger>
+                    </i:Interaction.Triggers>
+                </ctrl:CalculatorTextBox>
 
-                <Label>Opis</Label>
-                <extToolkit:WatermarkTextBox Name="ExpenseDescription" Text="{Binding ExpenseDescription, UpdateSourceTrigger=PropertyChanged}"
+                <TextBlock Grid.Row="6" Text="Opis" Margin="0,8,4,4"/>
+                <extToolkit:WatermarkTextBox Grid.Row="7" Name="ExpenseDescription" Text="{Binding ExpenseDescription, UpdateSourceTrigger=PropertyChanged}"
                                              VerticalAlignment="Stretch"
-                                             Watermark="Opis dodawanego wydatku">
+                                             Watermark="Opis">
                     <i:Interaction.Triggers>
                         <ext:KeyTrigger Key="Enter">
                             <cal:ActionMessage MethodName="AddAndMoveToExpenseValue" />
                         </ext:KeyTrigger>
                     </i:Interaction.Triggers>
                 </extToolkit:WatermarkTextBox>
-                <ctrl:ImageButton Content="Wstaw" ImageUrl="Images/basket-add.png" cal:Message.Attach="[Event Click] = [Action AddExpense()]" />
-            </StackPanel>
-        </Border>
+
+                <ctrl:ImageButton Grid.Row="8" Content="Wstaw" Margin="0,8,0,4"
+                                  ImageUrl="Images/basket-add.png" cal:Message.Attach="[Event Click] = [Action AddExpense()]" />                
+            </Grid>
+            </ScrollViewer>
+        </GroupBox>
     </Grid>
 </UserControl>

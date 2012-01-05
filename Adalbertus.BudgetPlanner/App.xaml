@@ -20,7 +20,8 @@
                     <conv:CompareConverter x:Key="LessThan" CompareType="LessThan" />
                     <conv:IsNullConverter x:Key="IsNull"/>
                     <conv:NotConverter x:Key="Not"/>
-                    <conv:NullToCollapsedConverter x:Key="NullToCollapsed" />
+                    <conv:EmptyToCollapsed x:Key="EmptyToCollapsed" />
+                    <conv:EmptyToCollapsed x:Key="NotEmptyToCollapsed" IsResultInverted="True" />
                     <conv:IsEmptyConverter x:Key="IsEmpty" />
 
                 </ResourceDictionary>

@@ -79,7 +79,7 @@
                 </DataGrid>
             </GroupBox>
             <DataTemplate.Triggers>
-                <DataTrigger Binding="{Binding Values, Converter={StaticResource IsEmpty}}" Value="True">
+                <DataTrigger Binding="{Binding Values, Converter={StaticResource IsEmpty}}" Value="False">
                     <Setter TargetName="RemoveSavingButton" Property="IsEnabled" Value="False" />
                 </DataTrigger>
             </DataTemplate.Triggers>

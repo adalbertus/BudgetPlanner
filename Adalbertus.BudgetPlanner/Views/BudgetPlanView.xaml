@@ -46,7 +46,8 @@
 
         <!-- Template for grouped data -->
         <HierarchicalDataTemplate DataType="{x:Type vm:BudgetPlanGroupItemVM}" ItemsSource="{Binding Items}">
-            <Grid>
+            <Grid Background="Transparent" ToolTipService.ShowDuration="60000"
+                  >
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
@@ -61,57 +62,57 @@
                         </Style.Triggers>
                     </Style>
                 </Grid.Resources>
-                <TextBlock Grid.Column="0" Text="{Binding GroupName}" HorizontalAlignment="Center" FontWeight="Bold"/>
-                <WrapPanel Grid.Column="1" Orientation="Vertical" ext:MarginSetterExtension.Margin="1">
-                    <WrapPanel.ToolTip>
-                        <GroupBox Header="Łączny plan budżetowy" Padding="4">
-                            <ListView ItemsSource="{Binding ToolTipValues}" FontSize="10">
-                                <ListView.Resources>
-                                    <Style TargetType="{x:Type ListViewItem}">
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding TotalBalanceValue, Converter={StaticResource LessThan}}" Value="True">
-                                                <Setter Property="Background" Value="Tomato" />
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </ListView.Resources>
-                                <ListView.View>
-                                    <GridView>                                        
-                                        <GridViewColumn Header="Kategoria" DisplayMemberBinding="{Binding Name}" Width="Auto"/>
-                                        <GridViewColumn Header="Kwota" Width="Auto">
-                                            <GridViewColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <TextBlock Text="{Binding TotalValue, Converter={StaticResource CurrencyFormatter}}" TextAlignment="Right" />
-                                                </DataTemplate>
-                                            </GridViewColumn.CellTemplate>
-                                        </GridViewColumn>
-                                        <GridViewColumn Header="Kwota wydana" Width="Auto">
-                                            <GridViewColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <WrapPanel>
-                                                        <TextBlock Width="55" Text="{Binding TotalExpenseValue, Converter={StaticResource CurrencyFormatter}}"
+                <Grid.ToolTip>
+                    <GroupBox Header="Łączny plan budżetowy" Padding="4">
+                        <ListView ItemsSource="{Binding ToolTipValues}" FontSize="10">
+                            <ListView.Resources>
+                                <Style TargetType="{x:Type ListViewItem}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding TotalBalanceValue, Converter={StaticResource LessThan}}" Value="True">
+                                            <Setter Property="Background" Value="Tomato" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </ListView.Resources>
+                            <ListView.View>
+                                <GridView>
+                                    <GridViewColumn Header="Kategoria" DisplayMemberBinding="{Binding Name}" Width="Auto"/>
+                                    <GridViewColumn Header="Kwota" Width="Auto">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding TotalValue, Converter={StaticResource CurrencyFormatter}}" TextAlignment="Right" />
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+                                    <GridViewColumn Header="Kwota wydana" Width="Auto">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <WrapPanel>
+                                                    <TextBlock Width="55" Text="{Binding TotalExpenseValue, Converter={StaticResource CurrencyFormatter}}"
                                                                    Tag="{Binding TotalBalanceValue}" TextAlignment="Right"/>
-                                                        <TextBlock Width="45" Text="{Binding TotalBalanceProcentValue, Converter={StaticResource ProcentFormatter}}"
+                                                    <TextBlock Width="45" Text="{Binding TotalBalanceProcentValue, Converter={StaticResource ProcentFormatter}}"
                                                                        TextAlignment="Right"/>
-                                                    </WrapPanel>
-                                                </DataTemplate>
-                                            </GridViewColumn.CellTemplate>
-                                        </GridViewColumn>
-                                        <GridViewColumn Header="Kwota do wydania" Width="Auto">
-                                            <GridViewColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <TextBlock Width="55" Text="{Binding TotalBalanceValue, Converter={StaticResource CurrencyFormatter}}"
+                                                </WrapPanel>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+                                    <GridViewColumn Header="Kwota do wydania" Width="Auto">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Width="55" Text="{Binding TotalBalanceValue, Converter={StaticResource CurrencyFormatter}}"
                                                                Tag="{Binding TotalBalanceValue}"
                                                                TextAlignment="Right"/>
-                                                </DataTemplate>
-                                            </GridViewColumn.CellTemplate>
-                                        </GridViewColumn>
-                                    </GridView>
-                                </ListView.View>
-                            </ListView>
-                        </GroupBox>
-                    </WrapPanel.ToolTip>
-
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+                    </GroupBox>
+                </Grid.ToolTip>
+                <TextBlock Grid.Column="0" Text="{Binding GroupName}" HorizontalAlignment="Center" FontWeight="Bold"/>
+                <WrapPanel Grid.Column="1" Orientation="Vertical" ext:MarginSetterExtension.Margin="1"
+                           >
                     <WrapPanel>
                         <TextBlock FontSize="10" Width="55" TextAlignment="Right" Margin="0,0,2,0"                                   
                                    Text="{Binding TotalValue, Converter={StaticResource CurrencyFormatter}}" />
@@ -139,7 +140,7 @@
         <DataTemplate DataType="{x:Type vm:BudgetPlanItemVM}">
             <Expander HorizontalContentAlignment="Stretch" Width="305">
                 <Expander.Header>
-                    <StackPanel>
+                    <StackPanel ToolTipService.ShowDuration="60000" ToolTipService.BetweenShowDelay="10000">
                         <StackPanel.Resources>
                             <Style TargetType="TextBlock">
                                 <Style.Triggers>
@@ -150,26 +151,12 @@
                                 </Style.Triggers>
                             </Style>
                         </StackPanel.Resources>
-                        <TextBlock Padding="0,4,0,4" FontWeight="Bold" Text="{Binding Name}" FontSize="10"/>
-                        <Grid Margin="0,0,0,4">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition />
-                                <ColumnDefinition Width="122"/>
-                                <ColumnDefinition />
-                            </Grid.ColumnDefinitions>
-                            <Border Grid.Column="0" BorderBrush="LightGray" BorderThickness="1"
-                                                Padding="2" CornerRadius="4" HorizontalAlignment="Left"                                                
-                                                Style="{StaticResource HoverBorder}">
-                                <WrapPanel>
-                                    <Image Source="/Adalbertus.BudgetPlanner;component/Images/total_plan_cost.png"
-                                               Width="12" />
-                                    <TextBlock FontSize="10" Width="55"
-                                                   Text="{Binding TotalValue, Converter={StaticResource CurrencyFormatter}}" 
-                                                   TextAlignment="Right"/>
-                                </WrapPanel>
-                                <Border.ToolTip>
-                                    <GroupBox Header="Łączny plan wydatków" Padding="4">
-                                        <ListView ItemsSource="{Binding ToolTipValues, Mode=OneWay}">
+                        <StackPanel.ToolTip>
+                            <WrapPanel MaxHeight="300">
+                                <GroupBox Header="Łączny plan wydatków" Padding="4">
+                                    <Grid>
+                                        <ListView ItemsSource="{Binding ToolTipValues, Mode=OneWay}"
+                                                  Visibility="{Binding ToolTipValues, Converter={StaticResource EmptyToCollapsed}}">
                                             <ListView.View>
                                                 <GridView>
                                                     <GridViewColumn Header="Kwota" Width="Auto">
@@ -183,8 +170,49 @@
                                                 </GridView>
                                             </ListView.View>
                                         </ListView>
-                                    </GroupBox>
-                                </Border.ToolTip>
+                                        <TextBlock Text="Plan jeszcze nie zdefiniowany" Visibility="{Binding ToolTipValues, Converter={StaticResource NotEmptyToCollapsed}}"/>
+                                    </Grid>
+                                </GroupBox>
+                                <GroupBox Header="Lista wydatków" Padding="4">
+                                    <Grid>
+                                        <ListView ItemsSource="{Binding ToolTipExpenses, Mode=OneWay}"
+                                                  Visibility="{Binding ToolTipExpenses, Converter={StaticResource EmptyToCollapsed}}">
+                                            <ListView.View>
+                                                <GridView>
+                                                    <GridViewColumn Header="Data" DisplayMemberBinding="{Binding Date, Converter={StaticResource DateFormatter}}" Width="Auto" />
+                                                    <GridViewColumn Header="Kwota" Width="Auto">
+                                                        <GridViewColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <TextBlock Text="{Binding Value, Converter={StaticResource CurrencyFormatter}}" TextAlignment="Right" />
+                                                            </DataTemplate>
+                                                        </GridViewColumn.CellTemplate>
+                                                    </GridViewColumn>
+                                                    <GridViewColumn Header="Opis" DisplayMemberBinding="{Binding Description}" Width="Auto" />
+                                                </GridView>
+                                            </ListView.View>
+                                        </ListView>
+                                        <TextBlock Text="Brak wprowadzonych wydatków dla tej kategorii" Visibility="{Binding ToolTipExpenses, Converter={StaticResource NotEmptyToCollapsed}}"/>
+                                    </Grid>
+                                </GroupBox>
+                            </WrapPanel>
+                        </StackPanel.ToolTip>
+                        <TextBlock Padding="0,4,0,4" FontWeight="Bold" Text="{Binding Name}" FontSize="10"/>
+                        <Grid Margin="0,0,0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition Width="122"/>
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <Border Grid.Column="0" BorderBrush="LightGray" BorderThickness="1"
+                                    Padding="2" CornerRadius="4" HorizontalAlignment="Left"                                                
+                                    Style="{StaticResource HoverBorder}">
+                                <WrapPanel>
+                                    <Image Source="/Adalbertus.BudgetPlanner;component/Images/total_plan_cost.png"
+                                               Width="12" />
+                                    <TextBlock FontSize="10" Width="55"
+                                                   Text="{Binding TotalValue, Converter={StaticResource CurrencyFormatter}}" 
+                                                   TextAlignment="Right"/>
+                                </WrapPanel>
                             </Border>
 
                             <Border Grid.Column="1"  BorderBrush="LightGray" BorderThickness="1"

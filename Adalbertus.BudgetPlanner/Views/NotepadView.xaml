@@ -16,9 +16,5 @@
                                   AcceptsReturn="True" AcceptsTab="True"
                                 HorizontalContentAlignment="Left" VerticalContentAlignment="Top"
                                 Margin="10" Text="{Binding Text}"/>
-        <!--<extToolkit:RichTextBox Width="600" Height="400" 
-                                AcceptsReturn="True" AcceptsTab="True"
-                                HorizontalContentAlignment="Left" VerticalContentAlignment="Top"
-                                Margin="10" Text="{Binding Text}" FontSize="11"/>-->
     </DockPanel>
 </UserControl>

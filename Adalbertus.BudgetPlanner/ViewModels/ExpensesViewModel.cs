@@ -18,6 +18,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         public ExpensesViewModel(IShellViewModel shell, IDatabase database, IConfigurationManager configuration, ICachedService cashedService, IEventAggregator eventAggregator)
             : base(shell, database, configuration, cashedService, eventAggregator)
         {
+            _filteredBudgetExpenses = new List<Expense>();
             ExpensesGridCashFlows = new BindableCollectionExt<CashFlow>();
             CashFlows = new BindableCollectionExt<CashFlow>();
             Filter = new ExpensesFilterVM(EventAggregator);
@@ -40,21 +41,42 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         //public int BudgetId { get; private set; }
 
         #region Budget plan expenses
-        public Budget Budget { get; set; }
+        private Budget _budget;
+        public Budget Budget
+        {
+            get { return _budget; }
+            set
+            {
+                _budget = value;
+                NotifyOfPropertyChange(() => Budget);
+            }
+        }
+
         private BindableCollectionExt<Expense> _budgetExpenses;
+        private List<Expense> _filteredBudgetExpenses;
         public IEnumerable<Expense> BudgetExpenses
         {
             get
             {
-                return FilteredBudgetExpenses();
+                return _filteredBudgetExpenses;
             }
+        }
+
+        public int BudgetExpensesTotalCount
+        {
+            get { return _budgetExpenses.Count; }
+        }
+
+        public int BudgetExpensesFilteredCount
+        {
+            get { return _filteredBudgetExpenses.Count; }
         }
 
         public decimal TotalExpensesValue
         {
             get
             {
-                return FilteredBudgetExpenses().Sum(x => x.Value);
+                return _filteredBudgetExpenses.Sum(x => x.Value);
             }
         }
 
@@ -167,19 +189,18 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         public void RefreshUI()
         {
             Diagnostics.Start();
+            FilterBudgetExpenses();
             NotifyOfPropertyChange(() => BudgetExpenses);
             NotifyOfPropertyChange(() => TotalExpensesValue);
             Diagnostics.Stop();
         }
-
-        public ICollectionView BudgetExpensesView { get; set; }
 
         public void LoadData(Budget budget)
         {
             Diagnostics.Start();
             Budget = budget;
             _budgetExpenses = budget.Expenses;
-            BudgetExpensesView = CollectionViewSource.GetDefaultView(_budgetExpenses);
+            _filteredBudgetExpenses = _budgetExpenses.ToList();
 
             LoadCashFlows();
             LoadExpenses();
@@ -263,7 +284,10 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         {
             get
             {
-                return (SelectedExpenseCashFlow != null) && (ExpenseValue > 0);
+                bool isCashFlowSelected = SelectedExpenseCashFlow != null;
+                bool hasPositiveExpenseValue = ExpenseValue > 0;
+                bool isDateInBudgetDange = (SelectedExpenseDate >= Budget.DateFrom && SelectedExpenseDate <= Budget.DateTo);
+                return (isCashFlowSelected && hasPositiveExpenseValue && isDateInBudgetDange);
             }
         }
 
@@ -285,6 +309,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             var expense = Budget.AddExpense(SelectedExpenseCashFlow, ExpenseValue, ExpenseDescription, SelectedExpenseDate);
 
             Save(expense);
+            FilterBudgetExpenses();
             NotifyOfPropertyChange(() => BudgetExpenses);
             ExpenseValue = 0;
             ExpenseDescription = string.Empty;
@@ -370,18 +395,13 @@ namespace Adalbertus.BudgetPlanner.ViewModels
 
         public ExpensesFilterVM Filter { get; set; }
 
-        private IEnumerable<Expense> FilteredBudgetExpenses()
+        private void FilterBudgetExpenses()
         {
-            
-
             Diagnostics.Start();
-            ICollection<Expense> expenses;
+
             if (IsFilteringEnabled)
             {
                 var predicate = PredicateBuilder.True<Expense>();
-
-                //var selectedCashFlows = Filter.CashFlows.Where(x => x.IsSelected).ToList();
-                //var selectedCashFlowGroups = Filter.CashFlowGroups.Where(x => x.IsSelected).ToList();
 
                 if (Filter.CashFlow != null || Filter.CashFlowGroup != null)
                 {
@@ -394,8 +414,6 @@ namespace Adalbertus.BudgetPlanner.ViewModels
                     {
                         flowPredicate = flowPredicate.And(p => Filter.CashFlow.Id == p.Id);
                     }
-                    //predicate = predicate.Or(flowPredicate);
-                    
                 }
 
                 if (Filter.CashFlowGroup != null && !Filter.CashFlowGroup.IsTransient())
@@ -423,18 +441,25 @@ namespace Adalbertus.BudgetPlanner.ViewModels
                 {
                     predicate = predicate.And(p => p.Description.Contains(Filter.Description, false));
                 }
-                expenses = _budgetExpenses.AsQueryable().Where(predicate).ToList();
+                _filteredBudgetExpenses = _budgetExpenses.AsQueryable().Where(predicate).ToList();
             }
             else
             {
-                expenses = _budgetExpenses.ToList();
+                _filteredBudgetExpenses = _budgetExpenses.ToList();
             }
 
 
-            IsExpensesFiltered = expenses.Count != _budgetExpenses.Count;
+            if (_budgetExpenses.Any())
+            {
+                IsExpensesFiltered = _filteredBudgetExpenses.Count != _budgetExpenses.Count;
+            }
+            else
+            {
+                IsExpensesFiltered = false;
+            }
+            NotifyOfPropertyChange(() => BudgetExpensesTotalCount);
+            NotifyOfPropertyChange(() => BudgetExpensesFilteredCount);
             Diagnostics.Stop();
-           
-            return expenses;
         }
 
         #region IHandle<ExpensesFilterVM> Members
@@ -444,7 +469,10 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             Diagnostics.Start();
             if (IsFilteringEnabled)
             {
-                RefreshUI();
+                if (_budgetExpenses != null)
+                {
+                    RefreshUI();
+                }
             }
             Diagnostics.Stop();
         }

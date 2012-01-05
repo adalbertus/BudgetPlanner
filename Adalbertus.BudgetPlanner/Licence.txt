@@ -1,4 +1,4 @@
-﻿Program Domowy Budżet jest  własnością autora: Wojciech Pietkiewicz <domowe-wydatki@pietkiewicz.pl>
+﻿Program Domowy Budżet jest  własnością autora: Wojciech Pietkiewicz <domowy-budzet@pietkiewicz.pl>
             
 Program Domowy Budżet jest darmowy i może być użytkowany, kopiowany i przekazywany dalej, jeśli spełnione są następujące warunki: 
 1. Program może być używany prywatnie i zawodowo bez ograniczeń. Nie może być jednakże sprzedawany i nie może być dołączany do innych pakietów oprogramowania bez uzyskania zgody autora.
@@ -12,7 +12,7 @@ Poprzez pobranie i instalację programu użytkownik uznaje powyższe warunki lic
 
 ==========================================================================================================
 
-The software Domowy Budżet is property of the author: Wojciech Pietkiewicz <domowe-wydatki@pietkiewicz.pl>
+The software Domowy Budżet is property of the author: Wojciech Pietkiewicz <domowy-budzet@pietkiewicz.pl>
 
 INSTALLATION OR USE OF THE ENCLOSED SOFTWARE INDICATES YOUR ASSENT TO THE FOLLOWING LICENSE AGREEMENT.
 

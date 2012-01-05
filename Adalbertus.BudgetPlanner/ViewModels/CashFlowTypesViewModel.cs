@@ -12,17 +12,20 @@ using Adalbertus.BudgetPlanner.Models;
 using Adalbertus.BudgetPlanner.Database;
 using System.Diagnostics;
 using Microsoft.Windows.Controls;
+using GongSolutions.Wpf.DragDrop;
+using System.Windows;
 
 namespace Adalbertus.BudgetPlanner.ViewModels
 {
-    public class CashFlowTypesViewModel : BaseViewModel
+    public class CashFlowTypesViewModel : BaseViewModel, IDropTarget
     {
         public CashFlowTypesViewModel(IShellViewModel shell, IDatabase database, IConfigurationManager configuration, ICachedService cashedService, IEventAggregator eventAggregator)
             : base(shell, database, configuration, cashedService, eventAggregator)
         {
+            SuppressEvent = false;
             _cashFlows = new BindableCollectionExt<CashFlow>();
-            _cashFlows.PropertyChanged += (s, e) => 
-            { 
+            _cashFlows.PropertyChanged += (s, e) =>
+            {
                 OnPropertyChanged(s, e);
                 CachedService.Clear(CachedServiceKeys.AllCashFlows);
             };
@@ -30,6 +33,10 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             _cashFlowGroups = new BindableCollectionExt<CashFlowGroup>();
             _cashFlowGroups.PropertyChanged += (s, e) =>
             {
+                if (SuppressEvent == true)
+                {
+                    return;
+                }
                 OnPropertyChanged(s, e);
 
                 CachedService.Clear(CachedServiceKeys.AllCashFlowGroups);
@@ -41,6 +48,8 @@ namespace Adalbertus.BudgetPlanner.ViewModels
                 NewCashFlowGroup = CashFlowGroups.First();
             };
         }
+
+        private bool SuppressEvent { get; set; }
 
         protected override void OnActivate()
         {
@@ -271,7 +280,11 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         {
             using (var tx = Database.GetTransaction())
             {
-                var maxPosition = Database.ExecuteScalar<int>("SELECT MAX(Position) FROM CashFlowGroup");
+                int maxPosition = 1;
+                if (Database.Count<CashFlowGroup>() > 0)
+                {
+                    maxPosition = Database.ExecuteScalar<int>("SELECT MAX(Position) FROM CashFlowGroup");
+                }
                 var cashFlowGroup = new CashFlowGroup
                 {
                     Name = NewGroupName,
@@ -451,5 +464,84 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             CachedService.Clear();
         }
         #endregion
+
+        #region IDropTarget Members
+
+        public void DragOver(IDropInfo dropInfo)
+        {
+            var sourceCashFlowGroup = dropInfo.Data as CashFlowGroup;
+            var targetCashFlowGroup = dropInfo.TargetItem as CashFlowGroup;
+
+            var sourceCashFlow = dropInfo.Data as CashFlow;
+            var targetCashFlow = dropInfo.TargetItem as CashFlow;
+
+            if (sourceCashFlowGroup != null && targetCashFlowGroup != null)
+            {
+                dropInfo.DropTargetAdorner = DropTargetAdorners.Insert;
+                dropInfo.Effects = DragDropEffects.Move;
+            }
+
+            if (sourceCashFlow != null && targetCashFlow == null)
+            {
+                dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
+                dropInfo.Effects = DragDropEffects.Move;
+            }
+            //GongSolutions.Wpf.DragDrop.DragDrop.DefaultDropHandler.DragOver(dropInfo);
+
+            //DragDrop.DefaultDropHandler.DragOver(dropInfo);
+            //if (dropInfo.TargetGroup == null) dropInfo.Effects = System.Windows.DragDropEffects.None;
+        }
+
+        public void Drop(IDropInfo dropInfo)
+        {
+            var sourceCashFlowGroup = dropInfo.Data as CashFlowGroup;
+            var targetCashFlowGroup = dropInfo.TargetItem as CashFlowGroup;
+
+            var sourceCashFlow = dropInfo.Data as CashFlow;
+            var targetCashFlow = dropInfo.TargetItem as CashFlow;
+
+            if (sourceCashFlowGroup != null && targetCashFlowGroup != null)
+            {
+                ReorderCashFlowGroup(sourceCashFlowGroup, dropInfo.InsertIndex);
+            }
+
+            if (sourceCashFlow != null && targetCashFlowGroup != null)
+            {
+                sourceCashFlow.Group = targetCashFlowGroup;
+            }
+        }
+        #endregion
+
+        private void ReorderCashFlowGroup(CashFlowGroup itemToReorder, int placeAtIndex)
+        {
+            var itemsCopy = CashFlowGroups.ToList();
+            var itemToReorderIndex = itemsCopy.IndexOf(itemToReorder);
+            if (itemToReorderIndex < 0 || itemToReorderIndex == placeAtIndex)
+            {
+                return;
+            }
+            SuppressEvent = true;
+
+            itemsCopy.Insert(placeAtIndex, itemToReorder);
+            if (placeAtIndex > itemToReorderIndex)
+            {
+                itemsCopy.RemoveAt(itemToReorderIndex);
+            }
+            else
+            {
+                itemsCopy.RemoveAt(itemToReorderIndex + 1);
+            }
+            
+            int position = 1;
+            itemsCopy.ForEach(x => x.Position = position++);
+            using (var tx = Database.GetTransaction())
+            {
+                Database.SaveAll(itemsCopy);
+                tx.Complete();
+            }
+            NotifyOfPropertyChange(() => CashFlowGroups);
+            CachedService.Clear(CachedServiceKeys.AllCashFlowGroups);
+            SuppressEvent = false;
+        }
     }
 }

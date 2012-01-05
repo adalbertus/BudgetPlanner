@@ -1,0 +1,1 @@
+The GongSolutions.Wpf.DragDrop library is a drag'n'drop framework for WPF is taken from http://code.google.com/p/gong-wpf-dragdrop/

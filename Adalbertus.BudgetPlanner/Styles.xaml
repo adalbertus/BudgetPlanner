@@ -30,6 +30,11 @@
         <GradientStop Offset="0" Color="White"/>
     </LinearGradientBrush>
 
+    <LinearGradientBrush x:Key="RedGradientVertical" StartPoint="0,1" EndPoint="0,0">
+        <GradientStop Offset="1" Color="Goldenrod"/>
+        <GradientStop Offset="0" Color="White"/>
+    </LinearGradientBrush>
+
     <LinearGradientBrush x:Key="BackgroundGradientBrush">
         <GradientBrush.GradientStops>
             <GradientStop Color="#FFD2D4D2" Offset="0" />
@@ -145,12 +150,19 @@
                 <Setter Property="Background" Value="{StaticResource {x:Static SystemColors.HighlightBrushKey}}" />
             </Trigger>
         </Style.Triggers>
-    </Style>
+    </Style>    
 
     <Style TargetType="{x:Type DatePickerTextBox}">
         <Setter Property="VerticalContentAlignment" Value="Center" />
     </Style>
 
+    <Style x:Key="DefaultBorder" TargetType="{x:Type Border}">
+        <Setter Property="BorderBrush" Value="LightGray" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="4" />
+        <Setter Property="Padding" Value="4" />
+    </Style>
+    
     <Style x:Key="OverlayRectangle" TargetType="{x:Type Rectangle}">
         <Setter Property="HorizontalAlignment" Value="Stretch" />
         <Setter Property="VerticalAlignment" Value="Stretch" />
@@ -347,7 +359,7 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
                 <ToggleButton x:Name="ExpanderButton" Grid.Row="0" 
-                              Background="{StaticResource LightBlueGradientVertical}"
+                              Background="{TemplateBinding Background}"
                               Template="{StaticResource AnimatedExpanderButtonTemplate}"
                               Content="{TemplateBinding Header}" IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}}"
                               OverridesDefaultStyle="True" />
@@ -426,6 +438,7 @@
         <Setter Property="Template" Value="{StaticResource NormalExpander}" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="BorderBrush" Value="LightGray" />
+        <Setter Property="Background" Value="{StaticResource LightBlueGradientVertical}" />
         <Setter Property="Margin" Value="4" />
     </Style>
 
