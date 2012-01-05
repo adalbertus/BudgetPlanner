@@ -9,7 +9,7 @@
         <Border DockPanel.Dock="Bottom" Style="{StaticResource DialogButtonsBorder}">
             <WrapPanel HorizontalAlignment="Right">
                 <ctrl:ImageButton Content="Anuluj" cal:Message.Attach="[Event Click] = [Action Cancel()]" Style="{StaticResource Button80}" />
-                <ctrl:ImageButton Content="OK" ImageUrl="Images/button-checked.png" cal:Message.Attach="[Event Click] = [Action DownloadAndRestart()]" Style="{StaticResource Button80}" />
+                <ctrl:ImageButton Content="Pobież i zainstaluj" ImageUrl="Images/button-checked.png" cal:Message.Attach="[Event Click] = [Action DownloadAndRestart()]" />
             </WrapPanel>
         </Border>
 
@@ -17,8 +17,17 @@
                Source="/Adalbertus.BudgetPlanner;component/Images/system-software-update.png"/>
 
         <StackPanel Margin="10">
-            <TextBlock FontSize="14" FontWeight="Bold" Text="Dostępna jest nowa wersja aplikacji."
-                       Margin="0,10"/>
+            <Grid Margin="0,10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" FontSize="14" FontWeight="Bold" Text="Dostępna jest nowa wersja aplikacji." />
+                <WrapPanel Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+                    <TextBlock Text="Aktualna wersja:" FontSize="10" Foreground="LightGray" VerticalAlignment="Bottom"/>
+                    <TextBlock Text="{Binding CurrentVersion}" FontSize="10" Foreground="LightGray" VerticalAlignment="Bottom"/>
+                </WrapPanel>
+            </Grid>
 
             <Border Style="{StaticResource DefaultBorder}" Margin="0,10">
                 <Grid>
@@ -32,11 +41,12 @@
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Data wydania:" Margin="0,0,4,4"/>
-                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding VersionDate}" Margin="0,0,4,0"/>
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Data wydania:" Margin="0,0,4,4" VerticalAlignment="Top"/>
+                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding VersionDate, Converter={StaticResource DateFormatter}}" Margin="0,0,4,0"
+                               VerticalAlignment="Top"/>
 
-                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Wersja:" Margin="0,0,4,4"/>
-                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding NewVersion}" Margin="0,0,4,0"/>
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Wersja:" Margin="0,0,4,4" VerticalAlignment="Top"/>
+                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding NewVersion}" Margin="0,0,4,0" VerticalAlignment="Top"/>
 
                     <TextBlock Grid.Row="2" Grid.Column="0" Text="Opis zmian:" Margin="0,0,4,4"
                                VerticalAlignment="Top"/>
@@ -45,11 +55,11 @@
                                MaxWidth="200" MaxHeight="200" TextWrapping="Wrap" Margin="0,0,4,0"/>
                 </Grid>
             </Border>
-            
+
             <TextBlock Text="Czy pobrać najnowszą wersję a następnie zaktualizować aplikację?" FontSize="12" />
-            <TextBlock Text="(będzie konieczne zamknięcie i ponowne uruchomienie aplikacji - dane nie zostaną stracone)"
+            <TextBlock Text="będzie konieczne zamknięcie i ponowne uruchomienie aplikacji - dane nie zostaną stracone"
                        FontSize="10" Foreground="Gray"/>
-            
+
             <Grid Height="80">
                 <ProgressBar Minimum="0" Maximum="100" Value="{Binding ProgressValue}"
                              VerticalAlignment="Center" Height="23"

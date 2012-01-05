@@ -410,6 +410,7 @@
     <Resource Include="Images\bulb-off.png" />
     <Resource Include="Images\system-software-update.png" />
     <Resource Include="Images\system-software-update-small.png" />
+    <SplashScreen Include="Images\SplashScreen.png" />
     <Content Include="Licence.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

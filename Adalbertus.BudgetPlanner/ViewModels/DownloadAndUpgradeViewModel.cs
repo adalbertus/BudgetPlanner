@@ -23,6 +23,8 @@ namespace Adalbertus.BudgetPlanner.ViewModels
 
         private WebClient _webClient;
 
+        public string CurrentVersion { get { return Updater.CurrentVersion; } }
+
         private double _progressValue;
         public double ProgressValue
         {
@@ -62,6 +64,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             IsProgressVisible = false;
             ProgressValue = 0;
             ErrorMessage = string.Empty;
+            NotifyOfPropertyChange(() => CurrentVersion);
             NotifyOfPropertyChange(() => NewVersion);
             NotifyOfPropertyChange(() => Changes);
             NotifyOfPropertyChange(() => VersionDate);
