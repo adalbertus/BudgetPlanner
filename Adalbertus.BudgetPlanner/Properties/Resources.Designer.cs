@@ -128,9 +128,9 @@ namespace Adalbertus.BudgetPlanner.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Program Domowy Budżet jest  własnością autora: Wojciech Pietkiewicz &lt;domowe-wydatki@pietkiewicz.pl&gt;
+        ///   Looks up a localized string similar to Program Budżet Domowy jest  własnością autora: Wojciech Pietkiewicz &lt;domowe-wydatki@pietkiewicz.pl&gt;
         ///            
-        ///Program Domowy Budżet jest darmowy i może być użytkowany, kopiowany i przekazywany dalej, jeśli spełnione są następujące warunki: 
+        ///Program Budżet Domowy jest darmowy i może być użytkowany, kopiowany i przekazywany dalej, jeśli spełnione są następujące warunki: 
         ///1. Program może być używany prywatnie i zawodowo bez ograniczeń. Nie może być jednakże sprzedawany i nie może być dołączany do innych pakietów oprogramowania bez uzyskania zgody autora.
         ///2. Program może być umieszczany na bezpłatnych stronach interetowych do pobran [rest of string was truncated]&quot;;.
         /// </summary>

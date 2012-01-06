@@ -1,6 +1,7 @@
-﻿Program Domowy Budżet jest  własnością autora: Wojciech Pietkiewicz <domowy-budzet@pietkiewicz.pl>
+﻿Program Budżet Domowy jest  własnością autora: Wojciech Pietkiewicz <budzet-domowy@pietkiewicz.pl>
+Strona WWW: budzet-domowy.pietkiewicz.pl
             
-Program Domowy Budżet jest darmowy i może być użytkowany, kopiowany i przekazywany dalej, jeśli spełnione są następujące warunki: 
+Program Budżet Domowy jest darmowy i może być użytkowany, kopiowany i przekazywany dalej, jeśli spełnione są następujące warunki: 
 1. Program może być używany prywatnie i zawodowo bez ograniczeń. Nie może być jednakże sprzedawany i nie może być dołączany do innych pakietów oprogramowania bez uzyskania zgody autora.
 2. Program może być umieszczany na bezpłatnych stronach interetowych do pobrania.
 3. Wszystkie inne formy publikacji programu wymagają pisemnego pozwolenia autora.
@@ -12,11 +13,12 @@ Poprzez pobranie i instalację programu użytkownik uznaje powyższe warunki lic
 
 ==========================================================================================================
 
-The software Domowy Budżet is property of the author: Wojciech Pietkiewicz <domowy-budzet@pietkiewicz.pl>
+The software Budżet Domowy is property of the author: Wojciech Pietkiewicz <budzet-domowy@pietkiewicz.pl>
+Website: budzet-domowy.pietkiewicz.pl
 
 INSTALLATION OR USE OF THE ENCLOSED SOFTWARE INDICATES YOUR ASSENT TO THE FOLLOWING LICENSE AGREEMENT.
 
-The software Domowy Budżet is freeware and can be used freely, copied and given to third parties under the following terms:
+The software Budżet Domowy is freeware and can be used freely, copied and given to third parties under the following terms:
 1.	You can use the software free of charge for private and professional purposes. You may not however sell it for profit and you may not bundle FreeCommander in other software packages without affirmation of the author.
 2.	You are allowed to offer the program on a website that is free of charges. 
 3.	For any other form of publication, the author’s written permission is necessary.

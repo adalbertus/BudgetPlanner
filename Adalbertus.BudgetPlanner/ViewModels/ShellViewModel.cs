@@ -44,7 +44,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             EventAggregator = eventAggregator;
             ConfigurationManager = configurationManager;
             CurrentBudgetDate = DateTime.Now;
-            DisplayName = "Domowy Budżet";
+            DisplayName = "Budżet Domowy";
             EventAggregator.Subscribe(this);
             int updateIntervalMinutes = ConfigurationManager.GetValueOrDefault(ConfigurationKeys.UpdateMinutesInterval, 15);
             _timer = new Timer(updateIntervalMinutes * 60 * 1000);
@@ -127,7 +127,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             if (ConfigurationManager.GetValueOrDefault<bool>(ConfigurationKeys.IsFirstRun, true))
             {
                 var message = new StringBuilder();
-                message.AppendLine("Witaj w programie Domowy Budżet");
+                message.AppendLine("Witaj w programie Budżet Domowy");
                 message.AppendLine();
                 message.AppendLine("W pierwszej kolejności wprowadź dane dotyczące źródeł dochodów");
                 message.AppendLine("oraz ewentualnych kont oszczędnościowych itp. Aby to zrobić");
@@ -206,13 +206,13 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         public void ShowAbout()
         {
             var message = new StringBuilder();
-            message.AppendLine("Domowy Budżet - program do budżetowania gospodarstwa domowego.");
+            message.AppendLine("Budżet Domowy - program do budżetowania gospodarstwa domowego.");
             message.AppendLine(string.Format("Wersja: {0}", Updater.CurrentVersion));
             message.AppendLine();
-            message.AppendLine(string.Format("Program Domowy Budżet jest  własnością autora: Wojciech Pietkiewicz <{0}>", ConfigurationManager.GetValueOrDefault<string>(ConfigurationKeys.AuthorEmail)));
+            message.AppendLine(string.Format("Program Budżet Domowy jest  własnością autora: Wojciech Pietkiewicz <{0}>", ConfigurationManager.GetValueOrDefault<string>(ConfigurationKeys.AuthorEmail)));
             message.AppendLine(string.Format("Strona WWW: {0}", ConfigurationManager.GetValueOrDefault<string>(ConfigurationKeys.HomePage)));
             message.AppendLine();
-            message.AppendLine("Program Domowy Budżet jest darmowy i może być użytkowany, kopiowany i przekazywany dalej, jeśli spełnione są następujące warunki: ");
+            message.AppendLine("Program Budżet Domowy jest darmowy i może być użytkowany, kopiowany i przekazywany dalej, jeśli spełnione są następujące warunki: ");
             message.AppendLine("1. Program może być używany prywatnie i zawodowo bez ograniczeń. Nie może być jednakże sprzedawany i nie może być dołączany do innych pakietów oprogramowania bez uzyskania zgody autora.");
             message.AppendLine("2. Program może być umieszczany na bezpłatnych stronach interetowych do pobrania.");
             message.AppendLine("3. Wszystkie inne formy publikacji programu wymagają pisemnego pozwolenia autora.");

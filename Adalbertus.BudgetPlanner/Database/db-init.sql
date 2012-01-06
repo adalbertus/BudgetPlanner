@@ -1,9 +1,9 @@
 ﻿INSERT INTO Configuration VALUES('DatabaseVersion','1','1','Wersja bazy danych');
 INSERT INTO Configuration VALUES('IsFirstRun','1','True','Czy jest to pierwsze uruchomienie aplikacji');
-INSERT INTO Configuration VALUES('AuthorEmail','1','domowy-budzet@@pietkiewicz.pl','Adres autora aplikacji');
-INSERT INTO Configuration VALUES('HomePage','1','http://domowy-budzet.pietkiewicz.pl/','Adres strony WWW aplikacji');
-INSERT INTO Configuration VALUES('HelpPage','1','http://domowy-budzet.pietkiewicz.pl/help','Adres strony WWW z pomocą');
-INSERT INTO Configuration VALUES('UpdatePage','1','http://domowy-budzet.pietkiewicz.pl/update','Adres strony z informacjami o aktualizacjach');
+INSERT INTO Configuration VALUES('AuthorEmail','1','budzet-domowy@@pietkiewicz.pl','Adres autora aplikacji');
+INSERT INTO Configuration VALUES('HomePage','1','http://budzet-domowy.pietkiewicz.pl/','Adres strony WWW aplikacji');
+INSERT INTO Configuration VALUES('HelpPage','1','http://budzet-domowy.pietkiewicz.pl/help','Adres strony WWW z pomocą');
+INSERT INTO Configuration VALUES('UpdatePage','1','http://budzet-domowy.pietkiewicz.pl/update','Adres strony z informacjami o aktualizacjach');
 INSERT INTO Configuration VALUES('UpdateMinutesInterval','1','15','Co ile minut aplikacja ma sprawdzać aktualizacje');
 
 INSERT INTO CashFlowGroup VALUES(1,'Dom','Wszystkie wydatki związane z domem','0',2);
