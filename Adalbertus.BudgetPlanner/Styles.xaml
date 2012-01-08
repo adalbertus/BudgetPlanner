@@ -239,15 +239,14 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
-                    <TextBlock TextDecorations="Underline">
-                    <ContentPresenter />
+                    <TextBlock>
+                        <ContentPresenter />
                     </TextBlock>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
         <Setter Property="Foreground" Value="Blue" />
         <Setter Property="Cursor" Value="Hand" />
-        <Setter Property="FontWeight" Value="Bold" />
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="true">
                 <Setter Property="Foreground" Value="Red" />

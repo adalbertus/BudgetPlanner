@@ -186,6 +186,11 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             Updater.RunUpdateAndExit();
         }
 
+        public void OpenHomePage()
+        {
+            Process.Start(ConfigurationManager.GetValueOrDefault<string>(ConfigurationKeys.HomePage));
+        }
+
         public void ShowHelp()
         {
             var helpPage = ConfigurationManager.GetValueOrDefault<string>(ConfigurationKeys.HelpPage);

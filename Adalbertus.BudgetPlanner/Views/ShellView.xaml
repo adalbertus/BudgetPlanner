@@ -28,7 +28,7 @@
                         <ctrl:ImageButton ImageUrl="Images/wallet_money.png" Margin="0,0,4,0"
                                           ImageHeight="24" ImageWidth="24"
                                           cal:Message.Attach="[Event Click] = [Action ShowCurrentBudget()]">
-                            <WrapPanel>                                
+                            <WrapPanel>
                                 <TextBlock Text="Szczegóły budżetu za okres" Margin="0,0,4,0"/>
                                 <ctrl:ImageButton ImageUrl="Images/arrow-left.png" ToolTip="Poprzedni budżet" cal:Message.Attach="[Event Click] = [Action ShowPreviousBudget()]"/>
                                 <TextBlock Text="{Binding CurrentBudgetDate, Converter={StaticResource DateMonthFormatter}}" FontWeight="Bold"
@@ -57,7 +57,7 @@
                     </StackPanel>
                     <WrapPanel Margin="0,2,4,0" Orientation="Vertical"
                                HorizontalAlignment="Right" VerticalAlignment="Top">
-                        <WrapPanel>
+                        <WrapPanel HorizontalAlignment="Right">
                             <ctrl:ImageButton ImageUrl="Images/system-software-update-small.png" ToolTip="Sprawdź aktualizacje"
                                           HorizontalAlignment="Right" FontSize="10"
                                           cal:Message.Attach="[Event Click] = [Action CheckForUpdates('true')]" />
@@ -66,11 +66,16 @@
                                           HorizontalAlignment="Right" FontSize="10"
                                           cal:Message.Attach="[Event Click] = [Action ShowHelp()]" />
 
-                        <ctrl:ImageButton ImageUrl="Images/system-info.png" ToolTip="O programie"
+                            <ctrl:ImageButton ImageUrl="Images/system-info.png" ToolTip="O programie"
                                           HorizontalAlignment="Right" FontSize="10"
                                           cal:Message.Attach="[Event Click] = [Action ShowAbout()]" />
                         </WrapPanel>
-                        <TextBlock Text="{Binding Version}" FontSize="10" Foreground="LightGray" HorizontalAlignment="Right" />
+                        <WrapPanel>                            
+                            <Button Style="{StaticResource LinkButton}" Content="http://budzet-domowy.pietkiewicz.pl" 
+                                    cal:Message.Attach="[Event Click] = [Action OpenHomePage()]" FontSize="10"
+                                    Margin="0,0,4,0"/>                            
+                            <TextBlock Text="{Binding Version}" FontSize="10" Foreground="LightGray" HorizontalAlignment="Right" />
+                        </WrapPanel>
                     </WrapPanel>
                 </Grid>
             </Border>

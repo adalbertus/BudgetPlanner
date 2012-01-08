@@ -113,6 +113,7 @@ Section Uninstall
   Delete "$INSTDIR\System.Windows.Interactivity.dll"
   Delete "$INSTDIR\System.Data.SQLite.Linq.dll"
   Delete "$INSTDIR\System.Data.SQLite.dll"
+  Delete "$INSTDIR\GongSolutions.Wpf.DragDrop.dll"
   Delete "$INSTDIR\NLog.dll"
   Delete "$INSTDIR\Licence.txt"
   Delete "$INSTDIR\ILCalc.dll"
