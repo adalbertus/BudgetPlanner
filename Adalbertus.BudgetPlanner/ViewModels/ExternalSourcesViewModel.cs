@@ -38,7 +38,6 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         {
             get
             {
-                Contract.Ensures(Contract.Result<BindableCollectionExt<Income>>() != null);
                 return _incomes;
             }
         }

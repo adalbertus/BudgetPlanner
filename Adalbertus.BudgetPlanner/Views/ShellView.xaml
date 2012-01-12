@@ -40,9 +40,12 @@
                         <ctrl:ImageButton ImageUrl="Images/category.png"
                             Content="Kategorie wydatków" HorizontalAlignment="Right" Margin="50 0 4 0"
                                           cal:Message.Attach="[Event Click] = [Action ShowCashFlowTypes()]"/>
-                        <ctrl:ImageButton ImageUrl="Images/external.png"
-                            Content="Środki zewnętrzne" HorizontalAlignment="Right"
-                                          cal:Message.Attach="[Event Click] = [Action ShowExternalSources()]"/>
+                        <ctrl:ImageButton ImageUrl="Images/external.png" Content="Oszczędności" HorizontalAlignment="Right"
+                                           Margin="4 0 4 0"
+                                          cal:Message.Attach="[Event Click] = [Action ShowSavings()]"/>
+                        <ctrl:ImageButton ImageUrl="Images/external.png" Content="Dochody" HorizontalAlignment="Right"
+                                           Margin="4 0 4 0"
+                                          cal:Message.Attach="[Event Click] = [Action ShowIncomes()]"/>
 
                         <ctrl:ImageButton ImageUrl="Images/bulb.png" Content="Obliczenia" Margin="4 0 4 0"
                                           HorizontalAlignment="Right"
@@ -70,10 +73,10 @@
                                           HorizontalAlignment="Right" FontSize="10"
                                           cal:Message.Attach="[Event Click] = [Action ShowAbout()]" />
                         </WrapPanel>
-                        <WrapPanel>                            
+                        <WrapPanel>
                             <Button Style="{StaticResource LinkButton}" Content="http://budzet-domowy.pietkiewicz.pl" 
                                     cal:Message.Attach="[Event Click] = [Action OpenHomePage()]" FontSize="10"
-                                    Margin="0,0,4,0"/>                            
+                                    Margin="0,0,4,0"/>
                             <TextBlock Text="{Binding Version}" FontSize="10" Foreground="LightGray" HorizontalAlignment="Right" />
                         </WrapPanel>
                     </WrapPanel>
