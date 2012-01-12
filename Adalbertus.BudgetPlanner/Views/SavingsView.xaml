@@ -12,12 +12,12 @@ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     <WrapPanel>
                         <Label>Nazwa</Label>
                         <TextBox Text="{Binding Name}" Width="150"/>
-                        <Label>Łącznie</Label>
+                        <Label>Łączna kwota</Label>
                         <Label Content="{Binding TotalValue, Converter={StaticResource CurrencyFormatter}}" />
                         <!-- I don't know why setting ImageUrl in style doesn't work in DataTemplate -->
-                        <ctrl:ImageButton x:Name="RemoveSavingButton" ToolTip="Usuń oszczędności" ImageUrl="Images/delete.png"
+                        <ctrl:ImageButton x:Name="RemoveSavingButton" Content="Usuń konto oszczędnościowe" ImageUrl="Images/delete.png"
                                                           cal:Message.Attach="[Event Click] = [Action RemoveSaving($dataContext)]"/>
-                        <ctrl:ImageButton ImageUrl="Images/save.png" ToolTip="Dodaj nowe oszczędności" cal:Message.Attach="[Event Click] = [Action AddSavingValue($dataContext)]"/>
+                        <ctrl:ImageButton ImageUrl="Images/save.png" Content="TODO: Do zmiany na - kwotę początkową" cal:Message.Attach="[Event Click] = [Action AddSavingValue($dataContext)]"/>
                     </WrapPanel>
                 </GroupBox.Header>
                 <DataGrid x:Name="ValuesDataGrid" ItemsSource="{Binding Values}" CanUserAddRows="False" 
@@ -94,26 +94,35 @@ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         <GroupBox Grid.Column="0" ScrollViewer.VerticalScrollBarVisibility="Auto">
             <GroupBox.Header>
                 <WrapPanel>
-                    <Label>Oszczędności</Label>
-                    <ctrl:ImageButton ImageUrl="Images/save.png" ToolTip="Dodaj nowe oszczędności" cal:Message.Attach="[Event Click] = [Action AddSaving()]"/>
+                    <Label>Konta oszczędnościowe</Label>
+                    <ctrl:ImageButton ImageUrl="Images/save.png" Content="Dodaj nowe konto"
+                                      cal:Message.Attach="[Event Click] = [Action AddSaving()]"/>
                 </WrapPanel>
             </GroupBox.Header>
             <ScrollViewer VerticalScrollBarVisibility="Auto" CanContentScroll="True">
                 <ItemsControl ItemsSource="{Binding Savings}" BorderThickness="0" />
             </ScrollViewer>
         </GroupBox>
-        <Border Grid.Column="1" Style="{StaticResource DefaultBorder}" Width="300" VerticalAlignment="Top" Margin="4">
+        <Border Grid.Column="1" Style="{StaticResource DefaultBorder}" Width="300"
+                VerticalAlignment="Top" Margin="4,17">
 
             <TextBlock TextWrapping="Wrap" TextAlignment="Left" FontSize="14" Margin="4">
                 <TextBlock.Inlines>
-                    Okno to zawiera ... to do...
-                        
+                    Zdefiniowane tutaj oszczędności w razie potrzeby można wykorzystać w
+                    planie budżetowym jako dodadkowe wpływy.
                     <LineBreak/><LineBreak/>
-                        Wstawianie poszczególnych wartości dochodów odbywa się poprzez dodanie wpływów budżetodych do planowanego budżetu
-                        (czyli np. wpisanie otrzymanej wypłaty).
+                    <Bold>Przykład:</Bold>
+                    <LineBreak/>
+                    Mamy specjalne konto oszczędnościowe, na które odkładamy regularnie pieniądze
+                    na wydatki związane z samochodem (np. OC, AC, warsztat itp). W przypadku
+                    pojawienia się konieczności zapłacenia OC i AC możemy pieniądze na taki wydatek
+                    wprowadzić do budżetu jako wpływy z oszczędności.
                     <LineBreak/><LineBreak/>
-                        Każdy dochód jest ściśle powiązany z budżetem, a więc zmiana wartości dochodu dokonana we wpływach budżetowych
-                        powoduje zmianę tego dochodu w tym oknie.
+                    Wstawiona kwota wpływu z oszczędności jest automatycznie odnotowywana na liście
+                    oszczędności.
+                    <LineBreak/>
+                    Podobnie wstawienie wydatku przypisanego do kategorii oszczędności automatycznie
+                    wstawi odpowiednią kwotę na liście oszczędności.                    
                 </TextBlock.Inlines>
             </TextBlock>
         </Border>

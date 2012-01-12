@@ -11,12 +11,12 @@
                 <GroupBox.Header>
                     <WrapPanel>
                         <Label>Nazwa</Label>
-                        <TextBox Text="{Binding Name}" Width="150" />
-                        <Label>Łącznie</Label>
-                        <Label Content="{Binding TotalValue, Converter={StaticResource CurrencyFormatter}}" />
+                        <TextBox Text="{Binding Name}" Width="150" Margin="0,0,4,0" />
+                        <!--<Label>Łącznie</Label>
+                        <Label Content="{Binding TotalValue, Converter={StaticResource CurrencyFormatter}}" />-->
                         <!-- I don't know why setting ImageUrl in style doesn't work in DataTemplate -->
-                        <ctrl:ImageButton ToolTip="Usuń źródło przychodów" ImageUrl="Images/delete.png"
-                                                          cal:Message.Attach="[Event Click] = [Action RemoveIncome($dataContext)]"/>
+                        <ctrl:ImageButton Content="Usuń źródło dochodów" ImageUrl="Images/delete.png"
+                              cal:Message.Attach="[Event Click] = [Action RemoveIncome($dataContext)]"/>
                     </WrapPanel>
                 </GroupBox.Header>
                 <DataGrid ItemsSource="{Binding Values}" CanUserAddRows="False" 
@@ -51,7 +51,8 @@
                 <ItemsControl ItemsSource="{Binding Incomes}" />
             </ScrollViewer>
         </GroupBox>
-        <Border Grid.Column="1" Style="{StaticResource DefaultBorder}" Width="300" VerticalAlignment="Top" Margin="4">
+        <Border Grid.Column="1" Style="{StaticResource DefaultBorder}" Width="300" 
+                VerticalAlignment="Top" Margin="4,17">
 
             <TextBlock TextWrapping="Wrap" TextAlignment="Left" FontSize="14" Margin="4">
                 <TextBlock.Inlines>

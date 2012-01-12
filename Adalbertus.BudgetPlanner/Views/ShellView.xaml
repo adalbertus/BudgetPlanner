@@ -40,12 +40,14 @@
                         <ctrl:ImageButton ImageUrl="Images/category.png"
                             Content="Kategorie wydatków" HorizontalAlignment="Right" Margin="50 0 4 0"
                                           cal:Message.Attach="[Event Click] = [Action ShowCashFlowTypes()]"/>
-                        <ctrl:ImageButton ImageUrl="Images/external.png" Content="Oszczędności" HorizontalAlignment="Right"
-                                           Margin="4 0 4 0"
-                                          cal:Message.Attach="[Event Click] = [Action ShowSavings()]"/>
-                        <ctrl:ImageButton ImageUrl="Images/external.png" Content="Dochody" HorizontalAlignment="Right"
+
+                        <ctrl:ImageButton ImageUrl="Images/incomes.png" Content="Dochody" HorizontalAlignment="Right"
                                            Margin="4 0 4 0"
                                           cal:Message.Attach="[Event Click] = [Action ShowIncomes()]"/>
+                        
+                        <ctrl:ImageButton ImageUrl="Images/bank.png" Content="Oszczędności" HorizontalAlignment="Right"
+                                           Margin="4 0 4 0"
+                                          cal:Message.Attach="[Event Click] = [Action ShowSavings()]"/>
 
                         <ctrl:ImageButton ImageUrl="Images/bulb.png" Content="Obliczenia" Margin="4 0 4 0"
                                           HorizontalAlignment="Right"

@@ -109,7 +109,7 @@
             <GroupBox Grid.Column="1">
                 <GroupBox.Header>
                     <WrapPanel>
-                        <Label>Wpływy z zewnętrznych środków</Label>
+                        <Label>Wpływy z oszczędności</Label>
                         <Label Content="{Binding SumOfRevenueSavings, Converter={StaticResource CurrencyFormatter}}" Margin="5,0,0,0" />
                     </WrapPanel>
                 </GroupBox.Header>
@@ -157,7 +157,7 @@
                             </i:Interaction.Triggers>
                         </extToolkit:WatermarkTextBox>
                         
-                        <ctrl:ImageButton Grid.Column="4" ImageUrl="Images/save.png" ToolTip="Dodaj wpływy z zewnętrznych środków" cal:Message.Attach="[Event Click] = [Action AddSavingValue()]" />
+                        <ctrl:ImageButton Grid.Column="4" ImageUrl="Images/save.png" ToolTip="Dodaj wpływy z oszczędności" cal:Message.Attach="[Event Click] = [Action AddSavingValue()]" />
                     </Grid>
 
                     <DataGrid ItemsSource="{Binding BudgetSavingValues}" AutoGenerateColumns="False"

@@ -195,7 +195,6 @@
     <Compile Include="ViewModels\ExpensesFilteringViewModel.cs" />
     <Compile Include="ViewModels\ExpensesFilterVM.cs" />
     <Compile Include="ViewModels\ExpensesViewModel.cs" />
-    <Compile Include="ViewModels\ExternalSourcesViewModel.cs" />
     <Compile Include="ViewModels\IncomesViewModel.cs" />
     <Compile Include="ViewModels\MessageBoxViewModel.cs" />
     <Compile Include="ViewModels\NotepadViewModel.cs" />
@@ -280,10 +279,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\ExternalSourcesView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Views\IncomesView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -297,6 +292,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\RevenuesView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\SavingsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -417,6 +416,9 @@
     <Resource Include="Images\system-software-update.png" />
     <Resource Include="Images\system-software-update-small.png" />
     <SplashScreen Include="Images\SplashScreen.png" />
+    <Resource Include="Images\bank.png" />
+    <Resource Include="Images\incomes.png" />
+    <Resource Include="Changelog.txt" />
     <Content Include="Licence.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

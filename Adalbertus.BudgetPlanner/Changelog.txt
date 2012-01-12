@@ -1,0 +1,3 @@
+﻿[0.9.8]
+- poprawki błędów
+- rozdzielenie "Środków zewnętrznych" na osobno dochody, osobno konta oszczędnościowe

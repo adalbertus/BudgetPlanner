@@ -102,7 +102,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
 
         public void ShowSavings()
         {
-            ActivateItem(IoC.Get<ExternalSourcesViewModel>());
+            ActivateItem(IoC.Get<SavingsViewModel>());
         }
 
         public void ShowIncomes()
