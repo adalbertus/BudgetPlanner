@@ -66,7 +66,8 @@ CREATE TABLE [Saving] (
   [Id]  INTEGER PRIMARY KEY AUTOINCREMENT,
   [CashFlowId] INTEGER NOT NULL,
   [Name] VARCHAR(250),
-  [Description] VARCHAR(250)
+  [Description] VARCHAR(250),
+  [StartingBalance] NUMERIC NOT NULL DEFAULT 0
 );
 DROP TABLE IF EXISTS [SavingValue];
 CREATE TABLE [SavingValue] (

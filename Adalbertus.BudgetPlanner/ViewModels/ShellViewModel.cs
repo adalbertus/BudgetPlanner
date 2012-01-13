@@ -46,11 +46,10 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             CurrentBudgetDate = DateTime.Now;
             DisplayName = "Budżet Domowy";
             EventAggregator.Subscribe(this);
-            int updateIntervalMinutes = ConfigurationManager.GetValueOrDefault(ConfigurationKeys.UpdateMinutesInterval, 15);
-            _timer = new Timer(updateIntervalMinutes * 60 * 1000);
+            _timer = new Timer();
             _timer.Elapsed += delegate
             {
-                CheckForUpdates(false);   
+                CheckForUpdates(false);
             };
             CanCheckForUpdates = true;
         }
@@ -118,17 +117,22 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         }
 
         public void ShowNotepad()
-        {            
+        {
             ShowDialog<NotepadViewModel>(null, null);
         }
 
         protected override void OnActivate()
         {
-            if (DatabaseVerification())
+            if (!DatabaseVerification())
             {
-                CachedService.LoadAll();
-                ShowCurrentBudget();
+                return;
             }
+            
+            CachedService.LoadAll();
+            ShowCurrentBudget();
+            int updateIntervalMinutes = ConfigurationManager.GetValueOrDefault(ConfigurationKeys.UpdateMinutesInterval, 15);
+            _timer.Interval = updateIntervalMinutes * 60 * 1000;
+
             if (ConfigurationManager.GetValueOrDefault<bool>(ConfigurationKeys.IsFirstRun, true))
             {
                 var message = new StringBuilder();
@@ -183,7 +187,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
                             _timer.Start();
                         }
                     }
-                });            
+                });
         }
 
         private void UpdateApplication()
@@ -205,12 +209,12 @@ namespace Adalbertus.BudgetPlanner.ViewModels
                     null, null, MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-
-            var message = new StringBuilder();
-            message.AppendLine("W tej chwili jedyna dostępna pomoc to filmik pokazujący jak używać aplikacji.");
-            message.AppendLine();
-            message.AppendLine("Po kliknięciu przycisku OK zostanie otwarta przeglądarka z filmikiem");
-            ShowMessage(message.ToString(), () => Process.Start(helpPage), null, MessageBoxButton.OK, MessageBoxImage.Information);
+            Process.Start(helpPage);
+            //var message = new StringBuilder();
+            //message.AppendLine("W tej chwili jedyna dostępna pomoc to filmik pokazujący jak używać aplikacji.");
+            //message.AppendLine();
+            //message.AppendLine("Po kliknięciu przycisku OK zostanie otwarta przeglądarka z filmikiem");
+            //ShowMessage(message.ToString(), () => Process.Start(helpPage), null, MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         public void ShowAbout()
@@ -237,7 +241,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         private bool DatabaseVerification()
         {
             var dbHelper = new DatabaseBackupHelper();
-            int applicationDatabaseVersion = 1;
+            int applicationDatabaseVersion = 2;
             int currentDatabaseVersion = ConfigurationManager.GetValueOrDefault<int>(ConfigurationKeys.DatabaseVersion);
 
             if (currentDatabaseVersion == applicationDatabaseVersion)
@@ -249,6 +253,8 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             {
                 dbHelper.CreateBackup();
                 DatabaseUpdateHelper.UpdateIfNeeded(Database, currentDatabaseVersion);
+                ConfigurationManager.Clear();
+                CachedService.Clear();
                 return true;
             }
             catch (Exception ex)
@@ -321,13 +327,14 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         #region Debug
         public bool IsDebug
         {
-            get {
+            get
+            {
 #if DEBUG
                 return true;
 #else
                 return false;
 #endif
-                }
+            }
         }
 
         private bool _isDebugLogVisible;

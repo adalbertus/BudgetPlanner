@@ -6,30 +6,44 @@
              xmlns:m="clr-namespace:Adalbertus.BudgetPlanner.Models"
 >
     <UserControl.Resources>
+        <Style TargetType="ListViewItem">
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        </Style>
+
         <DataTemplate DataType="{x:Type m:Income}">
-            <GroupBox Margin="4">
-                <GroupBox.Header>
-                    <WrapPanel>
-                        <Label>Nazwa</Label>
-                        <TextBox Text="{Binding Name}" Width="150" Margin="0,0,4,0" />
-                        <!--<Label>Łącznie</Label>
-                        <Label Content="{Binding TotalValue, Converter={StaticResource CurrencyFormatter}}" />-->
-                        <!-- I don't know why setting ImageUrl in style doesn't work in DataTemplate -->
-                        <ctrl:ImageButton Content="Usuń źródło dochodów" ImageUrl="Images/delete.png"
-                              cal:Message.Attach="[Event Click] = [Action RemoveIncome($dataContext)]"/>
-                    </WrapPanel>
-                </GroupBox.Header>
-                <DataGrid ItemsSource="{Binding Values}" CanUserAddRows="False" 
-                                          CanUserDeleteRows="False" RowHeaderWidth="0" Margin="0,4"
-                                          AutoGenerateColumns="False" MaxHeight="220" IsReadOnly="True"
-                                          VerticalScrollBarVisibility="Auto">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="Data" Binding="{Binding Date, Converter={StaticResource DateFormatter}}" Width="90"/>
-                        <DataGridTextColumn Header="Kwota" Binding="{Binding Value, Converter={StaticResource CurrencyFormatter}}" Width="120"/>
-                        <DataGridTextColumn Header="Uwagi" Binding="{Binding Description}" Width="*" Visibility="Collapsed" />
-                    </DataGrid.Columns>
-                </DataGrid>
-            </GroupBox>
+            <Expander Style="{StaticResource DarkExpander}" IsExpanded="False">
+                <Expander.Header>
+                    <Grid Margin="4">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <WrapPanel Grid.Column="0">
+                            <Label>Nazwa</Label>
+                            <TextBox Text="{Binding Name}" Width="150" Margin="0,0,4,0" />
+                        </WrapPanel>
+                        <ctrl:ImageButton Grid.Column="1" Content="Usuń źródło dochodów" ImageUrl="Images/delete.png"
+                                          cal:Message.Attach="[Event Click] = [Action RemoveIncome($dataContext)]"/>
+
+                    </Grid>
+                </Expander.Header>
+                <ListView ItemsSource="{Binding Values}" MaxHeight="350" Margin="4">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="Data" DisplayMemberBinding="{Binding Date, Converter={StaticResource DateFormatter}}" 
+                                            Width="90"/>
+                            <GridViewColumn Header="Kwota"
+                                            Width="120">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Value, Converter={StaticResource CurrencyFormatter}}" TextAlignment="Right" />
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+            </Expander>
         </DataTemplate>
 
     </UserControl.Resources>
@@ -52,9 +66,11 @@
             </ScrollViewer>
         </GroupBox>
         <Border Grid.Column="1" Style="{StaticResource DefaultBorder}" Width="300" 
-                VerticalAlignment="Top" Margin="4,17">
+                VerticalAlignment="Top" Margin="2,17,0,0">
 
-            <TextBlock TextWrapping="Wrap" TextAlignment="Left" FontSize="14" Margin="4">
+            <ScrollViewer ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True">
+                <TextBlock TextWrapping="Wrap" TextAlignment="Left" FontSize="14" Margin="4"
+                       ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True">
                 <TextBlock.Inlines>
                         W tym oknie definiujemy tylko i wyłącznie źródła dochodów dostępne dla budżetu. Może to być nazwa firmy,
                         w której pracujemy, ale również cokolwiek innego co może być potraktowane jako dochód - np. wygrana w
@@ -66,7 +82,8 @@
                         Każdy dochód jest ściśle powiązany z budżetem, a więc zmiana wartości dochodu dokonana we wpływach budżetowych
                         powoduje zmianę tego dochodu w tym oknie.
                 </TextBlock.Inlines>
-            </TextBlock>
+                </TextBlock>
+            </ScrollViewer>
         </Border>
     </Grid>
 </UserControl>

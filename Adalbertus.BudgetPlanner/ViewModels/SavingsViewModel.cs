@@ -44,6 +44,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
                     case "Name":
                     case "Description":
                     case "Value":
+                    case "StartingBalance":
                         var saving = sender as Saving;
                         var savingValue = sender as SavingValue;
                         if (saving != null)

@@ -49,6 +49,19 @@ namespace Adalbertus.BudgetPlanner.Models
             }
         }
 
+        private decimal _startingBalance;
+        [PetaPoco.Column]
+        public decimal StartingBalance
+        {
+            get { return _startingBalance; }
+            set
+            {
+                _startingBalance = value;
+                NotifyOfPropertyChange(() => StartingBalance);
+                NotifyOfPropertyChange(() => TotalValue);
+            }
+        }
+
         [PetaPoco.Column]
         public int CashFlowId { get { return CashFlow.Id; } set { } }
 
@@ -58,7 +71,7 @@ namespace Adalbertus.BudgetPlanner.Models
         
         public virtual decimal TotalValue
         {
-            get { return Values.Sum(x => x.Value); }            
+            get { return Values.Sum(x => x.Value) + StartingBalance; }
         }
 
         public Saving()
