@@ -171,7 +171,11 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             }
             Task.Factory.StartNew(() =>
                 {
-                    if (Updater.CheckForNewVersion(ConfigurationManager.GetValueOrDefault<string>(ConfigurationKeys.UpdatePage, string.Empty)))
+#if DEBUG
+                    if (Updater.CheckForNewVersion("http://budzet-domowy.pietkiewicz.pl/online-update-beta"))
+#else
+                    if (Updater.CheckForNewVersion(ConfigurationManager.GetValueOrDefault<string>(ConfigurationKeys.UpdatePage, string.Empty)))                    
+#endif
                     {
                         ShowDialog<DownloadAndUpgradeViewModel>(() => UpdateApplication(), () => CanCheckForUpdates = true);
                     }

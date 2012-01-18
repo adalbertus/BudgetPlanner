@@ -70,7 +70,7 @@
 
             <ScrollViewer ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True">
                 <TextBlock TextWrapping="Wrap" TextAlignment="Left" FontSize="14" Margin="4"
-                       ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True">
+                      >
                 <TextBlock.Inlines>
                         W tym oknie definiujemy tylko i wyłącznie źródła dochodów dostępne dla budżetu. Może to być nazwa firmy,
                         w której pracujemy, ale również cokolwiek innego co może być potraktowane jako dochód - np. wygrana w

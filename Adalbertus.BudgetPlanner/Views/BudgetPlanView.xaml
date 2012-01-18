@@ -48,10 +48,10 @@
         <HierarchicalDataTemplate DataType="{x:Type vm:BudgetPlanGroupItemVM}" ItemsSource="{Binding Items}">
             <Grid Background="Transparent" ToolTipService.ShowDuration="60000"
                   >
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
                 <Grid.Resources>
                     <Style TargetType="TextBlock">
                         <Style.Triggers>
@@ -110,30 +110,36 @@
                         </ListView>
                     </GroupBox>
                 </Grid.ToolTip>
-                <TextBlock Grid.Column="0" Text="{Binding GroupName}" HorizontalAlignment="Center" FontWeight="Bold"/>
-                <WrapPanel Grid.Column="1" Orientation="Vertical" ext:MarginSetterExtension.Margin="1"
+                <TextBlock Grid.Row="0" Text="{Binding GroupName}" HorizontalAlignment="Center" FontWeight="Bold"/>
+                <UniformGrid Grid.Row="1" ext:MarginSetterExtension.Margin="1" Rows="1" Margin="0,0,0,2"
                            >
-                    <WrapPanel>
-                        <TextBlock FontSize="10" Width="55" TextAlignment="Right" Margin="0,0,2,0"                                   
+                    <Border Style="{StaticResource DefaultBorder}" Padding="0">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                            <TextBlock FontSize="10" TextAlignment="Right" Margin="0,0,2,0"                                   
                                    Text="{Binding TotalValue, Converter={StaticResource CurrencyFormatter}}" />
-                        <Image Source="/Adalbertus.BudgetPlanner;component/Images/total_plan_cost.png" Width="10"
+                            <Image Source="/Adalbertus.BudgetPlanner;component/Images/total_plan_cost.png" Width="10"
                                ToolTip="Łączna kwota planu"/>
-                    </WrapPanel>
-                    <WrapPanel >
-                        <TextBlock FontSize="10" Width="55" TextAlignment="Right" Margin="0,0,2,0"
+                        </StackPanel>
+                    </Border>
+                    <Border Style="{StaticResource DefaultBorder}" Padding="0">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                            <TextBlock FontSize="10" TextAlignment="Right" Margin="0,0,2,0"
                                    Tag="{Binding TotalBalanceValue}"
                                    Text="{Binding TotalExpenseValue, Converter={StaticResource CurrencyFormatter}}"/>
-                        <Image Source="/Adalbertus.BudgetPlanner;component/Images/spent.png" Width="10"
+                            <Image Source="/Adalbertus.BudgetPlanner;component/Images/spent.png" Width="10"
                                ToolTip="Łączna kwota wydana"/>
-                    </WrapPanel>
-                    <WrapPanel>
-                        <TextBlock FontSize="10" Width="55" TextAlignment="Right" Margin="0,0,2,0"
+                        </StackPanel>
+                    </Border>
+                    <Border Style="{StaticResource DefaultBorder}" Padding="0">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                            <TextBlock FontSize="10" TextAlignment="Right" Margin="0,0,2,0"
                                    Tag="{Binding TotalBalanceValue}"
                                    Text="{Binding TotalBalanceValue, Converter={StaticResource CurrencyFormatter}}" />
-                        <Image Source="/Adalbertus.BudgetPlanner;component/Images/shopping-list.png" Width="10" 
+                            <Image Source="/Adalbertus.BudgetPlanner;component/Images/shopping-list.png" Width="10" 
                                ToolTip="Łączna kwota do wydania" />
-                    </WrapPanel>
-                </WrapPanel>
+                        </StackPanel>
+                    </Border>
+                </UniformGrid>
             </Grid>
         </HierarchicalDataTemplate>
 

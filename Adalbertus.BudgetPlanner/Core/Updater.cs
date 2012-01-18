@@ -28,7 +28,7 @@ namespace Adalbertus.BudgetPlanner.Core
                 return 0;
             }
             int numericVersion = 0;
-            if (!Int32.TryParse(version.Replace(".", ""), out numericVersion))
+            if (!Int32.TryParse(version.Replace(".", "").Replace(" beta", ""), out numericVersion))
             {
                 return 0;
             }

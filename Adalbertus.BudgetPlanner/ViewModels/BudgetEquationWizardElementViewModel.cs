@@ -6,6 +6,14 @@ using Adalbertus.BudgetPlanner.Models;
 
 namespace Adalbertus.BudgetPlanner.ViewModels
 {
+    public enum TypeOfForeignId
+    {
+        CashFlow,
+        CashFlowGroup,
+        Incomes,
+        Savings,
+        Equation,
+    }
     public class BudgetEquationWizardElementViewModel : WizardPageViewModel<BudgetEquationWizardVM>
     {
         public BudgetEquationWizardElementViewModel()
@@ -203,20 +211,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             set
             {
                 _selectedEquation = value;
-                if (Model != null && Model.CurrentItem != null)
-                {
-                    if (Model.CurrentItem.ValueType == CalculatorValueType.CalculatorEquationValue)
-                    {
-                        if (value != null)
-                        {
-                            Model.CurrentItem.ForeignId = value.Id;
-                        }
-                    }
-                    if (value == null)
-                    {
-                        Model.CurrentItem.ForeignId = 0;
-                    }
-                }
+                SetCurrentItemForeignId(value, TypeOfForeignId.Equation); 
                 NotifyOfPropertyChange(() => SelectedEquation);
             }
         }
@@ -226,9 +221,9 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         {
             get { return _selectedCashFlow; }
             set
-            {
+            {                
                 _selectedCashFlow = value;
-                SetCurrentItemForeignId(value);
+                SetCurrentItemForeignId(value, TypeOfForeignId.CashFlow);
                 NotifyOfPropertyChange(() => SelectedCashFlow);
             }
         }
@@ -240,7 +235,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             set
             {
                 _selectedCashFlowGroup = value;
-                SetCurrentItemForeignId(value);
+                SetCurrentItemForeignId(value, TypeOfForeignId.CashFlowGroup);
                 NotifyOfPropertyChange(() => SelectedCashFlowGroup);
             }
         }
@@ -252,7 +247,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             set
             {
                 _selectedIncome = value;
-                SetCurrentItemForeignId(value);
+                SetCurrentItemForeignId(value, TypeOfForeignId.Incomes);
                 NotifyOfPropertyChange(() => SelectedIncome);
             }
         }
@@ -264,7 +259,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             set
             {
                 _selectedSaving = value;
-                SetCurrentItemForeignId(value);
+                SetCurrentItemForeignId(value, TypeOfForeignId.Savings);
                 NotifyOfPropertyChange(() => SelectedSaving);
             }
         }
@@ -566,10 +561,44 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             }
         }
 
-        private void SetCurrentItemForeignId(Entity entity)
+        private void SetCurrentItemForeignId(Entity entity, TypeOfForeignId foreignIdType)
         {
             if (Model != null && Model.CurrentItem != null)
             {
+                switch(Model.CurrentItem.ValueType)
+                {
+                    case CalculatorValueType.BudgetExpensesValueOfType:
+                    case CalculatorValueType.BudgetPlanValueOfCategory:
+                        if (foreignIdType != TypeOfForeignId.CashFlow)
+                        {
+                            return;
+                        }
+                        break;
+                    case CalculatorValueType.BudgetIncomesValueOfType:
+                        if (foreignIdType != TypeOfForeignId.Incomes)
+                        {
+                            return;
+                        }
+                        break;
+                    case CalculatorValueType.BudgetPlanValueOfGroup:
+                        if (foreignIdType != TypeOfForeignId.CashFlowGroup)
+                        {
+                            return;
+                        }
+                        break;
+                    case CalculatorValueType.BudgetSavingsValueOfType:
+                        if (foreignIdType != TypeOfForeignId.Savings)
+                        {
+                            return;
+                        }
+                        break;
+                    case CalculatorValueType.CalculatorEquationValue:
+                        if (foreignIdType != TypeOfForeignId.Equation)
+                        {
+                            return;
+                        }
+                        break;
+                }
                 if (entity == null)
                 {
                     Model.CurrentItem.ForeignId = 0;

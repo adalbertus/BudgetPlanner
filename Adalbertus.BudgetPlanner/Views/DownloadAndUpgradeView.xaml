@@ -50,9 +50,12 @@
 
                     <TextBlock Grid.Row="2" Grid.Column="0" Text="Opis zmian:" Margin="0,0,4,4"
                                VerticalAlignment="Top"/>
-                    <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Changes}" 
-                               VerticalAlignment="Top"
-                               MaxWidth="200" MaxHeight="200" TextWrapping="Wrap" Margin="0,0,4,0"/>
+                    <ScrollViewer Grid.Row="2" Grid.Column="1" 
+                                  ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True"
+                                  MaxWidth="350" MaxHeight="200">
+                        <TextBlock Text="{Binding Changes}" VerticalAlignment="Top" 
+                                   TextWrapping="Wrap" Margin="0,0,4,0"/>
+                    </ScrollViewer>
                 </Grid>
             </Border>
 

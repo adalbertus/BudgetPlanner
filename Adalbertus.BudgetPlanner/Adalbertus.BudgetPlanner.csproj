@@ -148,6 +148,7 @@
     <Compile Include="Extensions\ModelExtensions.cs" />
     <Compile Include="Extensions\MousePressExtension.cs" />
     <Compile Include="Extensions\StringExtenstions.cs" />
+    <Compile Include="Extensions\TreeViewItemBehavior.cs" />
     <Compile Include="Models\Budget.cs" />
     <Compile Include="Models\BudgetCalculatorEquation.cs" />
     <Compile Include="Models\BudgetCalculatorItem.cs" />
