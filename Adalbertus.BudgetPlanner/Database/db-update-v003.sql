@@ -8,7 +8,6 @@ CREATE TABLE [BudgetTemplateItem] (
   [MonthDay] INTEGER,
   [RepeatInterval] INTEGER, -- month unit - i.e. 1 - each month, 3 - each quarter
   [StartDate] DATETIME, -- date from which repeat interval is counted
-  [LastExecutionDate] DATETIME, -- last execution date of item could be older than from BudgetTemplateHistory (because of RepeatInterval)
   [IsActive] INTEGER(1) DEFAULT 1
 );
 
@@ -19,6 +18,5 @@ CREATE TABLE [BudgetTemplateHistory] (
   [BudgetId] INTEGER,
   [Date] DATETIME -- date on witch item was tested for execution (could be skipped because of BudgetTemplateItem.RepeatInterval)
 );
-
 
 UPDATE [Configuration] SET [Value] = '3' WHERE [Key] = 'DatabaseVersion';

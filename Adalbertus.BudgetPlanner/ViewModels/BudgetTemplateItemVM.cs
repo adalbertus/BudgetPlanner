@@ -60,12 +60,24 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         {
             get
             {
-                string executionInverval = string.Format("Każdego {0} dnia miesiąca, co {1} mcy", WrappedItem.MonthDay, WrappedItem.RepeatInterval);
+                StringBuilder sb = new StringBuilder();
+                sb.AppendFormat("Od {0}, każdego {1} dnia ",
+                        WrappedItem.StartDate.ToShortDateString(),
+                        WrappedItem.MonthDay);
+                if (WrappedItem.RepeatInterval == 1)
+                {
+                    sb.AppendFormat("miesiąca");
+                }
+                else
+                {
+                    sb.AppendFormat(", co {0} miesiące", WrappedItem.RepeatInterval);
+                }
+
                 if (WrappedItem.Description.IsNullOrWhiteSpace())
                 {
-                    return string.Format("[{0}]", executionInverval);
+                    return sb.ToString();
                 }
-                return string.Format("{0} [{1}]", WrappedItem.Description, executionInverval);
+                return string.Format("{0}\r\n{1}", WrappedItem.Description, sb.ToString());
             }
         }
 
@@ -73,9 +85,12 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         {
             get
             {
-                if (WrappedItem.LastExecutionDate.HasValue)
+                if (WrappedItem.HistoryItems.Any())
                 {
-                    return string.Format("Ostatnio wykonany: {0}", WrappedItem.LastExecutionDate.Value);
+                    var lastDate = WrappedItem.HistoryItems.OrderByDescending(x => x.Date).First().Date;
+                    
+                    return string.Format("Wykonany {0}", lastDate.ToShortDateString());
+                    
                 }
                 return "Nigdy nie wykonany";
             }

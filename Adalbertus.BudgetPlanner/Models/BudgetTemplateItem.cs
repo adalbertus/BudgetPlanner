@@ -57,9 +57,6 @@ namespace Adalbertus.BudgetPlanner.Models
         [PetaPoco.Column]
         public DateTime StartDate { get; set; }
 
-        [PetaPoco.Column]
-        public DateTime? LastExecutionDate { get; set; }
-
         public IList<BudgetTemplateHistory> HistoryItems { get; private set; }
 
         public BudgetTemplateItem()

@@ -117,7 +117,6 @@ CREATE TABLE [BudgetTemplateItem] (
   [MonthDay] INTEGER,
   [RepeatInterval] INTEGER, -- month unit - i.e. 1 - each month, 3 - each quarter
   [StartDate] DATETIME, -- date from which repeat interval is counted
-  [LastExecutionDate] DATETIME, -- last execution date of item could be older than from BudgetTemplateHistory (because of RepeatInterval)
   [IsActive] INTEGER(1) DEFAULT 1
 );
 

@@ -11,7 +11,7 @@
     <Grid>
         <DockPanel LastChildFill="True" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <Border DockPanel.Dock="Bottom" Style="{StaticResource DialogButtonsBorder}">
-                <WrapPanel HorizontalAlignment="Right">
+                <WrapPanel HorizontalAlignment="Right" IsEnabled="{Binding IsCurrentItemTransient}">
                     <ctrl:ImageButton Content="Wykonaj" ImageUrl="Images/run.png" cal:Message.Attach="[Event Click] = [Action Execute()]" 
                                       Style="{StaticResource Button80}" Width="110"/>
                     <ctrl:ImageButton Content="Zamknij" ImageUrl="Images/button-checked.png" cal:Message.Attach="[Event Click] = [Action Close()]" 
@@ -85,44 +85,68 @@
                         </WrapPanel>
                     </Grid>
                 </GroupBox>
-                <GroupBox Grid.Row="1" Header="Zawartość szablonu" Height="250" MaxWidth="800">
-                        <ListView ItemsSource="{Binding TemplateItems}" >
-                            <ListView.View>
-                                <GridView>
-                                    <GridViewColumn Header="" Width="60">
-                                        <GridViewColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <WrapPanel>
-                                                    <ctrl:ImageButton ToolTip="Usuń" ImageUrl="Images/delete.png"
+                <GroupBox Grid.Row="1" Header="Zawartość szablonu" Height="250" MaxWidth="800" IsEnabled="{Binding IsCurrentItemTransient}">
+                    <ListView ItemsSource="{Binding TemplateItems}" >
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="" Width="60">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <WrapPanel>
+                                                <ctrl:ImageButton ToolTip="Usuń" ImageUrl="Images/delete.png"
                                                                       cal:Message.Attach="[Event Click] = [Action DeleteTemplateItem($dataContext)]" />
 
-                                                    <ctrl:ImageButton ToolTip="Edytuj" ImageUrl="Images/edit.png"
+                                                <ctrl:ImageButton ToolTip="Edytuj" ImageUrl="Images/edit.png"
                                                                       cal:Message.Attach="[Event Click] = [Action EditTemplateItem($dataContext)]" />
-                                                </WrapPanel>
-                                            </DataTemplate>
-                                        </GridViewColumn.CellTemplate>
-                                    </GridViewColumn>
-                                    <GridViewColumn Header="Aktywny" Width="Auto">
-                                        <GridViewColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <CheckBox IsChecked="{Binding IsElementActive}" />
-                                            </DataTemplate>
-                                        </GridViewColumn.CellTemplate>
-                                    </GridViewColumn>
-                                    <GridViewColumn Header="Rodzaj" DisplayMemberBinding="{Binding TypeName}" Width="100"/>
-                                    <GridViewColumn Header="Kategoria" DisplayMemberBinding="{Binding CashFlowName}" Width="130"/>
-                                    <GridViewColumn Header="Kwota" Width="100">
-                                        <GridViewColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <ctrl:CalculatorTextBox Value="{Binding Value}" Width="80" FormatString="C2"/>
-                                            </DataTemplate>
-                                        </GridViewColumn.CellTemplate>
-                                    </GridViewColumn>
-                                    <GridViewColumn Header="Opis" DisplayMemberBinding="{Binding DetailedDescription}" Width="220"/>
-                                    <GridViewColumn Header="Status" DisplayMemberBinding="{Binding Status}" Width="150"/>
-                                </GridView>
-                            </ListView.View>
-                        </ListView>
+                                            </WrapPanel>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="Aktywny" Width="Auto">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <CheckBox IsChecked="{Binding IsElementActive}" />
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="Rodzaj" Width="60">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding TypeName}" FontSize="10"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="Kategoria" Width="80">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding CashFlowName}" FontSize="10"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="Kwota" Width="100">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <ctrl:CalculatorTextBox Value="{Binding Value}" Width="80" FormatString="C2"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="Opis" DisplayMemberBinding="{Binding DetailedDescription}" Width="220">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding DetailedDescription}" FontSize="10"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="Status" DisplayMemberBinding="{Binding Status}" Width="150">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Status}" FontSize="10"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
                 </GroupBox>
             </Grid>
         </DockPanel>
