@@ -112,6 +112,7 @@
     <Compile Include="Converters\VisibilityConverter.cs" />
     <Compile Include="Core\BindableCollectionExt.cs" />
     <Compile Include="CastleBootstrapper.cs" />
+    <Compile Include="Core\TypeSwitch.cs" />
     <Compile Include="Core\UI.cs" />
     <Compile Include="Core\UpdateInfo.cs" />
     <Compile Include="Core\Updater.cs" />

@@ -76,22 +76,12 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         protected override void OnRefreshRequest(RefreshEvent refreshEvent)
         {
             Diagnostics.Start();
-            if (refreshEvent.Sender == typeof(RevenuesViewModel).Name)
-            {
-                RefreshBudgetSummary();
-            }
-            else if (refreshEvent.Sender == typeof(ExpensesViewModel).Name)
-            {
-                RefreshBudgetSummary();
-            }
-            else if (refreshEvent.Sender == typeof(BudgetPlanViewModel).Name)
-            {
-                RefreshBudgetSummary();
-            }
-            else if (refreshEvent.Sender == typeof(BudgetCalculationsViewModel).Name)
-            {
-                RefreshBudgetSummary();
-            }
+            TypeSwitch.Do(refreshEvent.ChangedEntity,
+                TypeSwitch.Case<Budget>(() => RefreshBudgetSummary()),
+                TypeSwitch.Case<IncomeValue>(() => RefreshBudgetSummary()),
+                TypeSwitch.Case<Expense>(() => RefreshBudgetSummary()),
+                TypeSwitch.Case<BudgetPlan>(() => RefreshBudgetSummary()),
+                TypeSwitch.Case<SavingValue>(() => RefreshBudgetSummary()));
             Diagnostics.Stop();
         }
 

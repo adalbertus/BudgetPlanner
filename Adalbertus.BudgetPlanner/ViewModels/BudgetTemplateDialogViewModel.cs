@@ -439,7 +439,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
                 }
             }
 
-            TemplateItems.ForEach(x => ApplyTemplate(x.WrappedItem));
+            TemplateItems.Where(x => x.WrappedItem.IsActive).ForEach(x => ApplyTemplate(x.WrappedItem));
 
             Close();
         }
@@ -459,22 +459,9 @@ namespace Adalbertus.BudgetPlanner.ViewModels
                 var historyToSave = item.HistoryItems.Where(x => x.IsTransient()).ToList();
                 historyToSave.ForEach(x => Database.Save(x));
                 tx.Complete();
+
+                PublishRefreshRequest(result);
             }
-        }
-
-        private void ApplyBudgetPlanTemplate(BudgetTemplateItem item)
-        {
-            var cashFlow = CashFlows.First(x => x.Id == item.ForeignId);
-            var budgetPlanValue = CurrentBudget.AddPlanValue(cashFlow, item.Value.Value, item.Description);
-            Save(budgetPlanValue);
-        }
-
-        private void ApplyBudgetExpenseTemplate(BudgetTemplateItem item)
-        {
-            var cashFlow = CashFlows.First(x => x.Id == item.ForeignId);
-            var expenseDate = CurrentBudget.DateFrom.SetMonthDay(item.MonthDay);
-            var expense = CurrentBudget.AddExpense(cashFlow, item.Value.Value, item.Description, expenseDate);
-            Save(expense);
         }
     }
 }

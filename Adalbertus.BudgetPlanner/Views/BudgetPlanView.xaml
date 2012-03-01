@@ -44,7 +44,7 @@
             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
         </Style>
 
-        <!-- Template for grouped data -->
+        <!-- Template for grouped data: Budget Plan Category -->
         <HierarchicalDataTemplate DataType="{x:Type vm:BudgetPlanGroupItemVM}" ItemsSource="{Binding Items}">
             <Grid Background="Transparent" ToolTipService.ShowDuration="60000"
                   >
@@ -143,10 +143,11 @@
             </Grid>
         </HierarchicalDataTemplate>
 
+        <!-- Budget Plan Item -->
         <DataTemplate DataType="{x:Type vm:BudgetPlanItemVM}">
             <Expander HorizontalContentAlignment="Stretch" Width="305">
                 <Expander.Header>
-                    <StackPanel ToolTipService.ShowDuration="60000" ToolTipService.BetweenShowDelay="10000">
+                    <StackPanel ToolTipService.ShowDuration="60000" ToolTipService.BetweenShowDelay="10000" KeyboardNavigation.TabNavigation="Local">
                         <StackPanel.Resources>
                             <Style TargetType="TextBlock">
                                 <Style.Triggers>
@@ -251,7 +252,44 @@
                                                TextAlignment="Right"/>
                                 </WrapPanel>
                             </Border>
-
+                        </Grid>
+                        <Grid Grid.Row="0" Margin="0,0,0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <ctrl:CalculatorTextBox x:Name="NewValueControl" Grid.Column="0" FontSize="10" Value="{Binding NewValue}"
+                                                    ext:FocusExtension.IsFocused="{Binding IsNewValueFocused}"                                                        
+                                                    ToolTip="Dopuszczalne są też wyrażenia matematyczne, np.: (250-3*3,56)+10"
+                                                    Watermark="Wstaw wartość" Width="80"
+                                                    KeyboardNavigation.TabIndex="1">
+                                <i:Interaction.Triggers>
+                                    <ext:KeyTrigger Key="Enter" Modifiers="Control">
+                                        <cal:ActionMessage MethodName="AddNewValueToBudgetPlan">
+                                            <cal:Parameter Value="$dataContext"/>
+                                        </cal:ActionMessage>
+                                    </ext:KeyTrigger>
+                                    <ext:KeyTrigger Key="Enter" FocusTarget="{x:Reference NewDescription}">
+                                    </ext:KeyTrigger>
+                                </i:Interaction.Triggers>
+                            </ctrl:CalculatorTextBox>
+                            <extToolkit:WatermarkTextBox x:Name="NewDescription" Grid.Column="1" FontSize="10"
+                                                                 Text="{Binding NewDescription}" Watermark="Opis"
+                                                                 Margin="4,0,4,0"
+                                                     KeyboardNavigation.TabIndex="2">
+                                <i:Interaction.Triggers>
+                                    <ext:KeyTrigger Key="Enter" FocusTarget="{x:Reference NewValueControl}">
+                                        <cal:ActionMessage MethodName="AddNewValueToBudgetPlan">
+                                            <cal:Parameter Value="$dataContext"/>
+                                        </cal:ActionMessage>
+                                    </ext:KeyTrigger>
+                                </i:Interaction.Triggers>
+                            </extToolkit:WatermarkTextBox>
+                            <ctrl:ImageButton Grid.Column="2" ImageUrl="Images/save.png" Content="Wstaw" IsEnabled="{Binding NewValue, Converter={StaticResource NumericToBool}}"
+                                          cal:Message.Attach="[Event Click] = [Action AddNewValueToBudgetPlan($dataContext)]"
+                                          FontSize="10"
+                                          KeyboardNavigation.TabIndex="3"/>
                         </Grid>
                     </StackPanel>
                 </Expander.Header>
@@ -260,44 +298,6 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition />
                     </Grid.RowDefinitions>
-                    <Grid Grid.Row="0" Margin="0,0,0,4">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <ctrl:CalculatorTextBox x:Name="NewValueControl" Grid.Column="0" FontSize="10" Value="{Binding NewValue}"
-                                                         ext:FocusExtension.IsFocused="{Binding IsNewValueFocused}"
-                                                         ToolTip="Dopuszczalne są też wyrażenia matematyczne, np.: (250-3*3,56)+10"
-                                                         Watermark="Wstaw wartość" Width="80"
-                                             KeyboardNavigation.TabIndex="1">
-                            <i:Interaction.Triggers>
-                                <ext:KeyTrigger Key="Enter" Modifiers="Control">
-                                    <cal:ActionMessage MethodName="AddNewValueToBudgetPlan">
-                                        <cal:Parameter Value="$dataContext"/>
-                                    </cal:ActionMessage>
-                                </ext:KeyTrigger>
-                                <ext:KeyTrigger Key="Enter" FocusTarget="{x:Reference NewDescription}">
-                                </ext:KeyTrigger>
-                            </i:Interaction.Triggers>
-                        </ctrl:CalculatorTextBox>
-                        <extToolkit:WatermarkTextBox x:Name="NewDescription" Grid.Column="1"
-                                                                 Text="{Binding NewDescription}" Watermark="Opis"
-                                                                 Margin="4,0,4,0" FontSize="10"
-                                                     KeyboardNavigation.TabIndex="2">
-                            <i:Interaction.Triggers>
-                                <ext:KeyTrigger Key="Enter" FocusTarget="{x:Reference NewValueControl}">
-                                    <cal:ActionMessage MethodName="AddNewValueToBudgetPlan">
-                                        <cal:Parameter Value="$dataContext"/>
-                                    </cal:ActionMessage>
-                                </ext:KeyTrigger>
-                            </i:Interaction.Triggers>
-                        </extToolkit:WatermarkTextBox>
-                        <ctrl:ImageButton Grid.Column="2" ImageUrl="Images/save.png" Content="Wstaw" IsEnabled="{Binding NewValue, Converter={StaticResource NumericToBool}}"
-                                          cal:Message.Attach="[Event Click] = [Action AddNewValueToBudgetPlan($dataContext)]"
-                                          FontSize="10"
-                                          KeyboardNavigation.TabIndex="3"/>
-                    </Grid>
                     <DataGrid Grid.Row="1" ItemsSource="{Binding Values, UpdateSourceTrigger=PropertyChanged}"
                                           AutoGenerateColumns="False" CanUserAddRows="False"
                                           CanUserReorderColumns="False" CanUserResizeColumns="False"

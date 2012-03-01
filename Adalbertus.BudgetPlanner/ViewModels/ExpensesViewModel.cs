@@ -32,6 +32,16 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             SelectedExpenseDate = DateTime.Now;
         }
 
+        protected override void OnRefreshRequest(RefreshEvent refreshEvent)
+        {
+            base.OnRefreshRequest(refreshEvent);
+            if (refreshEvent.ChangedEntity is Expense && refreshEvent.Sender == typeof(BudgetTemplateDialogViewModel).Name)
+            {
+                FilterBudgetExpenses();
+                NotifyOfPropertyChange(() => BudgetExpenses);
+            }
+        }
+
         public ExpensesFilteringViewModel ExpensesFilteringViewModel { get; set; }
 
         // Workaround - need ExpensesGridCashFlows and CashFlows because without spliting

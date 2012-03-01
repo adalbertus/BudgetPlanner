@@ -43,6 +43,14 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             {
                 AllBudgetPlanList.ForEach(x => x.RefreshUI());
             }
+
+            if (refreshEvent.ChangedEntity is BudgetPlan && refreshEvent.Sender == typeof(BudgetTemplateDialogViewModel).Name)
+            {
+                var budgetPlanItem = refreshEvent.ChangedEntity as BudgetPlan;
+                var budgetPlan = AllBudgetPlanList.FirstOrDefault(x => x.CashFlow.Id == budgetPlanItem.CashFlowId);
+                budgetPlan.Values.Add(budgetPlanItem);
+            }
+
             Diagnostics.Stop();
         }
         #endregion

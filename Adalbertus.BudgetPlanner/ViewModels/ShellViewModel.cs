@@ -120,10 +120,15 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         {
             ShowDialog<NotepadViewModel>(null, null);
         }
-        
-        public void ApplyBudgetTemplate()
+
+        public void ShowApplyBudgetTemplate(ActionExecutionContext executionContext)
         {
             ShowDialog<BudgetTemplateDialogViewModel>(new { CurrentBudget = CurrentBudget }, null, null);
+            var routedEventArgs = executionContext.EventArgs as RoutedEventArgs;
+            if (routedEventArgs != null)
+            {
+                routedEventArgs.Handled = true;
+            }
         }
 
         protected override void OnActivate()
@@ -132,7 +137,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             {
                 return;
             }
-            
+
             CachedService.LoadAll();
             ShowCurrentBudget();
             int updateIntervalMinutes = ConfigurationManager.GetValueOrDefault(ConfigurationKeys.UpdateMinutesInterval, 15);
