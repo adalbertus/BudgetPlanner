@@ -22,8 +22,8 @@ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                             <TextBlock>Nazwa</TextBlock>
                             <TextBox Text="{Binding Name}" Width="150" Margin="0,0,4,0" />
                             <TextBlock Margin="0,0,2,0" Text="Saldo początkowe" />
-                            <ctrl:NumericTextBox ToolTip="Saldo początkowe" Value="{Binding StartingBalance}"
-                                                 Width="60" Margin="0,0,4,0"/>
+                            <ctrl:CalculatorTextBox ToolTip="Saldo początkowe" Value="{Binding StartingBalance}"
+                                                    Width="80" Margin="0,0,4,0"/>
                             <TextBlock Margin="0,0,2,0" Text="Saldo" />
                             <TextBlock Text="{Binding TotalValue, Converter={StaticResource CurrencyFormatter}}" />
                         </WrapPanel>
@@ -97,11 +97,13 @@ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                 <TextBlock TextWrapping="Wrap" TextAlignment="Left" FontSize="14" Margin="4">
                 <TextBlock.Inlines>
                     Tworząc nowe konto oszczędnościowe podajemy jakie jest jego saldo początkowe.
-                    Zasilenie konta oszczędnościowego jest jednoznaczne z wydaniem pieniędzy z budżetu na ten cel.
+                    Zasilenie konta oszczędnościowego jest jednoznaczne z wydaniem pieniędzy 
+                    z budżetu na ten cel.
                     W praktyce oznacza to, że należy dodać wydatek na konto oszczędnościowe - wtedy kwota podana w wydatku pojawi
                     się jako środek zasilający konto.
                     <LineBreak/><LineBreak/>
-                    Zdefiniowane tutaj oszczędności w razie potrzeby można wykorzystać w planie budżetowym jako dodadkowe wpływy.
+                    Zdefiniowane tutaj oszczędności w razie potrzeby można wykorzystać w planie budżetowym
+                    jako dodatkowe wpływy.
                     <LineBreak/><LineBreak/>
                     <Bold>Przykład:</Bold>
                     <LineBreak/>

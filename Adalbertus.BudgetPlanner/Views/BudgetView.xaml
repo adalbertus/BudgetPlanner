@@ -102,7 +102,7 @@
                                 <TextBlock Grid.Row="3" Grid.Column="0"
                                    ToolTip="Kwota, która pozostała nie wydana w poprzednim okresie budżetowym"
                                    Text="Z poprzedniego okresu" />
-                                <ctrl:NumericTextBox Grid.Row="3" Grid.Column="1"
+                                <ctrl:CalculatorTextBox Grid.Row="3" Grid.Column="1"
                                              ToolTip="Kwota, która pozostała nie wydana w poprzednim okresie budżetowym"
                                              HorizontalAlignment="Stretch" 
                                              Value="{Binding TransferedValue, UpdateSourceTrigger=PropertyChanged}"/>

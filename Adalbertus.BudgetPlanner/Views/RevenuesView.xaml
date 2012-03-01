@@ -83,7 +83,7 @@
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
 
-                            <DataGridTextColumn Header="Nazwa" Binding="{Binding IncomeName}" />
+                            <DataGridTextColumn Header="Nazwa" Binding="{Binding IncomeName}" IsReadOnly="True" />
                             <DataGridTemplateColumn Header="Data">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>

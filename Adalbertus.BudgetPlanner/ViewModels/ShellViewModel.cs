@@ -120,6 +120,11 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         {
             ShowDialog<NotepadViewModel>(null, null);
         }
+        
+        public void ApplyBudgetTemplate()
+        {
+            ShowDialog<BudgetTemplateDialogViewModel>(new { CurrentBudget = CurrentBudget }, null, null);
+        }
 
         protected override void OnActivate()
         {

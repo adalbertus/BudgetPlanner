@@ -141,7 +141,7 @@
                     <DataGridTemplateColumn.CellEditingTemplate>
                         <DataTemplate>
                             <ctrl:CalculatorTextBox Value="{Binding Value, UpdateSourceTrigger=LostFocus}"
-                                                 HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                                    HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                                                     BorderThickness="0"
                                                     ToolTip="Dopuszczalne są też wyrażenia matematyczne, np.: (250-3*3,56)+10"/>
                         </DataTemplate>

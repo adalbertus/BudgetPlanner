@@ -383,7 +383,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
                 }
 
                 int foreignId = GetForeignId();
-                Model.AddItem(valueType, SelectedOperatorType, UserValue, foreignId);
+                Model.AddItem(valueType, SelectedOperatorType, UserValue, UserText, foreignId);
             }
         }
 

@@ -163,9 +163,9 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             InnerEquationList.Add(CurrentItem);
         }
 
-        public BudgetCalculatorItem AddItem(CalculatorValueType valueType, CalculatorOperatorType operatorType, decimal? value, int foreignId)
+        public BudgetCalculatorItem AddItem(CalculatorValueType valueType, CalculatorOperatorType operatorType, decimal? value, string text, int foreignId)
         {
-            CurrentItem = _equation.AddItem(string.Empty, valueType, operatorType, value, foreignId);
+            CurrentItem = _equation.AddItem(string.Empty, valueType, operatorType, value, text, foreignId);
             return CurrentItem;
         }
     }

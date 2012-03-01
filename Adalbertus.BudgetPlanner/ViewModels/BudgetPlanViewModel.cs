@@ -180,5 +180,10 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         }
 
         #endregion
+
+        public void CopyFromPreviousPlan()
+        {
+            Shell.ShowDialog<BudgetPlanCopyDialogViewModel>(new { Ala = "ma kota" }, null, null);
+        }
     }
 }

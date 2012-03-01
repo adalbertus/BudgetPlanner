@@ -60,6 +60,18 @@ namespace Adalbertus.BudgetPlanner.Converters
                     result = Visibility.Visible;
                 }
             }
+
+            if (value is bool)
+            {
+                if ((bool)value)
+                {
+                    result = Visibility.Visible;
+                }
+                else
+                {
+                    result = Visibility.Collapsed;
+                }
+            }
             if (IsResultInverted)
             {
                 return result == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;

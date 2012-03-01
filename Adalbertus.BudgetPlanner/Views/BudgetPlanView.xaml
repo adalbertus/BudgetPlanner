@@ -333,7 +333,14 @@
         </DataTemplate>
     </UserControl.Resources>
 
-    <GroupBox Header="Plan budżetowy">
+    <GroupBox>
+        <GroupBox.Header>
+            <WrapPanel>
+                <TextBlock Margin="0,0,4,0">Plan budżetowy</TextBlock>
+                <ctrl:ImageButton ImageUrl="Images/budget-copy.png" Content="Kopiuj plan" 
+                                  cal:Message.Attach="[Event Click] = [Action CopyFromPreviousPlan()]"/>
+            </WrapPanel>
+        </GroupBox.Header>
         <TreeView ItemsSource="{Binding BudgetPlanListGrouped}" BorderThickness="0" />
     </GroupBox>
 </UserControl>

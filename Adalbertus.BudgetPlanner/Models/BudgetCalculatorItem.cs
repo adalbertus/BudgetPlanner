@@ -135,6 +135,7 @@ namespace Adalbertus.BudgetPlanner.Models
                 OperatorType = this.OperatorType,
                 ForeignId = this.ForeignId,
                 Value = this.Value,
+                Text = this.Text,
                 Equation = this.Equation,
             };
             return copy;

@@ -73,7 +73,7 @@ namespace Adalbertus.BudgetPlanner.Models
             Items = new BindableCollectionExt<BudgetCalculatorItem>();
         }
         
-        public BudgetCalculatorItem AddItem(string name, CalculatorValueType valueType, CalculatorOperatorType operatorType = CalculatorOperatorType.None, decimal? value = null, int foreignId = 0)
+        public BudgetCalculatorItem AddItem(string name, CalculatorValueType valueType, CalculatorOperatorType operatorType, decimal? value, string text, int foreignId = 0)
         {
             var item = new BudgetCalculatorItem
             {
@@ -82,6 +82,7 @@ namespace Adalbertus.BudgetPlanner.Models
                 OperatorType = operatorType,
                 ForeignId = foreignId,
                 Value = value,
+                Text = text,
                 Equation = this,
             };
             Items.Add(item);
@@ -130,13 +131,6 @@ namespace Adalbertus.BudgetPlanner.Models
             Items.ForEach(x => copy.Items.Add(x.CreateCopy()));
 
             return copy;
-        }
-
-        public bool Validate()
-        {
-            bool isValid = false;
-
-            return false;
         }
     }
 }

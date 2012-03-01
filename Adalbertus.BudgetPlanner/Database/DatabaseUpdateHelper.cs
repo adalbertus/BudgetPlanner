@@ -16,6 +16,7 @@ namespace Adalbertus.BudgetPlanner.Database
                         UpdateToVersion2(database);
                         break;
                     case 2:
+                        UpdateToVersion3(database);
                         return;
                     default:
                         throw new InvalidOperationException(string.Format("Procedura aktualizacji bazy danych nie może być wykonana. Błędna wersja bazy danych: {0}", currentDatabaseVersion));
@@ -34,6 +35,15 @@ namespace Adalbertus.BudgetPlanner.Database
             using (var tx = database.GetTransaction())
             {
                 database.Execute(Resources.db_update_v002);
+                tx.Complete();
+            }
+        }
+
+        private static void UpdateToVersion3(IDatabase database)
+        {
+            using (var tx = database.GetTransaction())
+            {
+                database.Execute(Resources.db_update_v003);
                 tx.Complete();
             }
         }

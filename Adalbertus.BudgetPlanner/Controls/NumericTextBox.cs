@@ -28,8 +28,6 @@ namespace Adalbertus.BudgetPlanner.Controls
             set { SetValue(ValueProperty, value); }
         }
 
-        private static int _counter = 0;
-
         private static void OnValueChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
             var numericControl = o as NumericTextBox;
@@ -40,6 +38,56 @@ namespace Adalbertus.BudgetPlanner.Controls
             numericControl.UpdateFormattedValue();
             numericControl.FormatValue();
         }
+
+        public decimal? MinValue
+        {
+            get { return (decimal?)GetValue(MinValueProperty); }
+            set { SetValue(MinValueProperty, value); }
+        }
+
+        public static readonly DependencyProperty MinValueProperty =
+            DependencyProperty.Register("MinValue", typeof(decimal?), typeof(NumericTextBox), new UIPropertyMetadata(default(decimal?), OnMinValueChanged));
+
+        private static void OnMinValueChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
+        {
+            var numericControl = o as NumericTextBox;
+            if (numericControl == null)
+            {
+                return;
+            }
+            numericControl.UpdateValueConstraints();
+            numericControl.FormatValue();
+        }
+
+        public decimal? MaxValue
+        {
+            get { return (decimal?)GetValue(MaxValueProperty); }
+            set { SetValue(MaxValueProperty, value); }
+        }
+
+        public static readonly DependencyProperty MaxValueProperty =
+            DependencyProperty.Register("MaxValue", typeof(decimal?), typeof(NumericTextBox), new UIPropertyMetadata(default(decimal?), OnMaxValueChanged));
+
+        private static void OnMaxValueChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
+        {
+            var numericControl = o as NumericTextBox;
+            if (numericControl == null)
+            {
+                return;
+            }
+            numericControl.UpdateValueConstraints();
+            numericControl.FormatValue();
+        }
+
+        public bool IsIntegerOnly
+        {
+            get { return (bool)GetValue(IsIntegerOnlyProperty); }
+            set { SetValue(IsIntegerOnlyProperty, value); }
+        }
+
+        public static readonly DependencyProperty IsIntegerOnlyProperty = DependencyProperty.Register("IsIntegerOnly", typeof(bool), typeof(NumericTextBox), new UIPropertyMetadata(false));
+
+        
 
         public static readonly DependencyProperty FormatStringProperty = DependencyProperty.Register("FormatString", typeof(string), typeof(NumericTextBox), new UIPropertyMetadata(String.Empty, OnFormatStringChanged));
         public string FormatString
@@ -140,6 +188,7 @@ namespace Adalbertus.BudgetPlanner.Controls
             {
                 Value = value;
             }
+            UpdateValueConstraints();
         }
 
         private void UpdateFormattedValue()
@@ -151,6 +200,30 @@ namespace Adalbertus.BudgetPlanner.Controls
             else
             {
                 FormattedValue = string.Empty;
+            }
+        }
+
+        private void UpdateValueConstraints()
+        {
+            if (MinValue.HasValue)
+            {
+                if (Value < MinValue)
+                {
+                    Value = MinValue;
+                }
+            }
+
+            if (MaxValue.HasValue)
+            {
+                if (Value > MaxValue)
+                {
+                    Value = MaxValue;
+                }
+            }
+
+            if (IsIntegerOnly && Value.HasValue)
+            {
+                Value = (int) Value.Value;
             }
         }
 

@@ -1,0 +1,38 @@
+﻿<UserControl x:Class="Adalbertus.BudgetPlanner.Views.BudgetPlanCopyDialogView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+            xmlns:cal="http://www.caliburnproject.org"
+            xmlns:conv="clr-namespace:Adalbertus.BudgetPlanner.Converters"
+            xmlns:ctrl="clr-namespace:Adalbertus.BudgetPlanner.Controls"
+>
+    <DockPanel LastChildFill="True" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <Border DockPanel.Dock="Bottom" Style="{StaticResource DialogButtonsBorder}">
+            <WrapPanel HorizontalAlignment="Right">
+                <ctrl:ImageButton Content="Anuluj" cal:Message.Attach="[Event Click] = [Action Cancel()]" Style="{StaticResource Button80}" />
+                <ctrl:ImageButton Content="OK" ImageUrl="Images/button-checked.png" cal:Message.Attach="[Event Click] = [Action Close()]" Style="{StaticResource Button80}" />
+            </WrapPanel>
+        </Border>
+
+        <Image DockPanel.Dock="Left" Style="{StaticResource QuestionImage}"/>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <GroupBox>
+                <GroupBox.Header>
+                    <WrapPanel>
+                        <TextBlock>Kopiuj z budżetu:</TextBlock>
+                        <ctrl:ImageButton ImageUrl="Images/arrow-left.png" ToolTip="Poprzedni budżet" cal:Message.Attach="[Event Click] = [Action ShowPreviousBudget()]"/>
+                        <TextBlock Text="{Binding CurrentBudgetDate, Converter={StaticResource DateMonthFormatter}}" FontWeight="Bold"
+                                           Margin="4,0,4,0"/>
+                        <ctrl:ImageButton ImageUrl="Images/arrow-right.png" ToolTip="Następny budżet" cal:Message.Attach="[Event Click] = [Action ShowNextBudget()]"/>
+                    </WrapPanel>
+                </GroupBox.Header>
+                <TreeView ItemsSource="{Binding BudgetPlanListGrouped}" BorderThickness="0" />
+            </GroupBox>
+        </Grid>
+    </DockPanel>
+</UserControl>

@@ -227,7 +227,8 @@ namespace Adalbertus.BudgetPlanner.ViewModels
                     Savings = CachedService.GetAllSavings().ToList(),
                     CashFlows = CachedService.GetAllCashFlows().ToList(),
                     CashFlowGroups = CachedService.GetAllCashFlowGroups().ToList(),
-                    Equations = Equations.ToList(),
+                    // all equations except equation to edit
+                    Equations = Equations.Where(x => !x.Items.Any(y => y.ValueType == CalculatorValueType.CalculatorEquationValue && y.ForeignId == EquationToEdit.Id)).ToList(),
                     Equation = EquationToEdit,
                     BudgetCalculatorEvaluator = BudgetCalculatorEvaluator,
                 },
@@ -250,15 +251,18 @@ namespace Adalbertus.BudgetPlanner.ViewModels
                     equation.IsVisible = message.Model.Equation.IsVisible;
                     equation.Items.Clear();
                     equation.Items.AddRange(message.Model.Equation.Items);
-                    BudgetCalculatorEvaluator.Refresh(equation);
-                    equation.Refresh();
                 }
                 else
                 {
                     Equations.Add(message.Model.Equation);
                 }
 
-                BudgetCalculatorEvaluator.Refresh(message.Model.Equation);
+                Equations.ForEach(x =>
+                {
+                    BudgetCalculatorEvaluator.Refresh(x);
+                });
+                Equations.Refresh();
+
                 SuppressEvent = false;
             }
         }
