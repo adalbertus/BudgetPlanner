@@ -13,6 +13,23 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         public int Id { get; set; }
         public string Name { get; set; }
         public BudgetPlanCopyVM Parent { get; set; }
+        public decimal? Value { get; set; }
+
+        public decimal TotalValue
+        {
+            get
+            {
+                if (Value.HasValue)
+                {
+                    return Value.Value;
+                }
+                else
+                {
+                    return Children.Sum(x => x.TotalValue);
+                }
+            }
+        }
+
         private bool _isSelected;
 
         public bool IsSelected

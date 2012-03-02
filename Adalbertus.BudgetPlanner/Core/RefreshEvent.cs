@@ -9,9 +9,9 @@ namespace Adalbertus.BudgetPlanner.Core
     public class RefreshEvent
     {
         public string Sender { get; set; }
-        public Entity ChangedEntity { get; set; }
+        public object ChangedEntity { get; set; }
 
-        public RefreshEvent(string sender, Entity changedEntity)
+        public RefreshEvent(string sender, object changedEntity)
         {
             Sender        = sender;
             ChangedEntity = changedEntity;

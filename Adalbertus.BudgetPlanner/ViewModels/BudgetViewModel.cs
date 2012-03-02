@@ -81,7 +81,9 @@ namespace Adalbertus.BudgetPlanner.ViewModels
                 TypeSwitch.Case<IncomeValue>(() => RefreshBudgetSummary()),
                 TypeSwitch.Case<Expense>(() => RefreshBudgetSummary()),
                 TypeSwitch.Case<BudgetPlan>(() => RefreshBudgetSummary()),
+                TypeSwitch.Case<IEnumerable<BudgetPlan>>(() => RefreshBudgetSummary()),
                 TypeSwitch.Case<SavingValue>(() => RefreshBudgetSummary()));
+                
             Diagnostics.Stop();
         }
 

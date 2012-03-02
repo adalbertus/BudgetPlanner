@@ -447,6 +447,7 @@
     <EmbeddedResource Include="Database\db-update-v003.sql" />
     <Resource Include="Images\run.png" />
     <Resource Include="Images\search.png" />
+    <Resource Include="Images\copy.png" />
     <Content Include="Licence.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

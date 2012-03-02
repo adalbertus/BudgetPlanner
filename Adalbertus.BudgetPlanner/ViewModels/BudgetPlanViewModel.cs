@@ -47,8 +47,21 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             if (refreshEvent.ChangedEntity is BudgetPlan && refreshEvent.Sender == typeof(BudgetTemplateDialogViewModel).Name)
             {
                 var budgetPlanItem = refreshEvent.ChangedEntity as BudgetPlan;
-                var budgetPlan = AllBudgetPlanList.FirstOrDefault(x => x.CashFlow.Id == budgetPlanItem.CashFlowId);
+                var budgetPlan = AllBudgetPlanList.First(x => x.CashFlow.Id == budgetPlanItem.CashFlowId);
                 budgetPlan.Values.Add(budgetPlanItem);
+            }
+
+            if (refreshEvent.ChangedEntity is IEnumerable<BudgetPlan>)
+            {
+                var changedPlans = refreshEvent.ChangedEntity as IEnumerable<BudgetPlan>;
+                var gropedChangedPlans = changedPlans
+                    .GroupBy(x => x.CashFlowId, (cashFlowId, budgetPlanItems) => new { CashFlowId = cashFlowId, BudgetPlanItems = budgetPlanItems })
+                    .ToList();
+                gropedChangedPlans.ForEach(x => 
+                {
+                    var budgetPlan = AllBudgetPlanList.First(y => y.CashFlow.Id == x.CashFlowId);
+                    budgetPlan.Values.AddRange(x.BudgetPlanItems);
+                });
             }
 
             Diagnostics.Stop();

@@ -11,10 +11,26 @@
 >
     <UserControl.Resources>
         <HierarchicalDataTemplate DataType="{x:Type vm:BudgetPlanCopyVM}" ItemsSource="{Binding Children}">
-            <WrapPanel Margin="4">
-                <CheckBox IsChecked="{Binding IsSelected}" />
-                <TextBlock Text="{Binding Name}" />
-            </WrapPanel>
+            <Grid Margin="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <CheckBox Grid.Column="0" IsChecked="{Binding IsSelected}"/>
+                <TextBlock x:Name="name" Grid.Column="1" Text="{Binding Name}" />
+                <TextBlock x:Name="totalValue" Grid.Column="2" Text="{Binding TotalValue, Converter={StaticResource CurrencyFormatter}}" 
+                           Margin="4,0"/>
+            </Grid>
+            <HierarchicalDataTemplate.Triggers>
+                <DataTrigger Binding="{Binding Value, Converter={StaticResource IsNull}}" Value="False">
+                    <Setter TargetName="name" Property="Grid.Column" Value="2" />
+                    <Setter TargetName="name" Property="Margin" Value="4,0" />
+                    <Setter TargetName="totalValue" Property="Grid.Column" Value="1" />
+                    <Setter TargetName="totalValue" Property="Margin" Value="0" />
+                    <Setter TargetName="totalValue" Property="FontWeight" Value="Bold" />
+                </DataTrigger>
+            </HierarchicalDataTemplate.Triggers>
         </HierarchicalDataTemplate>
 
     </UserControl.Resources>
@@ -22,34 +38,35 @@
         <Border DockPanel.Dock="Bottom" Style="{StaticResource DialogButtonsBorder}">
             <WrapPanel HorizontalAlignment="Right">
                 <ctrl:ImageButton Content="Anuluj" cal:Message.Attach="[Event Click] = [Action Cancel()]" Style="{StaticResource Button80}" />
-                <ctrl:ImageButton Content="OK" ImageUrl="Images/button-checked.png" cal:Message.Attach="[Event Click] = [Action Close()]" Style="{StaticResource Button80}" />
+                <ctrl:ImageButton Content="Kopiuj" ImageUrl="Images/button-checked.png" cal:Message.Attach="[Event Click] = [Action Copy()]" Style="{StaticResource Button80}" />
             </WrapPanel>
         </Border>
 
-        <Image DockPanel.Dock="Left" Style="{StaticResource QuestionImage}"/>
-        <Grid>
+        <Image DockPanel.Dock="Left" Width="128" Height="128" Source="/Adalbertus.BudgetPlanner;component/Images/copy.png"
+               Margin="10,0"/>
+        
+        <Grid Margin="10">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-            <WrapPanel Grid.Row="0" ext:MarginSetterExtension.Margin="4">
-                <TextBlock>Wybierz budżet</TextBlock>
-                <ctrl:AutoCompleteBox ItemsSource="{Binding AvaiableBudgetDates}" SelectedItem="{Binding SelectedBudgetDate}" CanBeEmpty="False"/>
-            </WrapPanel>
-            <GroupBox Grid.Row="1">
+            <StackPanel Grid.Row="0">
+                <WrapPanel ext:MarginSetterExtension.Margin="4">
+                    <TextBlock>Wybierz budżet, z którego chcesz kopiować</TextBlock>
+                    <ctrl:AutoCompleteBox ItemsSource="{Binding AvaiableBudgetDates}" Width="80" SelectedItem="{Binding SelectedBudgetDate}" CanBeEmpty="False"/>
+                </WrapPanel>
+                <Border Background="LightGray" BorderThickness="1" CornerRadius="4" Padding="4" Width="400">
+                    <TextBlock>Zaznacz te grupy, kategorie lub wartości, które mają być przekopiowane</TextBlock>
+                </Border>
+            </StackPanel>
+            <GroupBox Grid.Row="1" Width="400">
                 <GroupBox.Header>
                     <WrapPanel ext:MarginSetterExtension.Margin="4">
                         <TextBlock>Kopiuj z budżetu</TextBlock>
                         <TextBlock Text="{Binding SelectedBudgetDate}" FontWeight="Bold"/>
                     </WrapPanel>
                 </GroupBox.Header>
-                <TreeView ItemsSource="{Binding Items}" BorderThickness="0" Width="400" Height="400">
-                    <TreeView.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <StackPanel />
-                        </ItemsPanelTemplate>
-                    </TreeView.ItemsPanel>
-                </TreeView>
+                <TreeView ItemsSource="{Binding Items}" BorderThickness="0" Height="300" />
             </GroupBox>
         </Grid>
     </DockPanel>

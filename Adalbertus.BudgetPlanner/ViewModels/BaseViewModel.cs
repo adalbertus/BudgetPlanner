@@ -105,11 +105,10 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         {
         }
 
-        protected void PublishRefreshRequest(Entity entity)
+        protected void PublishRefreshRequest(object entity)
         {
             EventAggregator.Publish(new RefreshEvent(this.GetType().Name, entity));
         }
-
         #endregion
     }
 }

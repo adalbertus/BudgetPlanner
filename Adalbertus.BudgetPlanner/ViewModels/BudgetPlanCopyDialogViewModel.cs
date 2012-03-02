@@ -103,8 +103,9 @@ namespace Adalbertus.BudgetPlanner.ViewModels
                     {
                         var planValue = new BudgetPlanCopyVM
                         {
-                            Id = v.Id,
-                            Name = string.Format("{0} {1}", v.Value.ToString("C2"), v.Description),
+                            Id = v.CashFlowId,
+                            Name = v.Description,
+                            Value = v.Value
                         };
                         child.AddChild(planValue);
                     });
@@ -113,5 +114,36 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             });
         }
 
+        public void Copy()
+        {
+            if (!Items.Any(x => x.IsSelected))
+            {
+                Close();
+                return;
+            }
+
+            var cashFlows = CachedService.GetAllCashFlows();
+            var copiedPlanItems = new List<BudgetPlan>();
+            Items.Where(x => x.IsSelected).ForEach(groupItem =>
+            {
+                groupItem.Children.Where(y => y.IsSelected).ForEach(categoryItem =>
+                {
+                    categoryItem.Children.Where(z => z.IsSelected).ForEach(valueItem => 
+                    {
+                        var cashFlow = cashFlows.First(c => c.Id == valueItem.Id);
+                        var planItem = CurrentBudget.AddPlanValue(cashFlow, valueItem.Value.GetValueOrDefault(0), valueItem.Name);
+                        copiedPlanItems.Add(planItem);
+                    });
+                });
+            });
+
+            using (var tx = Database.GetTransaction())
+            {
+                Database.SaveAll<BudgetPlan>(copiedPlanItems);
+                tx.Complete();
+                PublishRefreshRequest(copiedPlanItems);
+            }
+            Close();
+        }
     }
 }
