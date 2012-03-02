@@ -6,7 +6,17 @@
             xmlns:cal="http://www.caliburnproject.org"
             xmlns:conv="clr-namespace:Adalbertus.BudgetPlanner.Converters"
             xmlns:ctrl="clr-namespace:Adalbertus.BudgetPlanner.Controls"
+             xmlns:vm="clr-namespace:Adalbertus.BudgetPlanner.ViewModels"
 >
+    <UserControl.Resources>
+        <HierarchicalDataTemplate DataType="{x:Type vm:BudgetPlanCopyVM}" ItemsSource="{Binding Children}">
+            <WrapPanel Margin="4">
+                <CheckBox IsChecked="{Binding IsSelected}" />
+                <TextBlock Text="{Binding Name}" />
+            </WrapPanel>            
+        </HierarchicalDataTemplate>
+        
+    </UserControl.Resources>
     <DockPanel LastChildFill="True" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         <Border DockPanel.Dock="Bottom" Style="{StaticResource DialogButtonsBorder}">
             <WrapPanel HorizontalAlignment="Right">
@@ -31,7 +41,13 @@
                         <ctrl:ImageButton ImageUrl="Images/arrow-right.png" ToolTip="Następny budżet" cal:Message.Attach="[Event Click] = [Action ShowNextBudget()]"/>
                     </WrapPanel>
                 </GroupBox.Header>
-                <TreeView ItemsSource="{Binding BudgetPlanListGrouped}" BorderThickness="0" />
+                <TreeView ItemsSource="{Binding Items}" BorderThickness="0" Width="200" Height="400">
+                    <TreeView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel />
+                        </ItemsPanelTemplate>
+                    </TreeView.ItemsPanel>
+                </TreeView>
             </GroupBox>
         </Grid>
     </DockPanel>

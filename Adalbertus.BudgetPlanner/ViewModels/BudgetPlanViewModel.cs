@@ -191,7 +191,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
 
         public void CopyFromPreviousPlan()
         {
-            Shell.ShowDialog<BudgetPlanCopyDialogViewModel>(new { Ala = "ma kota" }, null, null);
+            Shell.ShowDialog<BudgetPlanCopyDialogViewModel>(new { CurrentBudget = Budget }, null, null);
         }
     }
 }

@@ -355,6 +355,8 @@ namespace Adalbertus.BudgetPlanner.ViewModels
                 Database.Delete<BudgetPlan>("WHERE CashFlowId = @0", cashFlow.Id);
                 Database.Delete<SavingValue>("WHERE ExpenseId IN (SELECT [Expense].Id FROM [Expense] WHERE CashFlowId = @0)", cashFlow.Id);
                 Database.Delete<Expense>("WHERE CashFlowId = @0", cashFlow.Id);
+                Database.Delete<BudgetTemplateHistory>("WHERE BudgetTemplateItemId IN (SELECT Id FROM [BudgetTemplateItem] WHERE [ForeignId] = @0)", cashFlow.Id);
+                Database.Delete<BudgetTemplateItem>("WHERE [ForeignId] = @0", cashFlow.Id);
                 Database.Delete<CashFlow>(cashFlow);
                 tx.Complete();
                 _cashFlows.Remove(cashFlow);

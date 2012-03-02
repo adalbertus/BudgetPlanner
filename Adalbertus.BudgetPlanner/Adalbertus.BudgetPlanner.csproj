@@ -189,6 +189,7 @@
     <Compile Include="ViewModels\BudgetEquationWizardStartViewModel.cs" />
     <Compile Include="ViewModels\BudgetEquationWizardVM.cs" />
     <Compile Include="ViewModels\BudgetPlanCopyDialogViewModel.cs" />
+    <Compile Include="ViewModels\BudgetPlanCopyVM.cs" />
     <Compile Include="ViewModels\BudgetPlanGroupItemVM.cs" />
     <Compile Include="ViewModels\BudgetPlanItemVM.cs">
       <SubType>Code</SubType>
