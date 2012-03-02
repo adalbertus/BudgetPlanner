@@ -122,6 +122,16 @@ namespace Adalbertus.BudgetPlanner.Controls
             SelectAllOnGotFocus = true;
         }
 
+        protected override void OnKeyDown(KeyEventArgs e)
+        {
+            base.OnKeyDown(e);
+            if (e.Key == Key.Escape)
+            {
+                Text = DefaultText;
+                Value = DefaultValue;                
+            }
+        }
+
         protected override void OnPreviewKeyDown(System.Windows.Input.KeyEventArgs e)
         {
             if (e.Key == Key.Up)

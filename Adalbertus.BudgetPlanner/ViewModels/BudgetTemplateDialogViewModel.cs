@@ -17,12 +17,16 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         {
             CashFlows = new BindableCollectionExt<CashFlow>();
             TemplateItems = new BindableCollectionExt<BudgetTemplateItemVM>();
+            TemplateItemsToFill = new BindableCollectionExt<BudgetTemplateItemVM>();
             TemplateItems.PropertyChanged += (s, e) =>
                 {
                     var item = s as BudgetTemplateItemVM;
-                    if (e.PropertyName == "IsElementActive")
+                    switch (e.PropertyName)
                     {
-                        Save(item.WrappedItem);
+                        case "IsElementActive":
+                        case "Value":
+                            Save(item.WrappedItem);
+                            break;
                     }
                 };
             CurrentTemplateItem = new BudgetTemplateItem();
@@ -70,6 +74,20 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         public bool IsCurrentItemTransient { get { return CurrentTemplateItem.IsTransient(); } }
 
         public BindableCollectionExt<BudgetTemplateItemVM> TemplateItems { get; private set; }
+        public IEnumerable<BudgetTemplateItemVM> TemplateItemsToApply
+        {
+            get
+            {
+                return TemplateItems.Where(x => x.IsElementActive).ToList();
+            }
+        }
+        public bool HasAllValuesToApply { 
+            get
+            {
+                return !TemplateItemsToApply.Any(x => !x.ValueToApply.HasValue);
+            }
+        }
+        public BindableCollectionExt<BudgetTemplateItemVM> TemplateItemsToFill { get; private set; }
 
         public BindableCollectionExt<CashFlow> CashFlows { get; private set; }
         private CashFlow _selectedCashFlow;
@@ -378,19 +396,29 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             IsConfirmationDialogActive = false;
             ConfirmationDialogMessage = string.Empty;
             ItemToDelete = null;
+            TemplateItemsToFill.Clear();
         }
 
         public void ConfirmConfirmationDialog()
         {
-            IsConfirmationDialogActive = false;
-            ConfirmationDialogMessage = string.Empty;
             if (ItemToDelete != null)
             {
+                IsConfirmationDialogActive = false;
+                ConfirmationDialogMessage = string.Empty;
                 DeleteTemplateItem(true);
             }
             else
             {
-                Execute(true);
+                if (HasAllValuesToApply)
+                {
+                    IsConfirmationDialogActive = false;
+                    ConfirmationDialogMessage = string.Empty;
+                    Execute(true);
+                }
+                else
+                {
+                    Execute(false);
+                }
             }
         }
 
@@ -423,31 +451,54 @@ namespace Adalbertus.BudgetPlanner.ViewModels
 
         public void Execute()
         {
+            NotifyOfPropertyChange(() => TemplateItemsToApply);
+            NotifyOfPropertyChange(() => HasAllValuesToApply);
             Execute(false);
         }
 
         public void Execute(bool bypassConfirmation)
         {
+            TemplateItems.ForEach(x =>
+            {
+                if (x.Value.HasValue)
+                {
+                    x.ValueToApply = x.Value;
+                }
+            });
+
+            StringBuilder sb = new StringBuilder();
+            if (Database.AreBudgetTemplatesApplied(CurrentBudget))
+            {
+                sb.AppendLine("Szablon był już raz wykonany na tym budżecie.\r\nWykonać jeszcze raz?");
+                sb.AppendLine();
+            }
+
+            if (!HasAllValuesToApply)
+            {
+                sb.AppendLine( "Proszę wypełnić puste wartości dla elementów poniżej.");
+            }
+
             if (!bypassConfirmation)
             {
-                if (Database.AreBudgetTemplatesApplied(CurrentBudget))
+                if(sb.Length > 0)
                 {
                     ItemToDelete = null;
-                    ConfirmationDialogMessage = "Szablon był już raz wykonany na tym budżecie.\r\nWykonać jeszcze raz?";
+                    ConfirmationDialogMessage = sb.ToString();
                     IsConfirmationDialogActive = true;
                     return;
                 }
             }
 
-            TemplateItems.Where(x => x.WrappedItem.IsActive).ForEach(x => ApplyTemplate(x.WrappedItem));
-
+            TemplateItemsToApply.ForEach(x => ApplyTemplate(x.WrappedItem));
+            TemplateItems.ForEach(x => x.ValueToApply = null);
+            
             Close();
         }
 
         private void ApplyTemplate(BudgetTemplateItem item)
         {
             var cashFlow = CashFlows.First(x => x.Id == item.ForeignId);
-            var result = item.ApplyToBudget(CurrentBudget, cashFlow, item.Value.GetValueOrDefault(0), item.Description);
+            var result = item.ApplyToBudget(CurrentBudget, cashFlow, item.ValueToApply.GetValueOrDefault(0), item.Description);
             if (result == null)
             {
                 return;

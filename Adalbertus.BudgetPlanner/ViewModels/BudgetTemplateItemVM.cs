@@ -56,6 +56,16 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             }
         }
 
+        public decimal? ValueToApply
+        {
+            get { return WrappedItem.ValueToApply; }
+            set
+            {
+                WrappedItem.ValueToApply = value;
+                NotifyOfPropertyChange(() => ValueToApply);
+            }
+        }
+
         public string DetailedDescription
         {
             get

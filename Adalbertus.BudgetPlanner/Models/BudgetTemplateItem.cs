@@ -31,6 +31,7 @@ namespace Adalbertus.BudgetPlanner.Models
 
         [PetaPoco.Column]
         public decimal? Value { get; set; }
+        public decimal? ValueToApply { get; set; }
 
         private string _description;
         [PetaPoco.Column]

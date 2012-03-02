@@ -61,7 +61,7 @@ namespace Adalbertus.BudgetPlanner.Controls
         {
             if (ResultPopup != null)
             {
-                ResultPopup.IsOpen = IsFocused && Result.HasValue;                
+                ResultPopup.IsOpen = IsFocused && Result.HasValue;
             }
         }
 
@@ -71,6 +71,22 @@ namespace Adalbertus.BudgetPlanner.Controls
             if (ResultPopup != null)
             {
                 ResultPopup.IsOpen = false;
+            }
+        }
+
+        protected override void OnKeyDown(System.Windows.Input.KeyEventArgs e)
+        {
+            base.OnKeyDown(e);
+            switch (e.Key)
+            {
+                case System.Windows.Input.Key.Escape:
+                case System.Windows.Input.Key.Enter:
+                    if (ResultPopup != null)
+                    {
+                        ResultPopup.IsOpen = false;
+                        base.FormatValue();
+                    }
+                    break;
             }
         }
 
