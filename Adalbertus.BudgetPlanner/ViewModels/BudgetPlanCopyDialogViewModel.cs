@@ -15,22 +15,67 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         public BudgetPlanCopyDialogViewModel(IShellViewModel shell, IDatabase database, IConfigurationManager configuration, ICachedService cashedService, IEventAggregator eventAggregator)
             : base(shell, database, configuration, cashedService, eventAggregator)
         {
-
+            AvaiableBudgetDates = new BindableCollection<string>();
+            Items = new BindableCollectionExt<BudgetPlanCopyVM>();
         }
 
-        public List<BudgetPlanCopyVM> Items { get; private set; }
+        public BindableCollectionExt<BudgetPlanCopyVM> Items { get; private set; }
+
+        public BindableCollection<string> AvaiableBudgetDates { get; private set; }
+        private string _selectedBudgetDate;
+
+        public string SelectedBudgetDate
+        {
+            get { return _selectedBudgetDate; }
+            set
+            {
+                _selectedBudgetDate = value;
+                LoadBudgetPlans();
+                NotifyOfPropertyChange(() => SelectedBudgetDate);
+            }
+        }
 
         public Budget CurrentBudget { get; set; }
+
 
         public override void Initialize(dynamic parameters)
         {
             CurrentBudget = parameters.CurrentBudget;
-            Items = new List<BudgetPlanCopyVM>();
         }
 
         public override void LoadData()
         {
             Diagnostics.Start();
+
+            LoadAvaiableBudgets();
+
+            Diagnostics.Stop();
+        }
+
+        private void LoadAvaiableBudgets()
+        {
+            var avaiableBudgets = Database.Query<DateTime>(PetaPoco.Sql.Builder
+                .Select("DateFrom")
+                .From("[Budget]")
+                .OrderBy("[DateFrom]")).ToList();
+
+            AvaiableBudgetDates.Clear();
+            avaiableBudgets.ForEach(x => AvaiableBudgetDates.Add(x.ToString("yyyy-MM")));
+
+            var currentBudgetIndex = AvaiableBudgetDates.IndexOf(CurrentBudget.DateFrom.ToString("yyyy-MM"));
+            if (currentBudgetIndex > 1)
+            {
+                SelectedBudgetDate = AvaiableBudgetDates[currentBudgetIndex - 1];
+            }
+            else
+            {
+                SelectedBudgetDate = AvaiableBudgetDates.FirstOrDefault();
+            }
+
+        }
+
+        private void LoadBudgetPlans()
+        {
             var cashFlows = CachedService.GetAllCashFlows();
 
             var sql = PetaPoco.Sql.Builder
@@ -42,11 +87,12 @@ namespace Adalbertus.BudgetPlanner.ViewModels
                 .On("CashFlow.Id = BudgetPlan.CashFlowId")
                 .InnerJoin("CashFlowGroup")
                 .On("CashFlow.CashFlowGroupId = CashFlowGroup.Id")
-                .Where("BudgetPlan.BudgetId = @0", CurrentBudget.Id);
+                .Where("Budget.DateFrom = datetime(@0)", string.Format("{0}-01", SelectedBudgetDate));
             var budgetPlans = Database.Query<BudgetPlan, Budget, CashFlow, CashFlowGroup>(sql).ToList();
 
             var result = cashFlows.GroupBy(x => x.GroupName, (name, id) => new { Name = name, Id = id }).ToList();
 
+            Items.Clear();
             cashFlows.GroupBy(x => x.GroupName, (name, cfs) => new { Name = name, CashFlows = cfs }).ForEach(x =>
             {
                 var planCopy = new BudgetPlanCopyVM { Name = x.Name };
@@ -59,16 +105,13 @@ namespace Adalbertus.BudgetPlanner.ViewModels
                         {
                             Id = v.Id,
                             Name = string.Format("{0} {1}", v.Value.ToString("C2"), v.Description),
-                            IsSelected = true
                         };
-                        child.AddChild(planValue);                        
+                        child.AddChild(planValue);
                     });
                 });
                 Items.Add(planCopy);
             });
-
-
-            Diagnostics.Stop();
         }
+
     }
 }

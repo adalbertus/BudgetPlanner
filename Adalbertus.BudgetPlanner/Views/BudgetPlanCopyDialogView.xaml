@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
             xmlns:cal="http://www.caliburnproject.org"
             xmlns:conv="clr-namespace:Adalbertus.BudgetPlanner.Converters"
+             xmlns:ext="clr-namespace:Adalbertus.BudgetPlanner.Extensions"
             xmlns:ctrl="clr-namespace:Adalbertus.BudgetPlanner.Controls"
              xmlns:vm="clr-namespace:Adalbertus.BudgetPlanner.ViewModels"
 >
@@ -13,9 +14,9 @@
             <WrapPanel Margin="4">
                 <CheckBox IsChecked="{Binding IsSelected}" />
                 <TextBlock Text="{Binding Name}" />
-            </WrapPanel>            
+            </WrapPanel>
         </HierarchicalDataTemplate>
-        
+
     </UserControl.Resources>
     <DockPanel LastChildFill="True" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         <Border DockPanel.Dock="Bottom" Style="{StaticResource DialogButtonsBorder}">
@@ -27,21 +28,22 @@
 
         <Image DockPanel.Dock="Left" Style="{StaticResource QuestionImage}"/>
         <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
-            <GroupBox>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <WrapPanel Grid.Row="0" ext:MarginSetterExtension.Margin="4">
+                <TextBlock>Wybierz budżet</TextBlock>
+                <ctrl:AutoCompleteBox ItemsSource="{Binding AvaiableBudgetDates}" SelectedItem="{Binding SelectedBudgetDate}" CanBeEmpty="False"/>
+            </WrapPanel>
+            <GroupBox Grid.Row="1">
                 <GroupBox.Header>
-                    <WrapPanel>
-                        <TextBlock>Kopiuj z budżetu:</TextBlock>
-                        <ctrl:ImageButton ImageUrl="Images/arrow-left.png" ToolTip="Poprzedni budżet" cal:Message.Attach="[Event Click] = [Action ShowPreviousBudget()]"/>
-                        <TextBlock Text="{Binding CurrentBudgetDate, Converter={StaticResource DateMonthFormatter}}" FontWeight="Bold"
-                                           Margin="4,0,4,0"/>
-                        <ctrl:ImageButton ImageUrl="Images/arrow-right.png" ToolTip="Następny budżet" cal:Message.Attach="[Event Click] = [Action ShowNextBudget()]"/>
+                    <WrapPanel ext:MarginSetterExtension.Margin="4">
+                        <TextBlock>Kopiuj z budżetu</TextBlock>
+                        <TextBlock Text="{Binding SelectedBudgetDate}" FontWeight="Bold"/>
                     </WrapPanel>
                 </GroupBox.Header>
-                <TreeView ItemsSource="{Binding Items}" BorderThickness="0" Width="200" Height="400">
+                <TreeView ItemsSource="{Binding Items}" BorderThickness="0" Width="400" Height="400">
                     <TreeView.ItemsPanel>
                         <ItemsPanelTemplate>
                             <StackPanel />
