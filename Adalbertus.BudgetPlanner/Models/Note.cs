@@ -21,5 +21,8 @@ namespace Adalbertus.BudgetPlanner.Models
                 NotifyOfPropertyChange(() => Text);
             }
         }
+
+        [PetaPoco.Column]
+        public int BudgetId { get; set; }
     }
 }

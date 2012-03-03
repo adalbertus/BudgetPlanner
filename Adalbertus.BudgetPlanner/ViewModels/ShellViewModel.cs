@@ -118,7 +118,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
 
         public void ShowNotepad()
         {
-            ShowDialog<NotepadViewModel>(null, null);
+            ShowDialog<NotepadViewModel>(new { CurrentBudget = CurrentBudget }, null, null);
         }
 
         public void ShowApplyBudgetTemplate(ActionExecutionContext executionContext)

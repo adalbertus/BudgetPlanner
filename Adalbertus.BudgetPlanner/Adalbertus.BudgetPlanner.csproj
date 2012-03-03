@@ -150,6 +150,7 @@
     <Compile Include="Database\SQLiteHelper.cs" />
     <Compile Include="Extensions\FocusExtension.cs" />
     <Compile Include="Converters\StringFormatConverter.cs" />
+    <Compile Include="Extensions\ListBoxExtensions.cs" />
     <Compile Include="Extensions\ListViewExtensions.cs" />
     <Compile Include="Extensions\MarginSetterExtension.cs" />
     <Compile Include="Extensions\ModelExtensions.cs" />

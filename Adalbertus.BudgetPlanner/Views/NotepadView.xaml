@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:cal="http://www.caliburnproject.org"
              xmlns:ctrl="clr-namespace:Adalbertus.BudgetPlanner.Controls"
+             xmlns:ext="clr-namespace:Adalbertus.BudgetPlanner.Extensions"
              xmlns:extToolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit/extended"
 >
     <DockPanel LastChildFill="True" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
@@ -12,9 +13,36 @@
                 <ctrl:ImageButton Content="OK" ImageUrl="Images/button-checked.png" cal:Message.Attach="[Event Click] = [Action Close()]" Style="{StaticResource Button80}" />
             </WrapPanel>
         </Border>
-        <ctrl:WatermarkTextBoxExt Width="600" Height="400" TextWrapping="Wrap" Watermark="Tutaj wpisz swoje notatki..."
+        <Grid Margin="10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <GroupBox Header="Notatnik główny">
+                <ctrl:WatermarkTextBoxExt Grid.Row="0" Width="620" Height="200" TextWrapping="Wrap" Watermark="Tutaj wpisz swoje notatki..."
                                   AcceptsReturn="True" AcceptsTab="True"
                                 HorizontalContentAlignment="Left" VerticalContentAlignment="Top"
-                                Margin="10" Text="{Binding Text}"/>
+                                Margin="5" Text="{Binding Text}"/>
+            </GroupBox>
+
+            <GroupBox Grid.Row="1" Header="Notatniki budżetowe">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <ListBox Grid.Column="0" Width="120" Height="200" Margin="5,5,0,5"
+                             ItemsSource="{Binding AvaiableBudgetDates}" SelectedItem="{Binding SelectedBudget}"
+                             SelectedValuePath="Name" DisplayMemberPath="Name"
+                             ext:ListBoxExtensions.ScrollToItem="{Binding SelectedBudget}"/>
+
+                    <ctrl:WatermarkTextBoxExt Grid.Column="1" Width="500" Height="200" TextWrapping="Wrap" Watermark="Tutaj wpisz swoje notatki..."
+                                  AcceptsReturn="True" AcceptsTab="True"
+                                HorizontalContentAlignment="Left" VerticalContentAlignment="Top"
+                                Margin="5" Text="{Binding BudgetNote.Text}"/>
+
+                </Grid>
+            </GroupBox>
+        </Grid>
     </DockPanel>
 </UserControl>

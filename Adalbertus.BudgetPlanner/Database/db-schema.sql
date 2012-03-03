@@ -104,7 +104,8 @@ CREATE TABLE [BudgetCalculatorEquation] (
 DROP TABLE IF EXISTS [Note];
 CREATE TABLE [Note] (
   [Id]  INTEGER PRIMARY KEY AUTOINCREMENT,
-  [Text] TEXT
+  [Text] TEXT,
+  [BudgetId] INT
 );
 
 DROP TABLE IF EXISTS [BudgetTemplateItem];
