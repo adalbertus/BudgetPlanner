@@ -38,6 +38,7 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <GroupBox Grid.Column="0" Header="Podsumowanie budżetu">
                     <GroupBox.Resources>
