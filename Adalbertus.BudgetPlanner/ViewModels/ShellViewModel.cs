@@ -255,7 +255,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         private bool DatabaseVerification()
         {
             var dbHelper = new DatabaseBackupHelper();
-            int applicationDatabaseVersion = 2;
+            int applicationDatabaseVersion = 3;
             int currentDatabaseVersion = ConfigurationManager.GetValueOrDefault<int>(ConfigurationKeys.DatabaseVersion);
 
             if (currentDatabaseVersion == applicationDatabaseVersion)

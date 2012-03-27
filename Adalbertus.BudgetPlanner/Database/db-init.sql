@@ -1,4 +1,4 @@
-﻿INSERT INTO Configuration VALUES('DatabaseVersion','1','2','Wersja bazy danych');
+﻿INSERT INTO Configuration VALUES('DatabaseVersion','1','3','Wersja bazy danych');
 INSERT INTO Configuration VALUES('IsFirstRun','1','True','Czy jest to pierwsze uruchomienie aplikacji');
 INSERT INTO Configuration VALUES('AuthorEmail','1','budzet-domowy@@pietkiewicz.pl','Adres autora aplikacji');
 INSERT INTO Configuration VALUES('HomePage','1','http://budzet-domowy.pietkiewicz.pl/','Adres strony WWW aplikacji');
