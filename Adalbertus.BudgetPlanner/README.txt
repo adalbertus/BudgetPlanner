@@ -1,4 +1,4 @@
-﻿0.9.6
+﻿0.9.10
 Screencast: http://www.debugmode.com/wink/
 
 Instalator: http://nsis.sourceforge.net/ + https://github.com/ProjectHuman/NsisDotNetChecker
