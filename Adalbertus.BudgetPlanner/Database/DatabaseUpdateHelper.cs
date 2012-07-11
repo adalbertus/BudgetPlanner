@@ -34,6 +34,7 @@ namespace Adalbertus.BudgetPlanner.Database
         {            
             using (var tx = database.GetTransaction())
             {
+                database.AlterTable("Saving", "[StartingBalance]", "ALTER TABLE [Saving] ADD COLUMN [StartingBalance] NUMERIC NOT NULL DEFAULT 0");
                 database.Execute(Resources.db_update_v002);
                 tx.Complete();
             }
@@ -43,8 +44,21 @@ namespace Adalbertus.BudgetPlanner.Database
         {
             using (var tx = database.GetTransaction())
             {
+                database.AlterTable("Note", "[BudgetId]", "ALTER TABLE [Note] ADD COLUMN [BudgetId] INT");
                 database.Execute(Resources.db_update_v003);
                 tx.Complete();
+            }
+        }
+
+        private static void AlterTable(this IDatabase database, string tableName, string columnName, string query)
+        {
+            // SQLite doesn't allow to alter table weather column in it exists or not
+            var ddlTable = database.ExecuteScalar<string>(PetaPoco.Sql.Builder.Select("sql")
+                .From("sqlite_master")
+                .Where("name=@0", tableName));
+            if (!ddlTable.ToLower().Contains(columnName.ToLower()))
+            {
+                database.Execute(query);
             }
         }
     }

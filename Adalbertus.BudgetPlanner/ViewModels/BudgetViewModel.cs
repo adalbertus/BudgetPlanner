@@ -54,7 +54,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
                 var sql = PetaPoco.Sql.Builder
                                 .Select("*")
                                 .From("Budget")
-                                .Where("@0 BETWEEN DateFrom AND DateTo", BudgetDate.Date);
+                                .Where("strftime('%Y%m', DateFrom) = @0", BudgetDate.Date.ToString("yyyyMM"));
                 Budget = Database.FirstOrDefault<Budget>(sql);
                 if (Budget == null)
                 {

@@ -19,6 +19,7 @@ CREATE TABLE [BudgetTemplateHistory] (
   [Date] DATETIME -- date on witch item was tested for execution (could be skipped because of BudgetTemplateItem.RepeatInterval)
 );
 
-ALTER TABLE [Note] ADD COLUMN [BudgetId] INT;
+-- inside DatabaseUpdateHelper
+-- ALTER TABLE [Note] ADD COLUMN [BudgetId] INT
 
 UPDATE [Configuration] SET [Value] = '3' WHERE [Key] = 'DatabaseVersion';
