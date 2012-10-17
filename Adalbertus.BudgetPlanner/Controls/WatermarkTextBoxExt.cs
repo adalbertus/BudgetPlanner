@@ -11,8 +11,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using Microsoft.Windows.Controls;
 using Adalbertus.BudgetPlanner.Core;
+using Xceed.Wpf.Toolkit;
 
 namespace Adalbertus.BudgetPlanner.Controls
 {

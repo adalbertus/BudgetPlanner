@@ -7,7 +7,8 @@ using Caliburn.Micro;
 using Castle.Core;
 using Castle.Windsor;
 using Adalbertus.BudgetPlanner.ViewModels;
-using Microsoft.Windows.Controls;
+using Adalbertus.BudgetPlanner.Extensions;
+using Xceed.Wpf.Toolkit;
 
 namespace Adalbertus.BudgetPlanner
 {

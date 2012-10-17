@@ -26,7 +26,7 @@ namespace Adalbertus.BudgetPlanner
                 Component.For<IConfigurationManager>().ImplementedBy<ConfigurationManager>().LifeStyle.Is(LifestyleType.Singleton),
                 Component.For<ICachedService>().ImplementedBy<Database.CachedService>().LifeStyle.Is(LifestyleType.Singleton),
                 
-                AllTypes.FromAssemblyContaining<App>().Pick().WithService.DefaultInterface().Configure(x => x.LifeStyle.Is(LifestyleType.Singleton))
+                AllTypes.FromAssemblyContaining<App>().Pick().WithService.DefaultInterfaces().Configure(x => x.LifeStyle.Is(LifestyleType.Singleton))
             );
         }
     }

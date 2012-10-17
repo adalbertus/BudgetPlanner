@@ -9,7 +9,6 @@ using Adalbertus.BudgetPlanner.Extensions;
 using System.Collections;
 using System.Windows.Input;
 using System.Windows.Media;
-using Microsoft.Windows.Controls;
 using Adalbertus.BudgetPlanner.Core;
 
 namespace Adalbertus.BudgetPlanner.Controls

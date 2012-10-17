@@ -1,19 +1,14 @@
 ﻿using System;
-using System.Linq;
-using Caliburn.Micro;
-using Adalbertus.BudgetPlanner.Core;
-using Adalbertus.BudgetPlanner.Extensions;
-using Adalbertus.BudgetPlanner.Database;
-using Adalbertus.BudgetPlanner.Models;
-using System.Collections.Generic;
-using Microsoft.Windows.Controls;
-using System.Windows;
-using System.Text;
-using System.Reflection;
 using System.Diagnostics;
-using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
+using System.Windows;
+using Adalbertus.BudgetPlanner.Core;
+using Adalbertus.BudgetPlanner.Database;
+using Adalbertus.BudgetPlanner.Extensions;
+using Adalbertus.BudgetPlanner.Models;
+using Caliburn.Micro;
 
 namespace Adalbertus.BudgetPlanner.ViewModels
 {

@@ -1,16 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Caliburn.Micro;
-using Adalbertus.BudgetPlanner.Database;
-using Adalbertus.BudgetPlanner.Core;
-using Adalbertus.BudgetPlanner.Models;
-using Adalbertus.BudgetPlanner.Extensions;
-using ILCalc;
-using Microsoft.Windows.Controls;
-using GongSolutions.Wpf.DragDrop;
 using System.Windows;
+using Adalbertus.BudgetPlanner.Core;
+using Adalbertus.BudgetPlanner.Database;
+using Adalbertus.BudgetPlanner.Extensions;
+using Adalbertus.BudgetPlanner.Models;
+using Caliburn.Micro;
+using GongSolutions.Wpf.DragDrop;
 
 namespace Adalbertus.BudgetPlanner.ViewModels
 {

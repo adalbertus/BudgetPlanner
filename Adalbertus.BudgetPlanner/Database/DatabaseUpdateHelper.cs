@@ -44,7 +44,7 @@ namespace Adalbertus.BudgetPlanner.Database
         {
             using (var tx = database.GetTransaction())
             {
-                database.AlterTable("Note", "[BudgetId]", "ALTER TABLE [Note] ADD COLUMN [BudgetId] INT");
+                database.AlterTable("Note", "[BudgetId]", "ALTER TABLE [Note] ADD COLUMN  [BudgetId] INT");
                 database.Execute(Resources.db_update_v003);
                 tx.Complete();
             }
