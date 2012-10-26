@@ -39,10 +39,6 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         protected override void OnRefreshRequest(RefreshEvent refreshEvent)
         {
             Diagnostics.Start();
-            if (refreshEvent.Sender == typeof(ExpensesViewModel).Name)
-            {
-                AllBudgetPlanList.ForEach(x => x.RefreshUI());
-            }
 
             if (refreshEvent.ChangedEntity is BudgetPlan && refreshEvent.Sender == typeof(BudgetTemplateDialogViewModel).Name)
             {
@@ -62,6 +58,13 @@ namespace Adalbertus.BudgetPlanner.ViewModels
                     var budgetPlan = AllBudgetPlanList.First(y => y.CashFlow.Id == x.CashFlowId);
                     budgetPlan.Values.AddRange(x.BudgetPlanItems);
                 });
+            }
+
+            if (refreshEvent.Sender == typeof(ExpensesViewModel).Name)
+            {
+                // something changes in expenses: added new expense, remove expense, change budget, change cash flow
+                // so thats why we need to refresh everything
+                AllBudgetPlanList.ForEach(x => x.RefreshUI());
             }
 
             Diagnostics.Stop();

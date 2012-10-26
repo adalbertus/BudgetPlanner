@@ -5,7 +5,7 @@
     xmlns:local="clr-namespace:Adalbertus.BudgetPlanner.Controls"
     xmlns:conv="clr-namespace:Adalbertus.BudgetPlanner.Converters"
     xmlns:ext="clr-namespace:Adalbertus.BudgetPlanner.Extensions"
-    xmlns:extToolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit/extended">
+    xmlns:xctk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit/extended">
     <conv:DebugConverter x:Key="DebugConverter" />
 
     <LinearGradientBrush x:Key="TextBoxBorder" EndPoint="0,20" MappingMode="Absolute" StartPoint="0,0">

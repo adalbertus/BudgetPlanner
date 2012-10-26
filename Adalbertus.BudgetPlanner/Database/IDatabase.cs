@@ -14,7 +14,9 @@ namespace Adalbertus.BudgetPlanner.Database
         string LastCommand { get; }
 
         int Count<T>();
+        int Count<T>(string sql, params object[] args);
         int Count(string tableName);
+        int Count(string tableName, string sql, params object[] args);
 
         IEnumerable<T> Query<T>();
         IEnumerable<T> Query<T>(Sql sql);

@@ -6,6 +6,9 @@ using System.Windows;
 using System.Windows.Controls.Primitives;
 using ILCalc;
 using System.Globalization;
+using Adalbertus.BudgetPlanner.Core;
+using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace Adalbertus.BudgetPlanner.Controls
 {
@@ -55,6 +58,32 @@ namespace Adalbertus.BudgetPlanner.Controls
                 Culture = CultureInfo.InvariantCulture,
             };
             _suppressEvent = false;
+            EventManager.RegisterClassHandler(typeof(Window), Window.PreviewMouseDownEvent, new MouseButtonEventHandler(OnWindowMouseDown));
+            EventManager.RegisterClassHandler(typeof(Window), Window.PreviewMouseWheelEvent, new MouseWheelEventHandler(OnMouseWheel));
+        }
+
+        private void OnWindowMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            var calculatorTextBox = e.OriginalSource as CalculatorTextBox;
+            if (calculatorTextBox == null)
+            {
+                if (ResultPopup != null)
+                {
+                    ResultPopup.IsOpen = false;
+                }
+            }
+        }
+
+        private void OnMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            var calculatorTextBox = e.OriginalSource as CalculatorTextBox;
+            if (calculatorTextBox == null)
+            {
+                if (ResultPopup != null)
+                {
+                    ResultPopup.IsOpen = false;
+                }
+            }
         }
 
         private void ShowHideResultPopup()

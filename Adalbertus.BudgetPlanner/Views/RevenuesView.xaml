@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:cal="http://www.caliburnproject.org"
              xmlns:ctrl="clr-namespace:Adalbertus.BudgetPlanner.Controls"
-             xmlns:extToolkit="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
              xmlns:ext="clr-namespace:Adalbertus.BudgetPlanner.Extensions"
 >
@@ -55,14 +55,14 @@
                             </i:Interaction.Triggers>
                         </ctrl:CalculatorTextBox>
 
-                        <extToolkit:WatermarkTextBox x:Name="incomeDescription" Grid.Column="3" FontSize="10" Text="{Binding IncomeValueDescription}" 
+                        <xctk:WatermarkTextBox x:Name="incomeDescription" Grid.Column="3" FontSize="10" Text="{Binding IncomeValueDescription}" 
                                                      Watermark="Opis" MinWidth="30" Margin="0,0,4,0">
                             <i:Interaction.Triggers>
                                 <ext:KeyTrigger Key="Enter" FocusTarget="{x:Reference avaiableIncome}">
                                     <cal:ActionMessage MethodName="AddIncomeValue" />
                                 </ext:KeyTrigger>
                             </i:Interaction.Triggers>
-                        </extToolkit:WatermarkTextBox>
+                        </xctk:WatermarkTextBox>
 
                         <ctrl:ImageButton Grid.Column="4" ImageUrl="Images/save.png" ToolTip="Dodaj wpływy z dochodów" cal:Message.Attach="[Event Click] = [Action AddIncomeValue()]" />
                     </Grid>
@@ -148,14 +148,14 @@
                             </i:Interaction.Triggers>
                         </ctrl:CalculatorTextBox>
 
-                        <extToolkit:WatermarkTextBox x:Name="savingDescription" Grid.Column="3" FontSize="10" Text="{Binding SavingValueDescription}"
+                        <xctk:WatermarkTextBox x:Name="savingDescription" Grid.Column="3" FontSize="10" Text="{Binding SavingValueDescription}"
                                                      Watermark="Opis" MinWidth="30" Margin="0,0,4,0">
                             <i:Interaction.Triggers>
                                 <ext:KeyTrigger Key="Enter" FocusTarget="{x:Reference availableSaving}">
                                     <cal:ActionMessage MethodName="AddSavingValue" />
                                 </ext:KeyTrigger>
                             </i:Interaction.Triggers>
-                        </extToolkit:WatermarkTextBox>
+                        </xctk:WatermarkTextBox>
                         
                         <ctrl:ImageButton Grid.Column="4" ImageUrl="Images/save.png" ToolTip="Dodaj wpływy z oszczędności" cal:Message.Attach="[Event Click] = [Action AddSavingValue()]" />
                     </Grid>

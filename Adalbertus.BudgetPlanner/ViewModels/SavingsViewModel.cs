@@ -198,5 +198,12 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             return uniqueName;
         }
 
+        protected override void OnRefreshRequest(RefreshEvent refreshEvent)
+        {
+            if (refreshEvent.ChangedEntity is Expense)
+            {
+                LoadSavingsData();
+            }
+        }
     }
 }

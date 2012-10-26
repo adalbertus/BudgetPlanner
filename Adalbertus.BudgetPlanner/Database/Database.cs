@@ -36,11 +36,31 @@ namespace Adalbertus.BudgetPlanner.Database
 
         public int Count(string tableName)
         {
-            return ExecuteScalar<int>(PetaPoco.Sql.Builder
-                .Select("COUNT(*)")
-                .From(tableName));
+            
+            return Count(tableName, null);
         }
 
+        public int Count<T>(string sql, params object[] args)
+        {
+            var pd = PocoData.ForType(typeof(T));
+            return Count(pd.TableInfo.TableName, sql, args);
+            
+        }
+
+        public int Count(string tableName, string sql, params object[] args)
+        {
+            if (string.IsNullOrWhiteSpace(sql))
+            {
+                return ExecuteScalar<int>(PetaPoco.Sql.Builder
+                    .Select("COUNT(*)")
+                    .From(tableName));
+            }
+            return ExecuteScalar<int>(PetaPoco.Sql.Builder
+                .Select("COUNT(*)")
+                .From(tableName)
+                .Where(sql, args));
+        }
+        
         public T FirstOrDefault<T>()
         {
             return FirstOrDefault<T>(string.Empty);

@@ -5,7 +5,7 @@
              xmlns:ext="clr-namespace:Adalbertus.BudgetPlanner.Extensions"
              xmlns:cal="http://www.caliburnproject.org"
              xmlns:ctrl="clr-namespace:Adalbertus.BudgetPlanner.Controls"
-             xmlns:extToolkit="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              xmlns:dd="clr-namespace:GongSolutions.Wpf.DragDrop;assembly=GongSolutions.Wpf.DragDrop"
 >
     <UserControl.Resources>
@@ -31,7 +31,7 @@
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="80" />
                     </Grid.ColumnDefinitions>
-                    <extToolkit:WatermarkTextBox Grid.Column="0" Text="{Binding NewName, UpdateSourceTrigger=PropertyChanged}"
+                    <xctk:WatermarkTextBox Grid.Column="0" Text="{Binding NewName, UpdateSourceTrigger=PropertyChanged}"
                                                  ext:FocusExtension.IsFocused="{Binding IsNewNameFocused}"
                                                  Watermark="Nazwa nowej kategorii"  Margin="0,0,4,0">
                         <i:Interaction.Triggers>
@@ -39,9 +39,9 @@
                                 <cal:ActionMessage MethodName="MoveToNewDescription" />
                             </ext:KeyTrigger>
                         </i:Interaction.Triggers>
-                    </extToolkit:WatermarkTextBox>
+                    </xctk:WatermarkTextBox>
 
-                    <extToolkit:WatermarkTextBox Grid.Column="1" Text="{Binding NewDescription, UpdateSourceTrigger=PropertyChanged}" Width="130"
+                    <xctk:WatermarkTextBox Grid.Column="1" Text="{Binding NewDescription, UpdateSourceTrigger=PropertyChanged}" Width="130"
                                                  ext:FocusExtension.IsFocused="{Binding IsNewDescriptionFocused}"
                                                  Watermark="Opis kategorii" Margin="0,0,4,0">
                         <i:Interaction.Triggers>
@@ -49,7 +49,7 @@
                                 <cal:ActionMessage MethodName="AddNewCashFlowType" />
                             </ext:KeyTrigger>
                         </i:Interaction.Triggers>
-                    </extToolkit:WatermarkTextBox>
+                    </xctk:WatermarkTextBox>
 
                     <ctrl:AutoCompleteBox Grid.Column="2" ItemsSource="{Binding CashFlowGroups}" 
                                           SelectedItem="{Binding NewCashFlowGroup, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
@@ -82,7 +82,7 @@
                         <DataGridTemplateColumn Header="Nazwa" SortMemberPath="Name" Width="*">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                        <extToolkit:WatermarkTextBox x:Name="TextBox" Text="{Binding Name, UpdateSourceTrigger=LostFocus}"
+                                        <xctk:WatermarkTextBox x:Name="TextBox" Text="{Binding Name, UpdateSourceTrigger=LostFocus}"
                                                                      IsReadOnly="{Binding IsReadOnly}" HorizontalAlignment="Stretch" BorderThickness="0" />
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
@@ -90,7 +90,7 @@
                         <DataGridTemplateColumn Header="Opis" SortMemberPath="Description" Width="200">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                        <extToolkit:WatermarkTextBox x:Name="TextBox" Text="{Binding Description, UpdateSourceTrigger=LostFocus}"
+                                        <xctk:WatermarkTextBox x:Name="TextBox" Text="{Binding Description, UpdateSourceTrigger=LostFocus}"
                                                  BorderThickness="0" IsReadOnly="{Binding IsReadOnly}"/>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
@@ -142,7 +142,7 @@
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="80" />
                     </Grid.ColumnDefinitions>
-                    <extToolkit:WatermarkTextBox Grid.Column="0" Text="{Binding NewGroupName, UpdateSourceTrigger=PropertyChanged}"
+                    <xctk:WatermarkTextBox Grid.Column="0" Text="{Binding NewGroupName, UpdateSourceTrigger=PropertyChanged}"
                                                  ext:FocusExtension.IsFocused="{Binding IsNewGroupNameFocused}"
                                                  Watermark="Nazwa nowej grupy" Margin="0,0,4,0">
                         <i:Interaction.Triggers>
@@ -150,9 +150,9 @@
                                 <cal:ActionMessage MethodName="MoveToNewGroupDescription" />
                             </ext:KeyTrigger>
                         </i:Interaction.Triggers>
-                    </extToolkit:WatermarkTextBox>
+                    </xctk:WatermarkTextBox>
 
-                    <extToolkit:WatermarkTextBox Grid.Column="1" Text="{Binding NewGroupDescription, UpdateSourceTrigger=PropertyChanged}"
+                    <xctk:WatermarkTextBox Grid.Column="1" Text="{Binding NewGroupDescription, UpdateSourceTrigger=PropertyChanged}"
                                                  ext:FocusExtension.IsFocused="{Binding IsNewGroupDescriptionFocused}"
                                                  Watermark="Opis grupy" Margin="0,0,4,0">
                         <i:Interaction.Triggers>
@@ -160,7 +160,7 @@
                                 <cal:ActionMessage MethodName="AddNewCashFlowGroup" />
                             </ext:KeyTrigger>
                         </i:Interaction.Triggers>
-                    </extToolkit:WatermarkTextBox>
+                    </xctk:WatermarkTextBox>
 
                     <ctrl:ImageButton Grid.Column="2" ImageUrl="Images/save.png" Content="Wstaw"
                                       cal:Message.Attach="[Event Click] = [Action AddNewCashFlowGroup()]"/>
@@ -185,7 +185,7 @@
                         <DataGridTemplateColumn Header="Nazwa" Width="100">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                        <extToolkit:WatermarkTextBox x:Name="TextBox" Text="{Binding Name, UpdateSourceTrigger=LostFocus}"
+                                        <xctk:WatermarkTextBox x:Name="TextBox" Text="{Binding Name, UpdateSourceTrigger=LostFocus}"
                                                  HorizontalAlignment="Stretch" BorderThickness="0" IsReadOnly="{Binding IsReadOnly}"/>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
@@ -193,7 +193,7 @@
                         <DataGridTemplateColumn Header="Opis" Width="*">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                        <extToolkit:WatermarkTextBox x:Name="TextBox" Text="{Binding Description, UpdateSourceTrigger=LostFocus}"
+                                        <xctk:WatermarkTextBox x:Name="TextBox" Text="{Binding Description, UpdateSourceTrigger=LostFocus}"
                                                  BorderThickness="0" IsReadOnly="{Binding IsReadOnly}"/>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>

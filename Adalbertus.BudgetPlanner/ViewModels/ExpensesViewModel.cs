@@ -10,6 +10,9 @@ using System.ComponentModel;
 using Caliburn.Micro;
 using System.Linq.Expressions;
 using System.Windows.Data;
+using System.Text;
+using Adalbertus.BudgetPlanner.Services;
+using System.Diagnostics;
 
 namespace Adalbertus.BudgetPlanner.ViewModels
 {
@@ -18,11 +21,10 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         public ExpensesViewModel(IShellViewModel shell, IDatabase database, IConfigurationManager configuration, ICachedService cashedService, IEventAggregator eventAggregator)
             : base(shell, database, configuration, cashedService, eventAggregator)
         {
-            _filteredBudgetExpenses = new List<Expense>();
+            BudgetExpenses = new BindableCollectionExt<ExpenseVM>();
             ExpensesGridCashFlows = new BindableCollectionExt<CashFlow>();
             CashFlows = new BindableCollectionExt<CashFlow>();
             Filter = new ExpensesFilterVM(EventAggregator);
-            IsFilteringEnabled = true;
             ExpensesFilteringViewModel = IoC.Get<ExpensesFilteringViewModel>();
         }
 
@@ -38,7 +40,6 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             if (refreshEvent.ChangedEntity is Expense && refreshEvent.Sender == typeof(BudgetTemplateDialogViewModel).Name)
             {
                 FilterBudgetExpenses();
-                NotifyOfPropertyChange(() => BudgetExpenses);
             }
         }
 
@@ -62,53 +63,42 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             }
         }
 
-        private BindableCollectionExt<Expense> _budgetExpenses;
-        private List<Expense> _filteredBudgetExpenses;
-        public IEnumerable<Expense> BudgetExpenses
-        {
-            get
-            {
-                return _filteredBudgetExpenses;
-            }
-        }
-
-        public int BudgetExpensesTotalCount
-        {
-            get { return _budgetExpenses.Count; }
-        }
+        public BindableCollectionExt<ExpenseVM> BudgetExpenses { get; private set; }
 
         public int BudgetExpensesFilteredCount
         {
-            get { return _filteredBudgetExpenses.Count; }
+            get { return BudgetExpenses.Count; }
         }
 
         public decimal TotalExpensesValue
         {
             get
             {
-                return _filteredBudgetExpenses.Sum(x => x.Value);
+                return BudgetExpenses.Sum(x => x.Value);
             }
         }
 
-        private bool _isExpensesFiltered;
-        public bool IsExpensesFiltered
+        private int _currentBudgetExpensesTotalCount;
+        public int CurrentBudgetExpensesTotalCount
         {
-            get { return _isExpensesFiltered; }
+            get { return _currentBudgetExpensesTotalCount; }
             set
             {
-                _isExpensesFiltered = value;
-                NotifyOfPropertyChange(() => IsExpensesFiltered);
+                _currentBudgetExpensesTotalCount = value;
+                NotifyOfPropertyChange(() => CurrentBudgetExpensesTotalCount);
+                NotifyOfPropertyChange(() => AreExpensesNotInBudgetScope);
             }
         }
 
-        private bool _isFilteringEnabled;
-        public bool IsFilteringEnabled
+        private int _currentBudgetExpensesFilteredCount;
+        public int CurrentBudgetExpensesFilteredCount
         {
-            get { return _isFilteringEnabled; }
+            get { return _currentBudgetExpensesFilteredCount; }
             set
             {
-                _isFilteringEnabled = value;
-                NotifyOfPropertyChange(() => IsFilteringEnabled);
+                _currentBudgetExpensesFilteredCount = value;
+                NotifyOfPropertyChange(() => CurrentBudgetExpensesFilteredCount);
+                NotifyOfPropertyChange(() => AreExpensesNotInBudgetScope);
             }
         }
 
@@ -168,6 +158,11 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             }
         }
 
+        public bool AreExpensesNotInBudgetScope
+        {
+            get { return !(CurrentBudgetExpensesTotalCount == CurrentBudgetExpensesFilteredCount && CurrentBudgetExpensesTotalCount == BudgetExpenses.Count); }
+        }
+
         #region Focus properties
         private bool _isExpenseDescriptionFocused;
 
@@ -200,8 +195,6 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         {
             Diagnostics.Start();
             FilterBudgetExpenses();
-            NotifyOfPropertyChange(() => BudgetExpenses);
-            NotifyOfPropertyChange(() => TotalExpensesValue);
             Diagnostics.Stop();
         }
 
@@ -209,23 +202,9 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         {
             Diagnostics.Start();
             Budget = budget;
-            _budgetExpenses = budget.Expenses;
-            _filteredBudgetExpenses = _budgetExpenses.ToList();
 
             LoadCashFlows();
-            LoadExpenses();
             ExpensesFilteringViewModel.LoadData(budget);
-
-            _budgetExpenses.PropertyChanged += (s, e) => { Save(s as Expense); };
-            _budgetExpenses.CollectionChanged += (s, e) =>
-            {
-                switch (e.Action)
-                {
-                    case NotifyCollectionChangedAction.Remove:
-                        Delete(e.OldItems[0] as Expense);
-                        break;
-                }
-            };
 
             RefreshUI();
             Diagnostics.Stop();
@@ -248,44 +227,10 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             Diagnostics.Stop();
         }
 
-        private void LoadExpenses()
+        public void RemoveExpense(ExpenseVM expense)
         {
             Diagnostics.Start();
-            var sql = PetaPoco.Sql.Builder
-                    .Select("*")
-                    .From("Expense")
-                    .InnerJoin("Budget")
-                    .On("Budget.Id = Expense.BudgetId")
-                    .InnerJoin("CashFlow")
-                    .On("CashFlow.Id = Expense.CashFlowId")
-                    .InnerJoin("CashFlowGroup")
-                    .On("CashFlow.CashFlowGroupId = CashFlowGroup.Id")
-                    .Where("Expense.BudgetId = @0", Budget.Id);
-
-            var expenses = Database.Query<Expense, Budget, CashFlow, CashFlowGroup>(sql).ToList();
-            expenses.ForEach(x =>
-            {
-                x.Flow.Saving = Database.SingleOrDefault<Saving>("WHERE CashFlowId = @0", x.CashFlowId);
-                x.SavingValue = Database.SingleOrDefault<SavingValue>("WHERE ExpenseId = @0", x.Id);
-                if (x.SavingValue != null)
-                {
-                    x.SavingValue.Expense = x;
-                    x.SavingValue.Saving = x.Flow.Saving;
-                    x.SavingValue.Budget = x.Budget;
-                }
-            });
-            _budgetExpenses.IsNotifying = false;
-            _budgetExpenses.Clear();
-            _budgetExpenses.AddRange(expenses);
-            _budgetExpenses.IsNotifying = true;
-            _budgetExpenses.Refresh();
-            Diagnostics.Stop();
-        }
-
-        public void RemoveExpense(Expense expense)
-        {
-            Diagnostics.Start();
-            _budgetExpenses.Remove(expense);
+            BudgetExpenses.Remove(expense);
             RefreshUI();
             Diagnostics.Stop();
         }
@@ -296,8 +241,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             {
                 bool isCashFlowSelected = SelectedExpenseCashFlow != null;
                 bool hasPositiveExpenseValue = ExpenseValue > 0;
-                bool isDateInBudgetDange = (SelectedExpenseDate >= Budget.DateFrom && SelectedExpenseDate <= Budget.DateTo);
-                return (isCashFlowSelected && hasPositiveExpenseValue && isDateInBudgetDange);
+                return (isCashFlowSelected && hasPositiveExpenseValue);
             }
         }
 
@@ -315,12 +259,32 @@ namespace Adalbertus.BudgetPlanner.ViewModels
 
         public void AddExpense()
         {
+            AddExpense(true);
+        }
+
+        public void AddExpense(bool showConfirmation)
+        {
             Diagnostics.Start();
+            if (showConfirmation)
+            {
+                if (SelectedExpenseDate < Budget.DateFrom || SelectedExpenseDate > Budget.DateTo)
+                {
+                    var messageBuilder = new StringBuilder();
+                    messageBuilder.AppendLine("Wstawiasz wydatek z poza poza wybranego okresu budżetowego.");
+                    messageBuilder.AppendLine();
+                    messageBuilder.AppendLine("Na pewno chcesz to zrobić?");
+
+                    Shell.ShowQuestion(messageBuilder.ToString(),
+                        () => AddExpense(false),
+                        null);
+                    return;
+                }
+            }
+
             var expense = Budget.AddExpense(SelectedExpenseCashFlow, ExpenseValue, ExpenseDescription, SelectedExpenseDate);
 
             Save(expense);
             FilterBudgetExpenses();
-            NotifyOfPropertyChange(() => BudgetExpenses);
             ExpenseValue = 0;
             ExpenseDescription = string.Empty;
 
@@ -333,10 +297,14 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         {
             Diagnostics.Start();
             Diagnostics.Start("Database operations");
+            bool refreshExpensesList = false;
             using (var tx = Database.GetTransaction())
             {
                 int savingsDeletedCounter = 0;
+
+                refreshExpensesList = UpdateBudgetIdIfNeeded(expense);
                 Database.Save(expense);
+
                 if (expense.Flow.Saving == null)
                 {
                     savingsDeletedCounter = Database.Delete<SavingValue>("WHERE ExpenseId = @0", expense.Id);
@@ -352,19 +320,63 @@ namespace Adalbertus.BudgetPlanner.ViewModels
                         .Where("ExpenseId = @0", expense.Id));
                     if (savingValuesCount > 1)
                     {
-                        savingsDeletedCounter = 
+                        savingsDeletedCounter =
                             Database.Delete<SavingValue>("WHERE ExpenseId = @0 AND SavingId <> @1", expense.Id, expense.SavingValue.SavingId);
                     }
                 }
 
-                tx.Complete();                
+                tx.Complete();
                 CachedService.Clear(CachedServiceKeys.AllSavings);
+                UpdateExpenseInCurrentBudget(expense);
             }
             Diagnostics.Stop();
 
             NotifyOfPropertyChange(() => TotalExpensesValue);
             PublishRefreshRequest(expense);
+            if (refreshExpensesList)
+            {
+                FilterBudgetExpenses();
+            }
             Diagnostics.Stop();
+        }
+
+        private bool UpdateBudgetIdIfNeeded(Expense expense)
+        {
+            var budget = BudgetViewModel.LoadOrCreateDefaultBudget(Database, expense.Date, CachedService.GetAllCashFlows());
+            if (expense.Budget.Id != budget.Id)
+            {
+                expense.Budget = budget;
+                return true;
+            }
+            return false;
+        }
+
+        private void UpdateExpenseInCurrentBudget(Expense expense)
+        {
+            var expenseToUpdate = Budget.Expenses.FirstOrDefault(x => x.Id == expense.Id);
+            if (expenseToUpdate != null)
+            {
+                expenseToUpdate.Flow = expense.Flow;
+                expenseToUpdate.Date = expense.Date;
+                expenseToUpdate.Description = expense.Description;
+                expenseToUpdate.Value = expense.Value;
+
+                if (expenseToUpdate.BudgetId != expense.BudgetId)
+                {
+                    Budget.RemoveExpense(expenseToUpdate);
+                }
+            }
+
+            if (expense.BudgetId != Budget.Id)
+            {
+                var expensesToDelete = Budget.Expenses.Where(x => x.BudgetId != Budget.Id).ToList();
+                expensesToDelete.ForEach(x => Budget.RemoveExpense(x));
+            }
+
+            if (expenseToUpdate == null && expense.BudgetId == Budget.Id)
+            {
+                Budget.AddExpense(expense.Flow, expense.Value, expense.Description, expense.Date);
+            }
         }
 
         private void Delete(Expense expense)
@@ -376,9 +388,20 @@ namespace Adalbertus.BudgetPlanner.ViewModels
                 Database.Delete(expense);
 
                 tx.Complete();
+
+                DeleteFromCurrentBudget(expense);
             }
             PublishRefreshRequest(expense);
             Diagnostics.Stop();
+        }
+
+        private void DeleteFromCurrentBudget(Expense expense)
+        {
+            var expenseDelete = Budget.Expenses.FirstOrDefault(x => x.Id == expense.Id);
+            if (expenseDelete != null)
+            {
+                Budget.RemoveExpense(expenseDelete);
+            }
         }
 
         public void MoveToExpenseValue()
@@ -409,67 +432,232 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         {
             Diagnostics.Start();
 
-            if (IsFilteringEnabled)
-            {
-                var predicate = PredicateBuilder.True<Expense>();
+            #region Predicate implementation (OLD)
+            //if (IsFilteringEnabled)
+            //{
+            //    var predicate = PredicateBuilder.True<Expense>();
 
-                if (Filter.CashFlow != null || Filter.CashFlowGroup != null)
-                {
-                    var flowPredicate = PredicateBuilder.False<Expense>();
-                    if (Filter.CashFlowGroup != null)
-                    {
-                        flowPredicate = flowPredicate.And(p => Filter.CashFlowGroup.Id == p.CashFlowGroupId);
-                    }
-                    if (Filter.CashFlow != null)
-                    {
-                        flowPredicate = flowPredicate.And(p => Filter.CashFlow.Id == p.Id);
-                    }
-                }
+            //    if (Filter.CashFlow != null || Filter.CashFlowGroup != null)
+            //    {
+            //        var flowPredicate = PredicateBuilder.False<Expense>();
+            //        if (Filter.CashFlowGroup != null)
+            //        {
+            //            flowPredicate = flowPredicate.And(p => Filter.CashFlowGroup.Id == p.CashFlowGroupId);
+            //        }
+            //        if (Filter.CashFlow != null)
+            //        {
+            //            flowPredicate = flowPredicate.And(p => Filter.CashFlow.Id == p.Id);
+            //        }
+            //    }
 
-                if (Filter.CashFlowGroup != null && !Filter.CashFlowGroup.IsTransient())
-                {
-                    predicate = predicate.And(p => Filter.CashFlowGroup.Id == p.CashFlowGroupId);
-                }
+            //    if (Filter.CashFlowGroup != null && !Filter.CashFlowGroup.IsTransient())
+            //    {
+            //        predicate = predicate.And(p => Filter.CashFlowGroup.Id == p.CashFlowGroupId);
+            //    }
 
-                if (Filter.CashFlow != null && !Filter.CashFlow.IsTransient())
-                {
-                    predicate = predicate.And(p => Filter.CashFlow.Id == p.CashFlowId);
-                }
-
-
-                predicate = predicate.And(p => p.Date >= Filter.DateFrom && p.Date <= Filter.DateTo);
-                if (Filter.ValueFrom.HasValue)
-                {
-                    predicate = predicate.And(p => p.Value >= Filter.ValueFrom.Value);
-                }
-                if (Filter.ValueTo.HasValue)
-                {
-                    predicate = predicate.And(p => p.Value <= Filter.ValueTo.Value);
-                }
-
-                if (!string.IsNullOrWhiteSpace(Filter.Description))
-                {
-                    predicate = predicate.And(p => p.Description.Contains(Filter.Description, false));
-                }
-                _filteredBudgetExpenses = _budgetExpenses.AsQueryable().Where(predicate).ToList();
-            }
-            else
-            {
-                _filteredBudgetExpenses = _budgetExpenses.ToList();
-            }
+            //    if (Filter.CashFlow != null && !Filter.CashFlow.IsTransient())
+            //    {
+            //        predicate = predicate.And(p => Filter.CashFlow.Id == p.CashFlowId);
+            //    }
 
 
-            if (_budgetExpenses.Any())
-            {
-                IsExpensesFiltered = _filteredBudgetExpenses.Count != _budgetExpenses.Count;
-            }
-            else
-            {
-                IsExpensesFiltered = false;
-            }
-            NotifyOfPropertyChange(() => BudgetExpensesTotalCount);
+            //    predicate = predicate.And(p => p.Date >= Filter.DateFrom && p.Date <= Filter.DateTo);
+            //    if (Filter.ValueFrom.HasValue)
+            //    {
+            //        predicate = predicate.And(p => p.Value >= Filter.ValueFrom.Value);
+            //    }
+            //    if (Filter.ValueTo.HasValue)
+            //    {
+            //        predicate = predicate.And(p => p.Value <= Filter.ValueTo.Value);
+            //    }
+
+            //    if (!string.IsNullOrWhiteSpace(Filter.Description))
+            //    {
+            //        predicate = predicate.And(p => p.Description.Contains(Filter.Description, false));
+            //    }
+            //    BudgetExpenses = _budgetExpenses.AsQueryable().Where(predicate).ToList();
+            //}
+            //else
+            //{
+            //    BudgetExpenses = _budgetExpenses.ToList();
+            //}
+            #endregion Predicate implementation (OLD)
+
+            DeatachEventsFromFilteredExpenses();
+            BudgetExpenses.Clear();
+            BudgetExpenses.AddRange(GetFilteredExpenses());
+            AttachEventsToFilteredExpenses();
+            //if (_budgetExpenses.Any())
+            //{
+            //    IsExpensesFiltered = BudgetExpenses.Count != _budgetExpenses.Count;
+            //}
+            //else
+            //{
+            //    IsExpensesFiltered = false;
+            //}
+
+            CurrentBudgetExpensesTotalCount = Database.Count<Expense>("BudgetId = @0", Budget.Id);
+            CurrentBudgetExpensesFilteredCount = BudgetExpenses.Count(x => x.IsCurrentBudget);
+
             NotifyOfPropertyChange(() => BudgetExpensesFilteredCount);
+            NotifyOfPropertyChange(() => TotalExpensesValue);
+            NotifyOfPropertyChange(() => BudgetExpenses);
             Diagnostics.Stop();
+        }
+
+        private void AttachEventsToFilteredExpenses()
+        {
+            BudgetExpenses.PropertyChanged += OnFilteredBudgetExpensesPropertyChanged;
+            BudgetExpenses.CollectionChanged += OnFilteredBudgetExpensesCollectionChanged;
+        }
+
+        private void OnFilteredBudgetExpensesCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            switch (e.Action)
+            {
+                case NotifyCollectionChangedAction.Remove:
+                    Delete(((ExpenseVM)e.OldItems[0]).WrappedItem);
+                    break;
+            }
+        }
+
+        private void OnFilteredBudgetExpensesPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            var expense = (ExpenseVM)sender;
+            var messageBuilder = new StringBuilder();
+            messageBuilder.AppendLine(string.Format("Zmieniasz pozycję, która wykracza poza wybrany okres budżetowy: {0:yyyy-MM}", Budget.DateFrom));
+            messageBuilder.AppendLine("Może to spowodować przeniesienie tej pozycji do innego okresu budżetowego.");
+            messageBuilder.AppendLine();
+            messageBuilder.AppendLine(string.Format("Grupa: {0}", expense.GroupName));
+            messageBuilder.AppendLine(string.Format("Kategoria: {0}", expense.Flow.Name));
+            messageBuilder.AppendLine(string.Format("Data: {0:yyyy-MM-dd}", expense.Date));
+            messageBuilder.AppendLine(string.Format("Kwota: {0:C}", expense.Value));
+            messageBuilder.AppendLine(string.Format("Opis: {0}", expense.Description));
+            messageBuilder.AppendLine();
+            messageBuilder.AppendLine("Na pewno chcesz to zrobić?");
+
+            if (expense.Date < expense.BudgetDateFrom || expense.Date > expense.BudgetDateTo)
+            {
+                Shell.ShowQuestion(messageBuilder.ToString(),
+                    () => Save(expense.WrappedItem),
+                    () => expense.UndoChanges());
+                return;
+            }
+
+            if (expense.Date < Budget.DateFrom || expense.Date > Budget.DateTo)
+            {
+                Shell.ShowQuestion(messageBuilder.ToString(),
+                    () => Save(expense.WrappedItem),
+                    () => expense.UndoChanges());
+                return;
+            }
+
+            Save(expense.WrappedItem);
+        }
+
+        private void DeatachEventsFromFilteredExpenses()
+        {
+            BudgetExpenses.PropertyChanged -= OnFilteredBudgetExpensesPropertyChanged;
+            BudgetExpenses.CollectionChanged -= OnFilteredBudgetExpensesCollectionChanged;
+        }
+
+        private List<ExpenseVM> GetFilteredExpenses()
+        {
+            Diagnostics.Start();
+            var sql = PetaPoco.Sql.Builder
+                    .Select("*")
+                    .From("Expense")
+                    .InnerJoin("Budget")
+                    .On("Budget.Id = Expense.BudgetId")
+                    .InnerJoin("CashFlow")
+                    .On("CashFlow.Id = Expense.CashFlowId")
+                    .InnerJoin("CashFlowGroup")
+                    .On("CashFlow.CashFlowGroupId = CashFlowGroup.Id");
+
+            var whereItems = new List<PetaPoco.Sql>();
+            if (Filter.CashFlow != null || Filter.CashFlowGroup != null)
+            {
+                if (Filter.CashFlowGroup != null)
+                {
+                    whereItems.Add(new PetaPoco.Sql("CashFlowGroup.Id = @0", Filter.CashFlowGroup.Id));
+                }
+                if (Filter.CashFlow != null)
+                {
+                    whereItems.Add(new PetaPoco.Sql("CashFlow.Id = @0", Filter.CashFlow.Id));
+                }
+            }
+
+            if (Filter.CashFlowGroup != null && !Filter.CashFlowGroup.IsTransient())
+            {
+                whereItems.Add(new PetaPoco.Sql("CashFlowGroup.Id = @0", Filter.CashFlowGroup.Id));
+            }
+
+            if (Filter.CashFlow != null && !Filter.CashFlow.IsTransient())
+            {
+                whereItems.Add(new PetaPoco.Sql("CashFlow.Id = @0", Filter.CashFlow.Id));
+            }
+
+            whereItems.Add(new PetaPoco.Sql("date(Expense.Date) BETWEEN date(@0) AND date(@1)", Filter.DateFrom, Filter.DateTo));
+
+            if (Filter.ValueFrom.HasValue)
+            {
+                whereItems.Add(new PetaPoco.Sql("Expense.Value >= @0", Filter.ValueFrom.Value));
+            }
+            if (Filter.ValueTo.HasValue)
+            {
+                whereItems.Add(new PetaPoco.Sql("Expense.Value <= @0", Filter.ValueTo.Value));
+            }
+            if (!string.IsNullOrWhiteSpace(Filter.Description))
+            {
+                whereItems.Add(new PetaPoco.Sql("Expense.Description LIKE @0", string.Format("%{0}%", Filter.Description)));
+            }
+
+            if (whereItems.Any())
+            {
+                var whereSql = PetaPoco.Sql.Builder;
+                for (int i = 0; i < whereItems.Count; i++)
+                {
+                    var tmpSql = whereItems[i];
+                    if (i == 0)
+                    {
+                        whereSql = whereSql.Append("WHERE").Append(tmpSql);
+                    }
+                    else
+                    {
+                        whereSql = whereSql.Append("AND").Append(tmpSql);
+                    }
+                }
+
+                sql = sql.Append(whereSql);
+            }
+
+            var expenses = Database.Query<Expense, Budget, CashFlow, CashFlowGroup>(sql).ToList();
+            expenses.ForEach(x =>
+            {
+                x.Flow.Saving = Database.SingleOrDefault<Saving>("WHERE CashFlowId = @0", x.CashFlowId);
+                x.SavingValue = Database.SingleOrDefault<SavingValue>("WHERE ExpenseId = @0", x.Id);
+                if (x.SavingValue != null)
+                {
+                    x.SavingValue.Expense = x;
+                    x.SavingValue.Saving = x.Flow.Saving;
+                    x.SavingValue.Budget = x.Budget;
+                }
+            });
+            Diagnostics.Stop();
+            return expenses.Select(x => new ExpenseVM(x, Budget.Id)).ToList();
+        }
+
+        public void Export()
+        {
+            var fileService = IoC.Get<IFileService>();
+            var defaultFileName = string.Format("Wydatki_{0}_{1}", Filter.DateFrom.ToString("yyyy-MM-dd"), Filter.DateTo.ToString("yyyy-MM-dd"));
+            var xlsFile = fileService.SaveExcelFile(defaultFileName);
+            if (!string.IsNullOrWhiteSpace(xlsFile))
+            {
+                var exportService = IoC.Get<IExportService>();
+                exportService.ExportExpenses(xlsFile, "Wydatki", BudgetExpenses.Select(x => x.WrappedItem));
+                Process.Start(xlsFile);
+            }
         }
 
         #region IHandle<ExpensesFilterVM> Members
@@ -477,12 +665,9 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         public void Handle(ExpensesFilterVM message)
         {
             Diagnostics.Start();
-            if (IsFilteringEnabled)
+            if (Budget != null)
             {
-                if (_budgetExpenses != null)
-                {
-                    RefreshUI();
-                }
+                RefreshUI();
             }
             Diagnostics.Stop();
         }

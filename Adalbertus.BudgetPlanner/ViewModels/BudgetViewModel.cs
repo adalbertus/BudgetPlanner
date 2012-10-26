@@ -17,8 +17,8 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         public BudgetViewModel(IShellViewModel shell, IDatabase database, IConfigurationManager configuration, ICachedService cashedService, IEventAggregator eventAggregator)
             : base(shell, database, configuration, cashedService, eventAggregator)
         {
-            ExpensesViewModel   = IoC.Get<ExpensesViewModel>();
-            RevenuesViewModel   = IoC.Get<RevenuesViewModel>();
+            ExpensesViewModel = IoC.Get<ExpensesViewModel>();
+            RevenuesViewModel = IoC.Get<RevenuesViewModel>();
             BudgetPlanViewModel = IoC.Get<BudgetPlanViewModel>();
             BudgetCalculatorViewModel = IoC.Get<BudgetCalculationsViewModel>();
         }
@@ -47,29 +47,72 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         private void LoadOrCreateDefaultBudget()
         {
             Diagnostics.Start();
-            using (var tx = Database.GetTransaction())
-            {
-                var cashFlowList = CachedService.GetAllCashFlows();
+            Budget = LoadOrCreateDefaultBudget(Database, BudgetDate.Date, CachedService.GetAllCashFlows());
 
+            LoadExpensesForBudget();
+            PublishRefreshRequest(Budget);
+            ExpensesHeader = string.Format("Realizacja budżetu za okres: {0:yyyy-MM-dd} - {1:yyyy-MM-dd}", Budget.DateFrom, Budget.DateTo);
+
+            Budget.PropertyChanged += (s, e) => { Save(s as Budget); };
+            Diagnostics.Stop();
+        }
+
+        public static Budget LoadOrCreateDefaultBudget(IDatabase database, DateTime date, IEnumerable<CashFlow> cashFlows)
+        {
+            Budget budget = null;
+            Diagnostics.Start();
+            using (var tx = database.GetTransaction())
+            {
                 var sql = PetaPoco.Sql.Builder
                                 .Select("*")
                                 .From("Budget")
-                                .Where("strftime('%Y%m', DateFrom) = @0", BudgetDate.Date.ToString("yyyyMM"));
-                Budget = Database.FirstOrDefault<Budget>(sql);
-                if (Budget == null)
+                                .Where("strftime('%Y%m', DateFrom) = @0", date.ToString("yyyyMM"));
+                budget = database.FirstOrDefault<Budget>(sql);
+                if (budget == null)
                 {
-                    Budget = Budget.CreateEmptyForDate(BudgetDate, cashFlowList);
-                    Database.Save(Budget);
+                    budget = Budget.CreateEmptyForDate(date, cashFlows);
+                    database.Save(budget);
                 }
 
                 tx.Complete();
-                PublishRefreshRequest(Budget);
             }
 
-            Budget.PropertyChanged += (s, e) => 
-            { 
-                Save(s as Budget);
-            };
+            Diagnostics.Stop();
+
+            return budget;
+        }
+
+        private void LoadExpensesForBudget()
+        {
+            Diagnostics.Start();
+            var sql = PetaPoco.Sql.Builder
+                    .Select("*")
+                    .From("Expense")
+                    .InnerJoin("Budget")
+                    .On("Budget.Id = Expense.BudgetId")
+                    .InnerJoin("CashFlow")
+                    .On("CashFlow.Id = Expense.CashFlowId")
+                    .InnerJoin("CashFlowGroup")
+                    .On("CashFlow.CashFlowGroupId = CashFlowGroup.Id")
+                    .Where("Expense.BudgetId = @0", Budget.Id);
+
+            var expenses = Database.Query<Expense, Budget, CashFlow, CashFlowGroup>(sql).ToList();
+            expenses.ForEach(x =>
+            {
+                x.Flow.Saving = Database.SingleOrDefault<Saving>("WHERE CashFlowId = @0", x.CashFlowId);
+                x.SavingValue = Database.SingleOrDefault<SavingValue>("WHERE ExpenseId = @0", x.Id);
+                if (x.SavingValue != null)
+                {
+                    x.SavingValue.Expense = x;
+                    x.SavingValue.Saving = x.Flow.Saving;
+                    x.SavingValue.Budget = x.Budget;
+                }
+            });
+            Budget.Expenses.IsNotifying = false;
+            Budget.Expenses.Clear();
+            Budget.Expenses.AddRange(expenses);
+            Budget.Expenses.IsNotifying = true;
+            Budget.Expenses.Refresh();
             Diagnostics.Stop();
         }
 
@@ -83,11 +126,12 @@ namespace Adalbertus.BudgetPlanner.ViewModels
                 TypeSwitch.Case<BudgetPlan>(() => RefreshBudgetSummary()),
                 TypeSwitch.Case<IEnumerable<BudgetPlan>>(() => RefreshBudgetSummary()),
                 TypeSwitch.Case<SavingValue>(() => RefreshBudgetSummary()));
-                
+
             Diagnostics.Stop();
         }
 
-        public IEnumerable<BudgetCalculatorEquation> BudgetEquations { 
+        public IEnumerable<BudgetCalculatorEquation> BudgetEquations
+        {
             get
             {
                 return BudgetCalculatorViewModel.AvaiableEquations;
@@ -110,7 +154,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             NotifyOfPropertyChange(() => TransferedValue);
             RefreshBudgetSummary();
             Diagnostics.Stop();
-        }        
+        }
 
         public DateTime DateFrom
         {
@@ -192,6 +236,18 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             }
         }
 
+        private string _expensesHeader;
+        public string ExpensesHeader
+        {
+            get { return _expensesHeader; }
+            set
+            {
+                _expensesHeader = value;
+                NotifyOfPropertyChange(() => ExpensesHeader);
+            }
+        }
+
+
         private void RefreshBudgetSummary()
         {
             Diagnostics.Start();
@@ -201,7 +257,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             NotifyOfPropertyChange(() => SumOfRevenueIncomes);
             NotifyOfPropertyChange(() => SumOfRevenueSavings);
 
-            NotifyOfPropertyChange(() => TotalBudgetBilans); 
+            NotifyOfPropertyChange(() => TotalBudgetBilans);
             NotifyOfPropertyChange(() => TotalBudgetPlanValue);
             NotifyOfPropertyChange(() => TotalExpenseValue);
             NotifyOfPropertyChange(() => TotalBalanceProcentValue);

@@ -39,6 +39,19 @@ namespace Adalbertus.BudgetPlanner.Core
                 return FindVisualParent<T>(parentObject);
             }
         }
+        
+        public static T FindVisualParentRoot<T>(DependencyObject child) where T : DependencyObject
+        {
+            var parent = FindVisualParent<T>(child);
+            if (parent == null)
+            {
+                return (T)child;
+            }
+            else
+            {
+                return FindVisualParentRoot<T>(parent);
+            }
+        }
 
         /// <summary>
         /// Finds a Child of a given item in the visual tree. 

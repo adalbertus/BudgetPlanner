@@ -158,5 +158,20 @@ namespace Adalbertus.BudgetPlanner.Models
         [PetaPoco.Column]
         public int BudgetId { get { return Budget.Id; } set { } }
         public Budget Budget { get; set; }
+
+        public Expense Clone()
+        {
+            var cloned = new Expense
+            {
+                Id = this.Id,
+                Date = this.Date,
+                Flow = this.Flow,
+                Value = this.Value,
+                Description = this.Description,
+                Budget = this.Budget,
+            };
+
+            return cloned;
+        }
     }
 }

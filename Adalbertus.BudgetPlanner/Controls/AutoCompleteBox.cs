@@ -274,6 +274,10 @@ namespace Adalbertus.BudgetPlanner.Controls
         public AutoCompleteBox()
         {
             SelectAllOnGotFocus = true;
+            Application.Current.Deactivated += (s, args) =>
+            {
+                HideResultHost();
+            };
         }
 
         protected override void OnPreviewKeyDown(KeyEventArgs e)
@@ -429,7 +433,7 @@ namespace Adalbertus.BudgetPlanner.Controls
                     ShowHideResultHost();
                     SearchResults.Items.Filter = (item) => { return true; };
                 };
-            }
+            }           
         }
 
         private void SearchResults_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)

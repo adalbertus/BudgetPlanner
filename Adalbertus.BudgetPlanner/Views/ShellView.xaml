@@ -33,8 +33,11 @@
                             <WrapPanel>
                                 <TextBlock Text="Szczegóły budżetu za okres" Margin="0,0,4,0"/>
                                 <ctrl:ImageButton ImageUrl="Images/arrow-left.png" ToolTip="Poprzedni budżet" cal:Message.Attach="[Event Click] = [Action ShowPreviousBudget()]"/>
-                                <TextBlock Text="{Binding CurrentBudgetDate, Converter={StaticResource DateMonthFormatter}}" FontWeight="Bold"
-                                           Margin="4,0,4,0"/>
+                                <!--<TextBlock Text="{Binding CurrentBudgetDate, Converter={StaticResource DateMonthFormatter}}" FontWeight="Bold"
+                                           Margin="4,0,4,0"/>-->
+                                <ctrl:AutoCompleteBox Watermark="Data budżetu" Width="80" Margin="4,0,4,0" 
+                                                      SelectedItem="{Binding CurrentBudgetDate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                      DisplayMemberPath="DateTimeFormatted" ItemsSource="{Binding AvaiableDates}"/>
                                 <ctrl:ImageButton ImageUrl="Images/arrow-right.png" ToolTip="Następny budżet" cal:Message.Attach="[Event Click] = [Action ShowNextBudget()]"/>
                                 <ctrl:ImageButton ImageUrl="Images/template.png" ToolTip="Zastosuj / definiuj szablon" cal:Message.Attach="[Event Click] = [Action ShowApplyBudgetTemplate($executionContext)]"/>
                             </WrapPanel>
@@ -59,6 +62,11 @@
                        <ctrl:ImageButton ImageUrl="Images/notepad.png" Content="Notatnik" Margin="4 0 4 0"
                                           HorizontalAlignment="Right"
                                           cal:Message.Attach="[Event Click] = [Action ShowNotepad()]"/>
+
+                        <ctrl:ImageButton ImageUrl="Images/file-xls.png" Content="Eksport" ToolTip="Eksportuj budżet"
+                                          Margin="4 0 4 0"
+                                          HorizontalAlignment="Right"
+                                          cal:Message.Attach="[Event Click] = [Action ShowExportDialog()]"/>
 
                         <Button Content="ShowLog" cal:Message.Attach="[Event Click] = [Action DebugShowLog()]"
                                 Visibility="{Binding IsDebug, Converter={StaticResource Visibility}}" />

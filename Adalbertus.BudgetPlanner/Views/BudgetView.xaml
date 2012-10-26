@@ -6,7 +6,7 @@
              xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
              xmlns:ext="clr-namespace:Adalbertus.BudgetPlanner.Extensions"
              xmlns:m="clr-namespace:Adalbertus.BudgetPlanner.Models"
-             xmlns:extToolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit/extended"
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              xmlns:ctrl="clr-namespace:Adalbertus.BudgetPlanner.Controls"
 >
     <UserControl.Resources>
@@ -232,7 +232,7 @@
                           ResizeBehavior="PreviousAndNext" Background="LightSteelBlue"/>-->
 
             <!-- Budget expenses -->
-            <GroupBox Grid.Column="1" Header="Realizacja budżetu">
+            <GroupBox Grid.Column="1" Header="{Binding ExpensesHeader}">
                 <ContentControl x:Name="ExpensesViewModel" />
             </GroupBox>
         </Grid>

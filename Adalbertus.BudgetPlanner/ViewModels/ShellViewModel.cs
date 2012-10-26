@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Diagnostics;
 using System.Text;
 using System.Threading.Tasks;
@@ -38,7 +39,6 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             CachedService = cachedService;
             EventAggregator = eventAggregator;
             ConfigurationManager = configurationManager;
-            CurrentBudgetDate = DateTime.Now;
             DisplayName = "Budżet Domowy";
             EventAggregator.Subscribe(this);
             _timer = new Timer();
@@ -47,17 +47,19 @@ namespace Adalbertus.BudgetPlanner.ViewModels
                 CheckForUpdates(false);
             };
             CanCheckForUpdates = true;
+            AvaiableDates = new BindableCollectionExt<DateTimeVM>();
         }
 
         public Budget CurrentBudget { get; set; }
+        public BindableCollectionExt<DateTimeVM> AvaiableDates { get; set; }
 
         public string Version
         {
             get { return Updater.CurrentVersion; }
         }
 
-        private DateTime _currentBudgetDate;
-        public DateTime CurrentBudgetDate
+        private DateTimeVM _currentBudgetDate;
+        public DateTimeVM CurrentBudgetDate
         {
             get { return _currentBudgetDate; }
             set
@@ -70,23 +72,30 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         public void ShowCurrentBudget()
         {
             BudgetViewModel budgetViewModel = IoC.Get<BudgetViewModel>();
-            budgetViewModel.BudgetDate = CurrentBudgetDate;
+            budgetViewModel.BudgetDate = CurrentBudgetDate.DateTime;
 
             if (ActiveItem != null && ActiveItem is BudgetViewModel)
             {
                 DeactivateItem(ActiveItem, false);
             }
             ActivateItem(budgetViewModel);
+
+            AvaiableDates.Clear();
+            var sql = PetaPoco.Sql.Builder.Select("date(DateFrom)").From("Budget").OrderBy("DateFrom ASC");
+            var dates = Database.Query<string>(sql).ToList();
+            dates.ForEach(x => AvaiableDates.Add(new DateTimeVM(x, "yyyy-MM")));
         }
 
         public void ShowPreviousBudget()
         {
             CurrentBudgetDate = CurrentBudgetDate.AddMonths(-1);
+            NotifyOfPropertyChange(() => CurrentBudgetDate);
         }
 
         public void ShowNextBudget()
         {
             CurrentBudgetDate = CurrentBudgetDate.AddMonths(1);
+            NotifyOfPropertyChange(() => CurrentBudgetDate);
         }
 
         public void ShowCashFlowTypes()
@@ -126,6 +135,11 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             }
         }
 
+        public void ShowExportDialog()
+        {
+            ShowDialog<ExportDialogViewModel>(new { CurrentBudget = CurrentBudget }, null, null);
+        }
+
         protected override void OnActivate()
         {
             if (!DatabaseVerification())
@@ -134,6 +148,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             }
 
             CachedService.LoadAll();
+            CurrentBudgetDate = new DateTimeVM(DateTime.Now, "yyyy-MM");
             ShowCurrentBudget();
             int updateIntervalMinutes = ConfigurationManager.GetValueOrDefault(ConfigurationKeys.UpdateMinutesInterval, 15);
             _timer.Interval = updateIntervalMinutes * 60 * 1000;
@@ -154,6 +169,14 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             }
 
             CheckForUpdates(false);
+
+            this.PropertyChanged += (s, e) =>
+            {
+                if (e.PropertyName == "CurrentBudgetDate")
+                {
+                    ShowCurrentBudget();
+                }
+            };
         }
 
         private bool _canCheckForUpdates;
@@ -288,7 +311,11 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             messageDialog.CancelCallback = cancelCallback;
             messageDialog.AfterCloseCallback = () => { DialogScreen = null; };
             DialogScreen = messageDialog;
+        }
 
+        public void ShowQuestion(string message, System.Action okCallback, System.Action cancelCallback)
+        {
+            ShowMessage(message, okCallback, cancelCallback, MessageBoxButton.OKCancel, MessageBoxImage.Question);
         }
 
         public void ShowDialog<TDialogViewModel>(System.Action okCallback, System.Action cancelCallback) where TDialogViewModel : IDialog<object>

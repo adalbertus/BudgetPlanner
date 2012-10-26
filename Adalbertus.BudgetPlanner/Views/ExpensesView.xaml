@@ -5,7 +5,7 @@
              xmlns:cal="http://www.caliburnproject.org"
              xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
              xmlns:ext="clr-namespace:Adalbertus.BudgetPlanner.Extensions"
-             xmlns:extToolkit="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              xmlns:ctrl="clr-namespace:Adalbertus.BudgetPlanner.Controls"
              xmlns:vm="clr-namespace:Adalbertus.BudgetPlanner.ViewModels"
              xmlns:m="clr-namespace:Adalbertus.BudgetPlanner.Models"
@@ -14,7 +14,7 @@
     <UserControl.Resources>
         <Style TargetType="{x:Type Expander}" BasedOn="{StaticResource {x:Type Expander}}">
             <Style.Triggers>
-                <DataTrigger Binding="{Binding IsExpensesFiltered}" Value="True">
+                <DataTrigger Binding="{Binding AreExpensesNotInBudgetScope}" Value="True">
                     <Setter Property="BorderBrush" Value="OrangeRed" />
                     <Setter Property="BorderThickness" Value="1" />
                     <Setter Property="Background" Value="{StaticResource RedGradientVertical}" />
@@ -56,7 +56,7 @@
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="200" />
         </Grid.ColumnDefinitions>
-        <Expander Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,4,0,4" 
+        <Expander Grid.Row="0" Grid.Column="0" Margin="0,4,0,4" 
                   KeyboardNavigation.TabNavigation="Local">
             <Expander.Header>
                 <Grid>
@@ -64,23 +64,57 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <WrapPanel ext:MarginSetterExtension.Margin="2" Grid.Column="0" VerticalAlignment="Center">
-                        <TextBlock>Filtrowanie</TextBlock>
-                        <CheckBox IsChecked="{Binding IsFilteringEnabled}" Content="Włącz filtrowanie" Visibility="Collapsed" />
+                    <WrapPanel ext:MarginSetterExtension.Margin="2" Grid.Column="0" VerticalAlignment="Center">                        
+                        <TextBlock Margin="0,0,10,0">Filtrowanie</TextBlock>
+                        <ctrl:ImageButton ImageUrl="Images/file-xls.png" ToolTip="Eksportuj wyniki filtrowania do pliku" 
+                                          cal:Message.Attach="[Event Click] = [Action Export()]"/>
                     </WrapPanel>
-                    <WrapPanel Orientation="Vertical" Grid.Column="1" HorizontalAlignment="Right">
-                        <WrapPanel ext:MarginSetterExtension.Margin="2,0" HorizontalAlignment="Right">
-                            <TextBlock Text="Łączna widoczna kwota" FontSize="10"/>
-                            <TextBlock Text="{Binding TotalExpensesValue,Converter={StaticResource CurrencyFormatter}}"
+                    <WrapPanel Grid.Column="1" HorizontalAlignment="Right" ToolTipService.ShowDuration="50000">
+                        <WrapPanel.ToolTip>
+                            <GroupBox Header="Szczegóły" Padding="4" >
+                                <Grid Margin="5" Background="White">
+                                    <Grid Margin="10">
+                                        <Grid.Resources>
+                                            <Style TargetType="{x:Type TextBlock}">
+                                                <Setter Property="Foreground" Value="Black" />
+                                            </Style>
+                                        </Grid.Resources>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
+
+                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Łączna widoczna kwota" Margin="0,0,4,0"/>
+                                        <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding TotalExpensesValue,Converter={StaticResource CurrencyFormatter}}"
+                                               FontWeight="Bold"/>
+                                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Ilość widocznych pozycji" Margin="0,0,4,0"/>
+                                        <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding BudgetExpensesFilteredCount}" FontWeight="Bold"/>
+                                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Ilość widocznych pozycji z wybranego budżetu" Margin="0,0,4,0"/>
+                                        <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding CurrentBudgetExpensesFilteredCount}" FontWeight="Bold"/>
+                                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Ilość wszystkich pozycji z wybranego budżetu" Margin="0,0,4,0"/>
+                                        <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding CurrentBudgetExpensesTotalCount}" FontWeight="Bold"/>
+                                    </Grid>
+                                </Grid>
+                            </GroupBox>
+                        </WrapPanel.ToolTip>
+                        <WrapPanel Orientation="Vertical">
+                            <WrapPanel ext:MarginSetterExtension.Margin="2,0" HorizontalAlignment="Right">
+                                <TextBlock Text="Łączna widoczna kwota" FontSize="10"/>
+                                <TextBlock Text="{Binding TotalExpensesValue,Converter={StaticResource CurrencyFormatter}}"
                                        FontSize="10"/>
+                            </WrapPanel>
+                            <WrapPanel ext:MarginSetterExtension.Margin="2,0" HorizontalAlignment="Right">
+                                <TextBlock Text="Ilość widocznych pozycji" FontSize="10"/>
+                                <TextBlock Text="{Binding BudgetExpensesFilteredCount}" FontSize="10"/>
+                            </WrapPanel>
                         </WrapPanel>
-                        <WrapPanel ext:MarginSetterExtension.Margin="2,0" HorizontalAlignment="Right"
-                                   Visibility="{Binding IsExpensesFiltered, Converter={StaticResource Visibility}}">
-                            <TextBlock Text="Widocznych pozycji" FontSize="10"/>
-                            <TextBlock Text="{Binding BudgetExpensesFilteredCount}" FontSize="10"/>
-                            <TextBlock Text="z" FontSize="10"/>
-                            <TextBlock Text="{Binding BudgetExpensesTotalCount}" FontSize="10"/>
-                        </WrapPanel>
+                        <Image Height="16" Source="/Adalbertus.BudgetPlanner;component/Images/system-info-alt-02.png" HorizontalAlignment="Right" VerticalAlignment="Top" />
                     </WrapPanel>
                 </Grid>
             </Expander.Header>
@@ -93,6 +127,16 @@
                   CanUserAddRows="False" CanUserDeleteRows="False"
                   ScrollViewer.CanContentScroll="True" 
                   AutoGenerateColumns="False" RowHeaderWidth="0">
+            <DataGrid.Resources>
+                <Style TargetType="{x:Type DataGridRow}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsCurrentBudget}" Value="False">
+                            <Setter Property="Background" Value="{StaticResource WhiteYellowWhiteGradientVertical}"/>
+                            <Setter Property="ToolTip" Value="Pozycja z innego okresu budżetowego" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </DataGrid.Resources>
             <DataGrid.Columns>
                 <DataGridTemplateColumn CanUserReorder="False" CanUserResize="False" Width="25">
                     <DataGridTemplateColumn.CellTemplate>
@@ -126,8 +170,7 @@
                     <DataGridTemplateColumn.CellEditingTemplate>
                         <DataTemplate>
                             <DatePicker SelectedDate="{Binding Date, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                        SelectedDateFormat="Long" BorderThickness="0"
-                                        DisplayDateStart="{Binding Budget.DateFrom}" DisplayDateEnd="{Binding Budget.DateTo}"/>
+                                        SelectedDateFormat="Long" BorderThickness="0"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellEditingTemplate>
                 </DataGridTemplateColumn>
@@ -151,72 +194,71 @@
             </DataGrid.Columns>
         </DataGrid>
 
-        <GroupBox Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+        <GroupBox Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                   Header="Wstaw wydatek" Margin="4,0">
             <ScrollViewer VerticalScrollBarVisibility="Auto">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
-                
-                
-                <TextBlock Grid.Row="0" Text="Kategoria" Margin="0,0,4,4"/>
-                <ctrl:AutoCompleteBox Grid.Row="1" ItemsSource="{Binding CashFlows}" Watermark="Wpisz nazwę kategorii"
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+
+                    <TextBlock Grid.Row="0" Text="Kategoria" Margin="0,0,4,4"/>
+                    <ctrl:AutoCompleteBox Grid.Row="1" ItemsSource="{Binding CashFlows}" Watermark="Wpisz nazwę kategorii"
                                       SelectedItem="{Binding SelectedExpenseCashFlow}" Focusable="True"
                                       CanBeEmpty="False">
-                    <i:Interaction.Triggers>
-                        <ext:KeyTrigger Key="Enter" FocusTarget="{Binding ElementName=ExpenseValueControl}">
-                        </ext:KeyTrigger>
-                    </i:Interaction.Triggers>
-                </ctrl:AutoCompleteBox>
+                        <i:Interaction.Triggers>
+                            <ext:KeyTrigger Key="Enter" FocusTarget="{Binding ElementName=ExpenseValueControl}">
+                            </ext:KeyTrigger>
+                        </i:Interaction.Triggers>
+                    </ctrl:AutoCompleteBox>
 
-                <TextBlock Grid.Row="2" Text="Data" Margin="0,8,4,4"/>
-                <DatePicker Grid.Row="3" x:Name="ExpenseDate" SelectedDate="{Binding SelectedExpenseDate}" 
-                            SelectedDateFormat="Long" DisplayDateStart="{Binding Budget.DateFrom}"
-                            DisplayDateEnd="{Binding Budget.DateTo}">
-                    <i:Interaction.Triggers>
-                        <ext:KeyTrigger Key="Enter" FocusTarget="{Binding ElementName=ExpenseValueControl}">
-                        </ext:KeyTrigger>
-                    </i:Interaction.Triggers>
-                </DatePicker>
+                    <TextBlock Grid.Row="2" Text="Data" Margin="0,8,4,4"/>
+                    <DatePicker Grid.Row="3" x:Name="ExpenseDate" SelectedDate="{Binding SelectedExpenseDate}" 
+                            SelectedDateFormat="Long">
+                        <i:Interaction.Triggers>
+                            <ext:KeyTrigger Key="Enter" FocusTarget="{Binding ElementName=ExpenseValueControl}">
+                            </ext:KeyTrigger>
+                        </i:Interaction.Triggers>
+                    </DatePicker>
 
-                <TextBlock Grid.Row="4" Text="Kwota" Margin="0,8,4,4"/>
-                <ctrl:CalculatorTextBox Grid.Row="5" x:Name="ExpenseValueControl" Value="{Binding ExpenseValue}"
+                    <TextBlock Grid.Row="4" Text="Kwota" Margin="0,8,4,4"/>
+                    <ctrl:CalculatorTextBox Grid.Row="5" x:Name="ExpenseValueControl" Value="{Binding ExpenseValue}"
                                      VerticalAlignment="Stretch" Watermark="Wstaw kwotę"
                                      ext:FocusExtension.IsFocused="{Binding IsExpenseValueFocused}"
                                      ToolTip="Dopuszczalne są też wyrażenia matematyczne, np.: (250-3*3,56)+10">
 
-                    <i:Interaction.Triggers>
-                        <ext:KeyTrigger Key="Enter" Modifiers="Control">
-                            <cal:ActionMessage MethodName="AddAndMoveToExpenseValue" />
-                        </ext:KeyTrigger>
-                        <ext:KeyTrigger Key="Enter" FocusTarget="{Binding ElementName=ExpenseDescription}">
-                        </ext:KeyTrigger>
-                    </i:Interaction.Triggers>
-                </ctrl:CalculatorTextBox>
+                        <i:Interaction.Triggers>
+                            <ext:KeyTrigger Key="Enter" Modifiers="Control">
+                                <cal:ActionMessage MethodName="AddAndMoveToExpenseValue" />
+                            </ext:KeyTrigger>
+                            <ext:KeyTrigger Key="Enter" FocusTarget="{Binding ElementName=ExpenseDescription}">
+                            </ext:KeyTrigger>
+                        </i:Interaction.Triggers>
+                    </ctrl:CalculatorTextBox>
 
-                <TextBlock Grid.Row="6" Text="Opis" Margin="0,8,4,4"/>
-                <extToolkit:WatermarkTextBox Grid.Row="7" Name="ExpenseDescription" Text="{Binding ExpenseDescription, UpdateSourceTrigger=PropertyChanged}"
+                    <TextBlock Grid.Row="6" Text="Opis" Margin="0,8,4,4"/>
+                    <xctk:WatermarkTextBox Grid.Row="7" Name="ExpenseDescription" Text="{Binding ExpenseDescription, UpdateSourceTrigger=PropertyChanged}"
                                              VerticalAlignment="Stretch"
                                              Watermark="Opis">
-                    <i:Interaction.Triggers>
-                        <ext:KeyTrigger Key="Enter">
-                            <cal:ActionMessage MethodName="AddAndMoveToExpenseValue" />
-                        </ext:KeyTrigger>
-                    </i:Interaction.Triggers>
-                </extToolkit:WatermarkTextBox>
+                        <i:Interaction.Triggers>
+                            <ext:KeyTrigger Key="Enter">
+                                <cal:ActionMessage MethodName="AddAndMoveToExpenseValue" />
+                            </ext:KeyTrigger>
+                        </i:Interaction.Triggers>
+                    </xctk:WatermarkTextBox>
 
-                <ctrl:ImageButton Grid.Row="8" Content="Wstaw" Margin="0,8,0,4"
-                                  ImageUrl="Images/basket-add.png" cal:Message.Attach="[Event Click] = [Action AddExpense()]" />                
-            </Grid>
+                    <ctrl:ImageButton Grid.Row="8" Content="Wstaw" Margin="0,8,0,4"
+                                  ImageUrl="Images/basket-add.png" cal:Message.Attach="[Event Click] = [Action AddExpense()]" />
+                </Grid>
             </ScrollViewer>
         </GroupBox>
     </Grid>

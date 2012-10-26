@@ -51,6 +51,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Castle.Windsor.3.1.0\lib\net40-client\Castle.Windsor.dll</HintPath>
     </Reference>
+    <Reference Include="EPPlus">
+      <HintPath>..\Libs\EEPlus\EPPlus.dll</HintPath>
+    </Reference>
     <Reference Include="GongSolutions.Wpf.DragDrop">
       <HintPath>..\Libs\GongSolutions.Wpf.DragDrop\GongSolutions.Wpf.DragDrop.dll</HintPath>
     </Reference>
@@ -73,6 +76,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\System.Data.SQLite.1.0.82.0\lib\net40\System.Data.SQLite.Linq.dll</HintPath>
     </Reference>
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Interactivity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Caliburn.Micro.1.3.1\lib\net40\System.Windows.Interactivity.dll</HintPath>
     </Reference>
@@ -184,6 +188,10 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Services\ExportService.cs" />
+    <Compile Include="Services\FileService.cs" />
+    <Compile Include="Services\IExportService.cs" />
+    <Compile Include="Services\IFileService.cs" />
     <Compile Include="ViewModels\BaseViewModel.cs" />
     <Compile Include="ViewModels\BudgetCalculationsViewModel.cs" />
     <Compile Include="ViewModels\BudgetCalculatorEvaluator.cs" />
@@ -210,10 +218,13 @@
     <Compile Include="ViewModels\CashFlowGroupDeleteConfirmationViewModel.cs" />
     <Compile Include="ViewModels\CashFlowTypesViewModel.cs" />
     <Compile Include="ViewModels\ComboItemVM.cs" />
+    <Compile Include="ViewModels\DateTimeVM.cs" />
     <Compile Include="ViewModels\DownloadAndUpgradeViewModel.cs" />
     <Compile Include="ViewModels\ExpensesFilteringViewModel.cs" />
     <Compile Include="ViewModels\ExpensesFilterVM.cs" />
     <Compile Include="ViewModels\ExpensesViewModel.cs" />
+    <Compile Include="ViewModels\ExpenseVM.cs" />
+    <Compile Include="ViewModels\ExportDialogViewModel.cs" />
     <Compile Include="ViewModels\IncomesViewModel.cs" />
     <Compile Include="ViewModels\MessageBoxViewModel.cs" />
     <Compile Include="ViewModels\NotepadViewModel.cs" />
@@ -230,6 +241,7 @@
     </Compile>
     <Compile Include="ViewModels\WizardPageViewModel.cs" />
     <Compile Include="ViewModels\WizardShellViewModel.cs" />
+    <Compile Include="ViewModels\WrappedViewModel.cs" />
     <Page Include="DataTemplates.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -303,6 +315,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\ExpensesView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ExportDialogView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -428,6 +444,9 @@
     <Resource Include="Images\substract.png" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="git.txt" />
+    <Resource Include="Images\system-info-alt-02.png" />
+    <Resource Include="Images\file-xls.png" />
     <Content Include="x64\SQLite.Interop.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

@@ -70,7 +70,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             get { return Filter.DateFrom; }
             set
             {
-                Filter.DateTo = value;
+                Filter.DateFrom = value;
                 NotifyOfPropertyChange(() => DateFrom);
             }
         }
@@ -119,8 +119,8 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         {
             Diagnostics.Start();
             Budget = budget;
-
             FillFilterData();
+            Refresh();
             Diagnostics.Start();
         }
 

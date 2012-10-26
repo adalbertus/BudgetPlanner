@@ -4,7 +4,7 @@
              xmlns:cal="http://www.caliburnproject.org"
              xmlns:ctrl="clr-namespace:Adalbertus.BudgetPlanner.Controls"
              xmlns:ext="clr-namespace:Adalbertus.BudgetPlanner.Extensions"
-             xmlns:extToolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit/extended"
+             xmlns:xctk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit/extended"
 >
     <DockPanel LastChildFill="True" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         <Border DockPanel.Dock="Bottom" Style="{StaticResource DialogButtonsBorder}">
