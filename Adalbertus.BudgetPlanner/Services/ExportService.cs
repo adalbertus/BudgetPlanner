@@ -516,6 +516,10 @@ namespace Adalbertus.BudgetPlanner.Services
 
         private static void AlterateAndAutoFitRowsColumns(ExcelWorksheet workSheet, int fromRow, int toRow, int numberOfColumns)
         {
+            if (fromRow > toRow)
+            {
+                return;
+            }
             for (int i = 1; i <= toRow - fromRow + 1; i++)
             {
                 if (i % 2 == 0)

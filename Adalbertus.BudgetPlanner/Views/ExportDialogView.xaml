@@ -66,12 +66,18 @@
                 <TextBlock Grid.Row="1" Grid.Column="0" Text="Eksport do pliku" />
                 <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding ExportFilePath}" HorizontalAlignment="Stretch"
                            TextWrapping="NoWrap" TextTrimming="CharacterEllipsis"/>
-                
+
                 <Border Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" BorderBrush="Red" BorderThickness="2" CornerRadius="10"
                         Padding="10" Visibility="{Binding ErrorMessage, Converter={StaticResource EmptyToCollapsed}}"
                         HorizontalAlignment="Center" Width="360" Margin="0" Background="LightPink">
                     <TextBlock HorizontalAlignment="Stretch" TextWrapping="WrapWithOverflow"
                                Text="{Binding ErrorMessage}"/>
+                </Border>
+                <Border Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" BorderBrush="Black" BorderThickness="2" CornerRadius="10"
+                        Padding="10" Visibility="{Binding InfoMessage, Converter={StaticResource EmptyToCollapsed}}"
+                        HorizontalAlignment="Center" Width="360" Margin="0" Background="LightGray">
+                    <TextBlock HorizontalAlignment="Stretch" TextWrapping="WrapWithOverflow"
+                               Text="{Binding InfoMessage}"/>
                 </Border>
             </Grid>
         </GroupBox>

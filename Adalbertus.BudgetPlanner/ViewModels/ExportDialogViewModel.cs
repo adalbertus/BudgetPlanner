@@ -8,6 +8,7 @@ using Caliburn.Micro;
 using Adalbertus.BudgetPlanner.Models;
 using Adalbertus.BudgetPlanner.Services;
 using System.Diagnostics;
+using System.IO;
 
 namespace Adalbertus.BudgetPlanner.ViewModels
 {
@@ -34,6 +35,10 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             set
             {
                 _selectedDateFrom = value;
+                if (SelectedDateFrom != null && SelectedDateTo != null && SelectedDateFrom.DateTime > SelectedDateTo.DateTime)
+                {
+                    SelectedDateTo = SelectedDateFrom;
+                }
                 NotifyOfPropertyChange(() => SelectedDateFrom);
                 NotifyOfPropertyChange(() => DateFrom);
                 NotifyOfPropertyChange(() => SelectedExportPeriod);
@@ -46,6 +51,10 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             set
             {
                 _selectedDateTo = value;
+                if (SelectedDateFrom != null && SelectedDateTo != null && SelectedDateTo.DateTime < SelectedDateFrom.DateTime)
+                {
+                    SelectedDateFrom = SelectedDateTo;
+                }
                 NotifyOfPropertyChange(() => SelectedDateTo);
                 NotifyOfPropertyChange(() => DateTo);
                 NotifyOfPropertyChange(() => SelectedExportPeriod);
@@ -62,7 +71,8 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             get { return GetDefaultExportDate(SelectedDateTo); }
         }
 
-        public string SelectedExportPeriod {
+        public string SelectedExportPeriod
+        {
             get { return string.Format("{0:yyyy-MM} - {1:yyyy-MM}", DateFrom, DateTo); }
         }
 
@@ -79,7 +89,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         }
         public string ExportFilePath
         {
-            get { return GetExportFilePath(); }            
+            get { return GetExportFilePath(); }
         }
 
         private string _errorMessage;
@@ -93,6 +103,16 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             }
         }
 
+        private string _infoMessage;
+        public string InfoMessage
+        {
+            get { return _infoMessage; }
+            set
+            {
+                _infoMessage = value;
+                NotifyOfPropertyChange(() => InfoMessage);
+            }
+        }
         #endregion Properties
 
         #region Public methods
@@ -120,6 +140,10 @@ namespace Adalbertus.BudgetPlanner.ViewModels
                 ErrorMessage = string.Empty;
                 ExportBudget();
                 base.Close();
+            }
+            catch (IOException)
+            {
+                ErrorMessage = "Brak dostępu do pliku. Być może jest on już otwarty...";
             }
             catch (Exception ex)
             {
@@ -160,9 +184,11 @@ namespace Adalbertus.BudgetPlanner.ViewModels
 
         private void ExportBudget()
         {
+            ErrorMessage = null;
+            InfoMessage = null;
             Diagnostics.Start();
             var cashFlows = CachedService.GetAllCashFlows();
-            
+
             var allBudgets = Database.Query<Budget>(PetaPoco.Sql.Builder
                     .Select("*")
                     .From("Budget")
@@ -220,9 +246,10 @@ namespace Adalbertus.BudgetPlanner.ViewModels
 
             var exportService = IoC.Get<IExportService>();
             exportService.ExportBudget(ExportFilePath, allBudgets);
-
             Diagnostics.Stop();
+
             Process.Start(ExportFilePath);
+
         }
         #endregion Private methods
     }

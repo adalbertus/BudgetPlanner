@@ -13,6 +13,7 @@ using System.Windows.Data;
 using System.Text;
 using Adalbertus.BudgetPlanner.Services;
 using System.Diagnostics;
+using System.IO;
 
 namespace Adalbertus.BudgetPlanner.ViewModels
 {
@@ -649,15 +650,27 @@ namespace Adalbertus.BudgetPlanner.ViewModels
 
         public void Export()
         {
-            var fileService = IoC.Get<IFileService>();
-            var defaultFileName = string.Format("Wydatki_{0}_{1}", Filter.DateFrom.ToString("yyyy-MM-dd"), Filter.DateTo.ToString("yyyy-MM-dd"));
-            var xlsFile = fileService.SaveExcelFile(defaultFileName);
-            if (!string.IsNullOrWhiteSpace(xlsFile))
+            try
             {
-                var exportService = IoC.Get<IExportService>();
-                exportService.ExportExpenses(xlsFile, "Wydatki", BudgetExpenses.Select(x => x.WrappedItem));
-                Process.Start(xlsFile);
+                var fileService = IoC.Get<IFileService>();
+                var defaultFileName = string.Format("Wydatki_{0}_{1}", Filter.DateFrom.ToString("yyyy-MM-dd"), Filter.DateTo.ToString("yyyy-MM-dd"));
+                var xlsFile = fileService.SaveExcelFile(defaultFileName);
+                if (!string.IsNullOrWhiteSpace(xlsFile))
+                {
+                    var exportService = IoC.Get<IExportService>();
+                    exportService.ExportExpenses(xlsFile, "Wydatki", BudgetExpenses.Select(x => x.WrappedItem));
+                    Process.Start(xlsFile);
+                }
             }
+            catch (IOException)
+            {
+                Shell.ShowMessage("Brak dostępu do pliku. Być może jest on już otwarty...", null, null, System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+            }
+            catch (Exception ex)
+            {
+                Shell.ShowMessage(ex.Message, null, null, System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+            }
+
         }
 
         #region IHandle<ExpensesFilterVM> Members

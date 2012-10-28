@@ -8,6 +8,7 @@ using System.Xml.Linq;
 using Adalbertus.BudgetPlanner.Extensions;
 using System.Diagnostics;
 using System.IO;
+using System.Globalization;
 
 namespace Adalbertus.BudgetPlanner.Core
 {
@@ -21,17 +22,15 @@ namespace Adalbertus.BudgetPlanner.Core
             return string.Format("{0}.{1}.{2}", version.Major, version.Minor, version.Build);
         }
 
-        public static int GetNumericVersion(string version)
+        public static decimal GetNumericVersion(string version)
         {
             if (string.IsNullOrWhiteSpace(version))
             {
                 return 0;
             }
-            int numericVersion = 0;
-            if (!Int32.TryParse(version.Replace(".", "").Replace(" beta", ""), out numericVersion))
-            {
-                return 0;
-            }
+            var versionArray = version.Split(new string[] { "." }, StringSplitOptions.None);
+            var numericVersion = Decimal.Parse(string.Format("{0}{1}.{2}", versionArray[0], versionArray[1], versionArray[2]), System.Globalization.NumberStyles.Float, CultureInfo.InvariantCulture);
+
             return numericVersion;
         }
 
