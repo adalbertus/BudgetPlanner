@@ -105,7 +105,6 @@ namespace Adalbertus.BudgetPlanner.Controls
 
         protected override void OnKeyDown(System.Windows.Input.KeyEventArgs e)
         {
-            base.OnKeyDown(e);
             switch (e.Key)
             {
                 case System.Windows.Input.Key.Escape:
@@ -114,9 +113,11 @@ namespace Adalbertus.BudgetPlanner.Controls
                     {
                         ResultPopup.IsOpen = false;
                         base.FormatValue();
+                        return;
                     }
                     break;
             }
+            base.OnKeyDown(e);
         }
 
         protected override void ParseText()
@@ -164,6 +165,13 @@ namespace Adalbertus.BudgetPlanner.Controls
         {
             base.OnApplyTemplate();
             ResultPopup = GetTemplateChild("PART_ResultHost") as Popup;
+            this.SelectAll();
+        }
+
+        protected override void OnGotKeyboardFocus(KeyboardFocusChangedEventArgs e)
+        {
+            base.OnGotKeyboardFocus(e);
+            SelectAll();
         }
     }
 }

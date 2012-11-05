@@ -271,7 +271,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
                 if (SelectedExpenseDate < Budget.DateFrom || SelectedExpenseDate > Budget.DateTo)
                 {
                     var messageBuilder = new StringBuilder();
-                    messageBuilder.AppendLine("Wstawiasz wydatek z poza poza wybranego okresu budżetowego.");
+                    messageBuilder.AppendLine("Wstawiasz wydatek spoza wybranego okresu budżetowego.");
                     messageBuilder.AppendLine();
                     messageBuilder.AppendLine("Na pewno chcesz to zrobić?");
 
