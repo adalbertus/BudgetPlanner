@@ -7,18 +7,21 @@ using Adalbertus.BudgetPlanner.Core;
 using Caliburn.Micro;
 using Adalbertus.BudgetPlanner.Models;
 using Adalbertus.BudgetPlanner.Extensions;
+using Adalbertus.BudgetPlanner.Services;
 
 namespace Adalbertus.BudgetPlanner.ViewModels
 {
     public class BudgetPlanCopyDialogViewModel : BaseDailogViewModel
     {
-        public BudgetPlanCopyDialogViewModel(IShellViewModel shell, IDatabase database, IConfigurationManager configuration, ICachedService cashedService, IEventAggregator eventAggregator)
+        public BudgetPlanCopyDialogViewModel(IShellViewModel shell, IDatabase database, IConfigurationManager configuration, ICachedService cashedService, IEventAggregator eventAggregator, IBudgetService budgetService)
             : base(shell, database, configuration, cashedService, eventAggregator)
         {
+            BudgetService = budgetService;
             AvaiableBudgetDates = new BindableCollection<string>();
             Items = new BindableCollectionExt<BudgetPlanCopyVM>();
         }
 
+        public IBudgetService BudgetService { get; private set; }
         public BindableCollectionExt<BudgetPlanCopyVM> Items { get; private set; }
 
         public BindableCollection<string> AvaiableBudgetDates { get; private set; }
@@ -54,11 +57,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
 
         private void LoadAvaiableBudgets()
         {
-            var avaiableBudgets = Database.Query<DateTime>(PetaPoco.Sql.Builder
-                .Select("DateFrom")
-                .From("[Budget]")
-                .OrderBy("[DateFrom]")).ToList();
-
+            var avaiableBudgets = BudgetService.GetBudgetDates().Skip(1);
             AvaiableBudgetDates.Clear();
             avaiableBudgets.ForEach(x => AvaiableBudgetDates.Add(x.ToString("yyyy-MM")));
 
@@ -87,7 +86,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
                 .On("CashFlow.Id = BudgetPlan.CashFlowId")
                 .InnerJoin("CashFlowGroup")
                 .On("CashFlow.CashFlowGroupId = CashFlowGroup.Id")
-                .Where("Budget.DateFrom = datetime(@0)", string.Format("{0}-01", SelectedBudgetDate));
+                .Where("strftime('%Y%m', Budget.DateFrom) = @0", SelectedBudgetDate.Replace("-", string.Empty));
             var budgetPlans = Database.Query<BudgetPlan, Budget, CashFlow, CashFlowGroup>(sql).ToList();
 
             var result = cashFlows.GroupBy(x => x.GroupName, (name, id) => new { Name = name, Id = id }).ToList();

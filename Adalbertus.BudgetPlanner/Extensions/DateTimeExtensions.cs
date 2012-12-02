@@ -29,5 +29,17 @@ namespace Adalbertus.BudgetPlanner.Extensions
                 return new DateTime(date.Year, date.Month, monthDay);
             }
         }
+
+        public static DateTime ToDateOnly(this DateTime dateTime)
+        {
+            return DateTime.Parse(dateTime.ToShortDateString());
+        }
+
+        public static bool IsBetween(this DateTime dateTime, DateTime fromDate, DateTime toDate)
+        {
+            var result = (dateTime.ToDateOnly() >= fromDate.ToDateOnly() && dateTime.ToDateOnly() <= toDate.ToDateOnly());
+
+            return result;
+        }
     }
 }

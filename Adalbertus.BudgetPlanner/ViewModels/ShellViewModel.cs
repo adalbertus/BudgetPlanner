@@ -10,6 +10,7 @@ using Adalbertus.BudgetPlanner.Database;
 using Adalbertus.BudgetPlanner.Extensions;
 using Adalbertus.BudgetPlanner.Models;
 using Caliburn.Micro;
+using Adalbertus.BudgetPlanner.Services;
 
 namespace Adalbertus.BudgetPlanner.ViewModels
 {
@@ -31,12 +32,13 @@ namespace Adalbertus.BudgetPlanner.ViewModels
         public IEventAggregator EventAggregator { get; private set; }
         public IConfigurationManager ConfigurationManager { get; private set; }
         public ICachedService CachedService { get; private set; }
-        public ShellViewModel(IDatabase database, IEventAggregator eventAggregator, IConfigurationManager configurationManager, ICachedService cachedService)
+        public ShellViewModel(IDatabase database, IEventAggregator eventAggregator, IConfigurationManager configurationManager, ICachedService cachedService, IBudgetService budgetService)
         {
             SQLiteHelper.CreateDefaultDatabase();
 
             Database = database;
             CachedService = cachedService;
+            BudgetService = budgetService;
             EventAggregator = eventAggregator;
             ConfigurationManager = configurationManager;
             DisplayName = "Budżet Domowy";
@@ -52,6 +54,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
 
         public Budget CurrentBudget { get; set; }
         public BindableCollectionExt<DateTimeVM> AvaiableDates { get; set; }
+        public IBudgetService BudgetService { get; private set; }
 
         public string Version
         {
@@ -81,8 +84,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             ActivateItem(budgetViewModel);
 
             AvaiableDates.Clear();
-            var sql = PetaPoco.Sql.Builder.Select("date(DateFrom)").From("Budget").OrderBy("DateFrom ASC");
-            var dates = Database.Query<string>(sql).ToList();
+            var dates = BudgetService.GetBudgetDates();
             dates.ForEach(x => AvaiableDates.Add(new DateTimeVM(x, "yyyy-MM")));
         }
 

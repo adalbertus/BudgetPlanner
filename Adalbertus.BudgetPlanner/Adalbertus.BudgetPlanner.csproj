@@ -188,8 +188,10 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Services\BudgetService.cs" />
     <Compile Include="Services\ExportService.cs" />
     <Compile Include="Services\FileService.cs" />
+    <Compile Include="Services\IBudgetService.cs" />
     <Compile Include="Services\IExportService.cs" />
     <Compile Include="Services\IFileService.cs" />
     <Compile Include="ViewModels\BaseViewModel.cs" />

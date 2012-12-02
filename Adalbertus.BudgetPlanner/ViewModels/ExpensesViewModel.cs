@@ -268,7 +268,7 @@ namespace Adalbertus.BudgetPlanner.ViewModels
             Diagnostics.Start();
             if (showConfirmation)
             {
-                if (SelectedExpenseDate < Budget.DateFrom || SelectedExpenseDate > Budget.DateTo)
+                if(!SelectedExpenseDate.IsBetween(Budget.DateFrom, Budget.DateTo))
                 {
                     var messageBuilder = new StringBuilder();
                     messageBuilder.AppendLine("Wstawiasz wydatek spoza wybranego okresu budżetowego.");

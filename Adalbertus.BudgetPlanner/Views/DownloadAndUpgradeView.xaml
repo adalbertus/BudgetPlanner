@@ -9,7 +9,7 @@
         <Border DockPanel.Dock="Bottom" Style="{StaticResource DialogButtonsBorder}">
             <WrapPanel HorizontalAlignment="Right">
                 <ctrl:ImageButton Content="Anuluj" cal:Message.Attach="[Event Click] = [Action Cancel()]" Style="{StaticResource Button80}" />
-                <ctrl:ImageButton Content="Pobież i zainstaluj" ImageUrl="Images/button-checked.png" cal:Message.Attach="[Event Click] = [Action DownloadAndRestart()]" />
+                <ctrl:ImageButton Content="Pobierz i zainstaluj" ImageUrl="Images/button-checked.png" cal:Message.Attach="[Event Click] = [Action DownloadAndRestart()]" />
             </WrapPanel>
         </Border>
 
